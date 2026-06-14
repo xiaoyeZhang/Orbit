@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  示例模板。请到 Firebase 控制台下载你自己的 GoogleService-Info.plist，
+  替换其中的占位值后，另存为同目录下的 GoogleService-Info.plist（去掉 .sample）。
+  详见 FIREBASE_SETUP.md。
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>YOUR_API_KEY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>YOUR_SENDER_ID</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.jagat</string>
+	<key>PROJECT_ID</key>
+	<string>your-project-id</string>
+	<key>STORAGE_BUCKET</key>
+	<string>your-project-id.appspot.com</string>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:0000000000:ios:0000000000000000000000</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+</dict>
+</plist>

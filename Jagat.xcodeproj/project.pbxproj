@@ -1,0 +1,500 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9E0CAE2BE0F6975A245BB273 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E8C556A3BE663970296473 /* AppDelegate.swift */; };
+		FF4B752F86B987838BE3A409 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */; };
+		0CB79563C68C21CAF36BC759 /* AppServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */; };
+		F0097559B104D2E1D5AFEC7F /* JagatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4292FC0DA5387F8CB84084B /* JagatApp.swift */; };
+		6F27C16891ACCAF8DA512449 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B517D591155834DFE63229E /* RootView.swift */; };
+		331CD3F8BA898C763E7DED5B /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748D8ED610965D268EECA498 /* AvatarView.swift */; };
+		09B7D6EAB7870B9F8688A1D5 /* FriendMapBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5748B4EE4BF95E8BC6587DCD /* FriendMapBubble.swift */; };
+		5EF2CCB46ECB0647570D7AA3 /* StatusBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B07BADD24E748A9CE643481 /* StatusBadges.swift */; };
+		DA5D5BA1393E072F3CB048E3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D2C975F40BC83CEBAC7BA /* ChatView.swift */; };
+		FB18DE14643D698D372B4A17 /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F977FEA5E49A603B31EF /* ConversationsView.swift */; };
+		DF5B16AA480083FBCEAB0050 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48414B089652D9C90B8F8D2D /* AddFriendView.swift */; };
+		357B45FCD5B15783AFF04E14 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4050C07E21F4EBF1834A54E6 /* FriendsView.swift */; };
+		FD9742195984F61EFF8DF51A /* FriendDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */; };
+		BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */; };
+		0E81C6F6B4308B354B8A4877 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52104617E4FFCEAB354D258C /* LoginView.swift */; };
+		4325BCC265BADD0B90244CDE /* AvatarEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4026167B4941975EB569E /* AvatarEditorView.swift */; };
+		5B9ABAE8B982A5C74910D661 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BDB14218C6806634F38CD7 /* ProfileView.swift */; };
+		5A5F042553321041247B447E /* ReportingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */; };
+		E49E40035B9902F54666ADAF /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7F557259731EA0D7573B33 /* Avatar.swift */; };
+		8ACA43D4D0743C883D0E34F9 /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1420C7E30E11E7EEC2BAF /* Chat.swift */; };
+		C1C39D25A1EC9C8E78BE8D9E /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B23D55A8EA789E62A9A3ED /* Friend.swift */; };
+		CD417B6679BF80554906D426 /* Geo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9B90F65DAE40D9D3BC94B6 /* Geo.swift */; };
+		135E91B59B1082EC1CB66722 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F8649D3538DC9410B7D0E3 /* Place.swift */; };
+		F7AA53D6D3A95455E4562C66 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5332409034010AF3EBFD4408 /* User.swift */; };
+		FF683CCAFE3B2A3DBF38A5A4 /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73C47B7C27A0E723F59D0CF9 /* BackendService.swift */; };
+		A372222470D084277614F99E /* FirebaseBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90A8B120A9AA97971E6ADC6 /* FirebaseBackendService.swift */; };
+		AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */; };
+		9F80C78E3BB244B98B2E8F3E /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD01C2BE04FDA72C229E16A /* LocationManager.swift */; };
+		F1D6BC4BA2149EE0855472DE /* MockBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC9ABE4C5E8E4F2383D64E0 /* MockBackendService.swift */; };
+		F776AD4B1A79DD129AF49AFE /* MotionActivityTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB27D6DE5B25159FE21AC59F /* MotionActivityTracker.swift */; };
+		142CBBA251229997B7013CDA /* PresenceReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386DF612F8201D7536E0E24A /* PresenceReporter.swift */; };
+		A85A44979DEC19639F2D6670 /* ReportingSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B61C0778EFBC3C386538B9 /* ReportingSettings.swift */; };
+		2C06ACB05FB5096263E660F6 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20882055655CAC79DA77D5D1 /* SampleData.swift */; };
+		6BC1F0615AE174FDDB0B393A /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07C64816BF86F10EE4E47CF /* SessionStore.swift */; };
+		A18BC0B300416D19B42A0C1E /* Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DA68934B80E6B8D54611A42 /* Effects.swift */; };
+		723DF7AF98C235A931808DA6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B948E5D4EAA19698DF59193 /* Theme.swift */; };
+		9BE5F94F2F49E63846C9521B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE384496F97606BD6D7C5641 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		996AD237BC284D463E664FFE /* Jagat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jagat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		07E8C556A3BE663970296473 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate.swift"; sourceTree = "<group>"; };
+		ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppEnvironment.swift"; sourceTree = "<group>"; };
+		E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppServices.swift"; sourceTree = "<group>"; };
+		A4292FC0DA5387F8CB84084B /* JagatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JagatApp.swift"; sourceTree = "<group>"; };
+		6B517D591155834DFE63229E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RootView.swift"; sourceTree = "<group>"; };
+		748D8ED610965D268EECA498 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AvatarView.swift"; sourceTree = "<group>"; };
+		5748B4EE4BF95E8BC6587DCD /* FriendMapBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FriendMapBubble.swift"; sourceTree = "<group>"; };
+		2B07BADD24E748A9CE643481 /* StatusBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusBadges.swift"; sourceTree = "<group>"; };
+		E26D2C975F40BC83CEBAC7BA /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatView.swift"; sourceTree = "<group>"; };
+		3E50F977FEA5E49A603B31EF /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationsView.swift"; sourceTree = "<group>"; };
+		48414B089652D9C90B8F8D2D /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddFriendView.swift"; sourceTree = "<group>"; };
+		4050C07E21F4EBF1834A54E6 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FriendsView.swift"; sourceTree = "<group>"; };
+		B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FriendDetailSheet.swift"; sourceTree = "<group>"; };
+		0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapHomeView.swift"; sourceTree = "<group>"; };
+		52104617E4FFCEAB354D258C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginView.swift"; sourceTree = "<group>"; };
+		22F4026167B4941975EB569E /* AvatarEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AvatarEditorView.swift"; sourceTree = "<group>"; };
+		38BDB14218C6806634F38CD7 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileView.swift"; sourceTree = "<group>"; };
+		EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReportingSettingsView.swift"; sourceTree = "<group>"; };
+		FC7F557259731EA0D7573B33 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Avatar.swift"; sourceTree = "<group>"; };
+		D4D1420C7E30E11E7EEC2BAF /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chat.swift"; sourceTree = "<group>"; };
+		E1B23D55A8EA789E62A9A3ED /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Friend.swift"; sourceTree = "<group>"; };
+		9E9B90F65DAE40D9D3BC94B6 /* Geo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Geo.swift"; sourceTree = "<group>"; };
+		B1F8649D3538DC9410B7D0E3 /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Place.swift"; sourceTree = "<group>"; };
+		5332409034010AF3EBFD4408 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User.swift"; sourceTree = "<group>"; };
+		DE384496F97606BD6D7C5641 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
+		ACFBDAB4DE1CCFDAF9F419C7 /* GoogleService-Info.plist.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = "GoogleService-Info.plist.sample"; sourceTree = "<group>"; };
+		B7CDA78EA1804CD18AC7D530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+		73C47B7C27A0E723F59D0CF9 /* BackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackendService.swift"; sourceTree = "<group>"; };
+		A90A8B120A9AA97971E6ADC6 /* FirebaseBackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseBackendService.swift"; sourceTree = "<group>"; };
+		12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveBackendService.swift"; sourceTree = "<group>"; };
+		7AD01C2BE04FDA72C229E16A /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocationManager.swift"; sourceTree = "<group>"; };
+		8FC9ABE4C5E8E4F2383D64E0 /* MockBackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MockBackendService.swift"; sourceTree = "<group>"; };
+		CB27D6DE5B25159FE21AC59F /* MotionActivityTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MotionActivityTracker.swift"; sourceTree = "<group>"; };
+		386DF612F8201D7536E0E24A /* PresenceReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresenceReporter.swift"; sourceTree = "<group>"; };
+		A2B61C0778EFBC3C386538B9 /* ReportingSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReportingSettings.swift"; sourceTree = "<group>"; };
+		20882055655CAC79DA77D5D1 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SampleData.swift"; sourceTree = "<group>"; };
+		D07C64816BF86F10EE4E47CF /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionStore.swift"; sourceTree = "<group>"; };
+		7DA68934B80E6B8D54611A42 /* Effects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Effects.swift"; sourceTree = "<group>"; };
+		4B948E5D4EAA19698DF59193 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4FCBC29864E7C7752B7E193F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2B731CEFC6751AAE0EC69B98 = {
+			isa = PBXGroup;
+			children = (
+				951A8348117A3E83C2CDAB15 /* Jagat */,
+				0A2C978E52A76F0AA9F68BB5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0A2C978E52A76F0AA9F68BB5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				996AD237BC284D463E664FFE /* Jagat.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C9BDDB53F6B1B8E1973281C5 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				07E8C556A3BE663970296473,
+				ED915F2E4E41281307FBDE52,
+				E428F8B14B1FBFD3CFFC9393,
+				A4292FC0DA5387F8CB84084B,
+				6B517D591155834DFE63229E,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		97B76AEDA937E6EBC7154CC8 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				748D8ED610965D268EECA498,
+				5748B4EE4BF95E8BC6587DCD,
+				2B07BADD24E748A9CE643481,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		AB87732ABA8706825F5A5822 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				E26D2C975F40BC83CEBAC7BA,
+				3E50F977FEA5E49A603B31EF,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		4D7FDDAC636C0AF4FC828FB7 /* Friends */ = {
+			isa = PBXGroup;
+			children = (
+				48414B089652D9C90B8F8D2D,
+				4050C07E21F4EBF1834A54E6,
+			);
+			path = Friends;
+			sourceTree = "<group>";
+		};
+		68B3D185FB3B0BDE0F99B1EA /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				B158E2904C303DB3D06D2931,
+				0A34A8D71FA3D56ACB389DE1,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		A1E6E0C477635B981873F8A0 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				52104617E4FFCEAB354D258C,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		1B74021AEA72C5B36AD68E0D /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				22F4026167B4941975EB569E,
+				38BDB14218C6806634F38CD7,
+				EDBF7ACF96F60530C2D4DAAC,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		2562ED786D1208B0FF57FF9D /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				AB87732ABA8706825F5A5822,
+				4D7FDDAC636C0AF4FC828FB7,
+				68B3D185FB3B0BDE0F99B1EA,
+				A1E6E0C477635B981873F8A0,
+				1B74021AEA72C5B36AD68E0D,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		72AC87CF0F3349AEB5A4A448 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FC7F557259731EA0D7573B33,
+				D4D1420C7E30E11E7EEC2BAF,
+				E1B23D55A8EA789E62A9A3ED,
+				9E9B90F65DAE40D9D3BC94B6,
+				B1F8649D3538DC9410B7D0E3,
+				5332409034010AF3EBFD4408,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		82A08E86D1744AC61AAB9DE8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DE384496F97606BD6D7C5641,
+				ACFBDAB4DE1CCFDAF9F419C7,
+				B7CDA78EA1804CD18AC7D530,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1D86C9697E60FB276D39EAD1 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				73C47B7C27A0E723F59D0CF9,
+				A90A8B120A9AA97971E6ADC6,
+				12CBB14EEB9DD90F95B369BA,
+				7AD01C2BE04FDA72C229E16A,
+				8FC9ABE4C5E8E4F2383D64E0,
+				CB27D6DE5B25159FE21AC59F,
+				386DF612F8201D7536E0E24A,
+				A2B61C0778EFBC3C386538B9,
+				20882055655CAC79DA77D5D1,
+				D07C64816BF86F10EE4E47CF,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		55D892C4F4D77D0D0849054D /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				7DA68934B80E6B8D54611A42,
+				4B948E5D4EAA19698DF59193,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		951A8348117A3E83C2CDAB15 /* Jagat */ = {
+			isa = PBXGroup;
+			children = (
+				C9BDDB53F6B1B8E1973281C5,
+				97B76AEDA937E6EBC7154CC8,
+				2562ED786D1208B0FF57FF9D,
+				72AC87CF0F3349AEB5A4A448,
+				82A08E86D1744AC61AAB9DE8,
+				1D86C9697E60FB276D39EAD1,
+				55D892C4F4D77D0D0849054D,
+			);
+			path = Jagat;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		42AEFBAE01D2DFD981F7DA7D /* Jagat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4985AD989563B2F3A8B7C515 /* Build configuration list for PBXNativeTarget "Jagat" */;
+			buildPhases = (
+				C197A1D4E0DE673615AC32CB /* Sources */,
+				4FCBC29864E7C7752B7E193F /* Frameworks */,
+				8A6A452CEE30B0908A47D41D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Jagat;
+			productName = Jagat;
+			productReference = 996AD237BC284D463E664FFE /* Jagat.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46F86FAA6BBF9AC94A7E4595 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1420;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					42AEFBAE01D2DFD981F7DA7D = {
+						CreatedOnToolsVersion = 14.2;
+					};
+				};
+			};
+			buildConfigurationList = 4513333F934C61E7818EFCC3 /* Build configuration list for PBXProject "Jagat" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2B731CEFC6751AAE0EC69B98;
+			productRefGroup = 0A2C978E52A76F0AA9F68BB5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				42AEFBAE01D2DFD981F7DA7D /* Jagat */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8A6A452CEE30B0908A47D41D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9BE5F94F2F49E63846C9521B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C197A1D4E0DE673615AC32CB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9E0CAE2BE0F6975A245BB273 /* AppDelegate.swift in Sources */,
+				FF4B752F86B987838BE3A409 /* AppEnvironment.swift in Sources */,
+				0CB79563C68C21CAF36BC759 /* AppServices.swift in Sources */,
+				F0097559B104D2E1D5AFEC7F /* JagatApp.swift in Sources */,
+				6F27C16891ACCAF8DA512449 /* RootView.swift in Sources */,
+				331CD3F8BA898C763E7DED5B /* AvatarView.swift in Sources */,
+				09B7D6EAB7870B9F8688A1D5 /* FriendMapBubble.swift in Sources */,
+				5EF2CCB46ECB0647570D7AA3 /* StatusBadges.swift in Sources */,
+				DA5D5BA1393E072F3CB048E3 /* ChatView.swift in Sources */,
+				FB18DE14643D698D372B4A17 /* ConversationsView.swift in Sources */,
+				DF5B16AA480083FBCEAB0050 /* AddFriendView.swift in Sources */,
+				357B45FCD5B15783AFF04E14 /* FriendsView.swift in Sources */,
+				FD9742195984F61EFF8DF51A /* FriendDetailSheet.swift in Sources */,
+				BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */,
+				0E81C6F6B4308B354B8A4877 /* LoginView.swift in Sources */,
+				4325BCC265BADD0B90244CDE /* AvatarEditorView.swift in Sources */,
+				5B9ABAE8B982A5C74910D661 /* ProfileView.swift in Sources */,
+				5A5F042553321041247B447E /* ReportingSettingsView.swift in Sources */,
+				E49E40035B9902F54666ADAF /* Avatar.swift in Sources */,
+				8ACA43D4D0743C883D0E34F9 /* Chat.swift in Sources */,
+				C1C39D25A1EC9C8E78BE8D9E /* Friend.swift in Sources */,
+				CD417B6679BF80554906D426 /* Geo.swift in Sources */,
+				135E91B59B1082EC1CB66722 /* Place.swift in Sources */,
+				F7AA53D6D3A95455E4562C66 /* User.swift in Sources */,
+				FF683CCAFE3B2A3DBF38A5A4 /* BackendService.swift in Sources */,
+				A372222470D084277614F99E /* FirebaseBackendService.swift in Sources */,
+				AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */,
+				9F80C78E3BB244B98B2E8F3E /* LocationManager.swift in Sources */,
+				F1D6BC4BA2149EE0855472DE /* MockBackendService.swift in Sources */,
+				F776AD4B1A79DD129AF49AFE /* MotionActivityTracker.swift in Sources */,
+				142CBBA251229997B7013CDA /* PresenceReporter.swift in Sources */,
+				A85A44979DEC19639F2D6670 /* ReportingSettings.swift in Sources */,
+				2C06ACB05FB5096263E660F6 /* SampleData.swift in Sources */,
+				6BC1F0615AE174FDDB0B393A /* SessionStore.swift in Sources */,
+				A18BC0B300416D19B42A0C1E /* Effects.swift in Sources */,
+				723DF7AF98C235A931808DA6 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		218037AB54AB59F5BE8E874E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		0CF8206AA0B385A93D33097D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		20059E21F925AD836AC2940F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Jagat/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.jagat;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C28072A195776CA6F6E4EF27 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Jagat/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.jagat;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4513333F934C61E7818EFCC3 /* Build configuration list for PBXProject "Jagat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				218037AB54AB59F5BE8E874E /* Debug */,
+				0CF8206AA0B385A93D33097D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4985AD989563B2F3A8B7C515 /* Build configuration list for PBXNativeTarget "Jagat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20059E21F925AD836AC2940F /* Debug */,
+				C28072A195776CA6F6E4EF27 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+}

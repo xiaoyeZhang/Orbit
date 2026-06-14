@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// Jagat 的 Cloud Firestore 安全规则（示例，部署前请按自身需求复核）。
+// 部署：firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function isFriendOf(uid) {
+      // 对方的好友边里存在指向我的记录 => 我是 ta 的好友，可读 ta 的位置
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(uid)/friends/$(request.auth.uid));
+    }
+
+    match /users/{uid} {
+      allow read:  if isMe(uid) || isFriendOf(uid);
+      allow write: if isMe(uid);
+
+      // 好友边：本人可读写自己的；添加好友时允许对方写入「指向我」的反向边
+      match /friends/{friendUid} {
+        allow read:  if isMe(uid);
+        allow write: if isMe(uid) || isMe(friendUid);
+      }
+
+      // 足迹
+      match /places/{placeId} {
+        allow read, write: if isMe(uid);
+      }
+    }
+
+    // 邀请码索引：登录用户可查；仅本人可写自己的码
+    match /inviteCodes/{code} {
+      allow read:   if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // 会话：仅成员可读写
+    match /conversations/{cid} {
+      allow read, update, delete: if signedIn() && request.auth.uid in resource.data.members;
+      allow create: if signedIn() && request.auth.uid in request.resource.data.members;
+
+      match /messages/{mid} {
+        allow read, create: if signedIn()
+          && request.auth.uid in get(/databases/$(database)/documents/conversations/$(cid)).data.members;
+      }
+    }
+  }
+}
