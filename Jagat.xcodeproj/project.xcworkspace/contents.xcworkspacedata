@@ -4,4 +4,13 @@
    <FileRef
       location = "self:">
    </FileRef>
+   <FileRef
+      location = "group:../Packages/OrbitCore">
+   </FileRef>
+   <FileRef
+      location = "group:../Packages/OrbitUI">
+   </FileRef>
+   <FileRef
+      location = "group:../Packages/OrbitServices">
+   </FileRef>
 </Workspace>
