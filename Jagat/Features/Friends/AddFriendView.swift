@@ -1,4 +1,7 @@
 import SwiftUI
+import OrbitCore
+import OrbitUI
+import OrbitServices
 
 /// 添加好友：展示自己的邀请码，或输入对方邀请码添加。
 struct AddFriendView: View {

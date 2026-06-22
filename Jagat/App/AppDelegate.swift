@@ -1,4 +1,7 @@
 import UIKit
+import OrbitCore
+import OrbitUI
+import OrbitServices
 
 /// 处理 App 生命周期里 SwiftUI 不便覆盖的部分——尤其是被「显著位置变更」唤醒的冷启动。
 ///

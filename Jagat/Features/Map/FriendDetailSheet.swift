@@ -1,5 +1,8 @@
 import SwiftUI
 import MapKit
+import OrbitCore
+import OrbitUI
+import OrbitServices
 
 struct FriendDetailSheet: View {
     let friendId: String

@@ -16,6 +16,7 @@ import Foundation
 import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
+import OrbitCore
 
 @MainActor
 final class FirebaseBackendService: BackendService {

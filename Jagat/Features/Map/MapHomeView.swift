@@ -1,5 +1,8 @@
 import SwiftUI
 import MapKit
+import OrbitCore
+import OrbitUI
+import OrbitServices
 
 private enum MapEntity: Identifiable {
     case me(Coordinate, AvatarConfig)

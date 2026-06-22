@@ -1,4 +1,7 @@
 import SwiftUI
+import OrbitCore
+import OrbitUI
+import OrbitServices
 
 struct FriendsView: View {
     @EnvironmentObject private var session: SessionStore

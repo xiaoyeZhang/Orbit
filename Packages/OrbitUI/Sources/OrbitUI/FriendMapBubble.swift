@@ -1,20 +1,26 @@
 import SwiftUI
+import MapKit
+import OrbitCore
 
 /// 地图上的好友气泡：头像 + 名牌，移动时带光晕，常态轻呼吸，选中 Q 弹放大。
-struct FriendMapBubble: View {
-    let friend: Friend
-    var isSelected: Bool = false
+public struct FriendMapBubble: View {
+    public let friend: Friend
+    public var isSelected: Bool = false
 
     private var moving: Bool { friend.presence.movement != .stationary && !friend.isGhostMode }
     private var avatarSize: CGFloat { isSelected ? 52 : 42 }
-    private var totalSize: CGFloat { avatarSize + 20 }   // 固定 frame，避免 scaleEffect 扩张 annotation 容器
+    private var totalSize: CGFloat { avatarSize + 20 }
 
     @State private var glowPulse = false
 
-    var body: some View {
+    public init(friend: Friend, isSelected: Bool = false) {
+        self.friend = friend
+        self.isSelected = isSelected
+    }
+
+    public var body: some View {
         VStack(spacing: 4) {
             ZStack {
-                // 移动中：opacity 脉冲光晕（不用 scaleEffect，避免 MapAnnotation 容器膨胀）
                 if moving {
                     Circle()
                         .fill(ringColor.opacity(glowPulse ? 0.0 : 0.35))
@@ -34,16 +40,14 @@ struct FriendMapBubble: View {
                     .scaleEffect(isSelected ? 1.06 : 1.0)
                     .animation(.jelly, value: isSelected)
 
-                // 低电量红点
                 if friend.presence.isLowBattery {
                     badge(color: Theme.Palette.danger, system: "bolt.slash.fill")
                 }
-                // 隐身
                 if friend.isGhostMode {
                     badge(color: Theme.Palette.ink.opacity(0.8), system: "moon.zzz.fill")
                 }
             }
-            .frame(width: totalSize, height: totalSize)  // 固定容器大小
+            .frame(width: totalSize, height: totalSize)
 
             Text(friend.displayName)
                 .font(.system(size: 11, weight: .bold))
@@ -76,21 +80,23 @@ struct FriendMapBubble: View {
     }
 }
 
-/// 自己在地图上的位置气泡：固定大小，避免 scaleEffect 动画撑大 MapAnnotation 容器。
-struct SelfMapBubble: View {
-    let avatar: AvatarConfig
+/// 自己在地图上的位置气泡。
+public struct SelfMapBubble: View {
+    public let avatar: AvatarConfig
 
     @State private var glow = false
 
-    var body: some View {
+    public init(avatar: AvatarConfig) {
+        self.avatar = avatar
+    }
+
+    public var body: some View {
         ZStack {
-            // 柔和光晕：用 opacity 动画，不用 scaleEffect
             Circle()
                 .fill(Theme.Palette.sky.opacity(glow ? 0.0 : 0.30))
                 .frame(width: 64, height: 64)
                 .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true), value: glow)
 
-            // 白色描边环
             Circle()
                 .strokeBorder(.white, lineWidth: 3)
                 .frame(width: 54, height: 54)
@@ -98,12 +104,11 @@ struct SelfMapBubble: View {
             AvatarView(config: avatar, size: 42, showsRing: false)
                 .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
 
-            // 天蓝内描边
             Circle()
                 .strokeBorder(Theme.Palette.sky, lineWidth: 2)
                 .frame(width: 42, height: 42)
         }
-        .frame(width: 64, height: 64)  // 固定 frame，MapAnnotation 容器不会超过此尺寸
+        .frame(width: 64, height: 64)
         .onAppear { glow = true }
     }
 }

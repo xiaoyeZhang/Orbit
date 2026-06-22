@@ -1,6 +1,9 @@
 import SwiftUI
 import CoreLocation
 import CoreMotion
+import OrbitCore
+import OrbitUI
+import OrbitServices
 #if canImport(UIKit)
 import UIKit
 #endif

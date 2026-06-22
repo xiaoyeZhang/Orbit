@@ -1,4 +1,5 @@
 import Foundation
+import OrbitCore
 
 /// 真实后端实现的骨架（占位）。
 ///
