@@ -11,11 +11,11 @@ import OrbitServices
 @MainActor
 enum AppEnvironment {
 
-    /// 后端来源。切换它即可在「本地 Mock / Firebase 实时 / 自定义 REST」之间选择。
-    enum BackendKind { case mock, firebase, rest }
+    /// 后端来源。切换它即可在「本地 Mock / Supabase / Firebase / 自定义 REST」之间选择。
+    enum BackendKind { case mock, supabase, firebase, rest }
 
-    /// ⬇️ 改这一行即可切换后端。接入 Firebase 见 FIREBASE_SETUP.md。
-    static let backendKind: BackendKind = .mock
+    /// ⬇️ 改这一行即可切换后端
+    static let backendKind: BackendKind = .supabase
 
     /// 自定义 REST 后端地址（backendKind == .rest 时使用）。
     static let liveBaseURL = URL(string: "https://api.example.com")!
@@ -24,6 +24,8 @@ enum AppEnvironment {
         switch backendKind {
         case .mock:
             return MockBackendService()
+        case .supabase:
+            return SupabaseBackendService()
         case .firebase:
             #if ORBIT_FIREBASE
             return FirebaseBackendService()
