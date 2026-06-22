@@ -5,7 +5,7 @@ import SwiftUI
 /// 共享实例统一来自 `AppServices.shared`（与 `AppDelegate` 共用），并把状态中枢、
 /// 定位管理器、上报器作为环境对象下发。监听 `scenePhase` 在前后台间切换上报策略。
 @main
-struct JagatApp: App {
+struct OrbitApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     @StateObject private var session = AppServices.shared.session

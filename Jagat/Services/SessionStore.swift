@@ -31,7 +31,7 @@ final class SessionStore: ObservableObject {
                 id: "me", displayName: "我", bio: "在路上 🚀",
                 avatar: AvatarConfig(skinTone: .medium, hair: .short, hairColor: .brown,
                                      accessory: .glasses, background: .violet),
-                inviteCode: "JAGAT-ME01", phoneNumber: nil
+                inviteCode: "ORBIT-ME01", phoneNumber: nil
             )
             isAuthenticated = true
         }

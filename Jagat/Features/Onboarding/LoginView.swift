@@ -61,7 +61,7 @@ struct LoginView: View {
             .floating(amount: 8, duration: 4.0)
 
             VStack(spacing: 10) {
-                Text("Jagat")
+                Text("Orbit")
                     .font(.system(size: 46, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
 
@@ -155,7 +155,7 @@ struct LoginView: View {
                         ProgressView().tint(Theme.Palette.primary)
                     } else {
                         HStack(spacing: 8) {
-                            Text(codeSent ? "进入 Jagat" : "获取验证码")
+                            Text(codeSent ? "进入 Orbit" : "获取验证码")
                                 .font(.system(size: 16, weight: .bold))
                             Image(systemName: codeSent ? "arrow.right.circle.fill" : "envelope.fill")
                                 .font(.system(size: 15))

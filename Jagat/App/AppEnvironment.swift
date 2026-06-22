@@ -22,7 +22,7 @@ enum AppEnvironment {
         case .mock:
             return MockBackendService()
         case .firebase:
-            #if JAGAT_FIREBASE
+            #if ORBIT_FIREBASE
             return FirebaseBackendService()
             #else
             assertionFailure("未集成 Firebase SDK：请按 FIREBASE_SETUP.md，用 ENABLE_FIREBASE=1 重新生成工程")

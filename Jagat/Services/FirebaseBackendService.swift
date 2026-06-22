@@ -2,16 +2,16 @@
 //  FirebaseBackendService.swift
 //  真实后端实现：Firebase Auth（手机号登录）+ Cloud Firestore（实时位置 / 聊天）。
 //
-//  ⚠️ 整份文件用 `#if JAGAT_FIREBASE` 守护（该编译标志由生成器在 ENABLE_FIREBASE=1 时注入）：
+//  ⚠️ 整份文件用 `#if ORBIT_FIREBASE` 守护（该编译标志由生成器在 ENABLE_FIREBASE=1 时注入）：
 //     - 未启用 Firebase 时，此文件编译为空，工程照常用 Mock 构建运行。
 //     - 用 `ENABLE_FIREBASE=1 python3 Scripts/generate_xcodeproj.py` 重新生成工程后，
-//       JAGAT_FIREBASE 生效、SDK 被链接，本实现激活；再把 backendKind 改为 .firebase 即可。
+//       ORBIT_FIREBASE 生效、SDK 被链接，本实现激活；再把 backendKind 改为 .firebase 即可。
 //     （用显式编译标志而非 canImport，可避免切换模式时受 DerivedData 缓存影响。）
 //
 //  Firestore 数据结构见 FIREBASE_SETUP.md，安全规则见 firestore.rules。
 //
 
-#if JAGAT_FIREBASE
+#if ORBIT_FIREBASE
 import Foundation
 import FirebaseCore
 import FirebaseAuth
@@ -318,7 +318,7 @@ final class FirebaseBackendService: BackendService {
             )
         }
         // 首次登录：创建资料 + 邀请码索引
-        let code = "JAGAT-" + String(UUID().uuidString.prefix(5)).uppercased()
+        let code = "ORBIT-" + String(UUID().uuidString.prefix(5)).uppercased()
         let profile = UserProfile(id: uid, displayName: "我", bio: "在路上 🚀",
                                   avatar: .default, inviteCode: code, phoneNumber: phone)
         try await ref.setData([

@@ -40,7 +40,7 @@ struct AddFriendView: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(Theme.Palette.subtle)
                     HStack {
-                        TextField("如 JAGAT-XXXX", text: $code)
+                        TextField("如 ORBIT-XXXX", text: $code)
                             .textInputAutocapitalization(.characters)
                             .autocorrectionDisabled()
                         if !code.isEmpty {

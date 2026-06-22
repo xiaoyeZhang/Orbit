@@ -14,7 +14,7 @@ struct UserProfile: Codable, Equatable, Identifiable {
         displayName: "我",
         bio: "在路上 🚀",
         avatar: .default,
-        inviteCode: "JAGAT-ME01",
+        inviteCode: "ORBIT-ME01",
         phoneNumber: nil
     )
 }

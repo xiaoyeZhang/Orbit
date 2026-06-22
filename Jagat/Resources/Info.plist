@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Jagat</string>
+	<string>Orbit</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -33,11 +33,11 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Jagat 需要使用你的位置，才能在地图上与好友实时分享彼此的位置。</string>
+	<string>Orbit 需要使用你的位置，才能在地图上与好友实时分享彼此的位置。</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Jagat 需要在后台使用你的位置，以便持续向好友更新你的位置。</string>
+	<string>Orbit 需要在后台使用你的位置，以便持续向好友更新你的位置。</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Jagat 使用运动与健身数据来识别你正在步行/驾车等状态，并展示给好友。</string>
+	<string>Orbit 使用运动与健身数据来识别你正在步行/驾车等状态，并展示给好友。</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
