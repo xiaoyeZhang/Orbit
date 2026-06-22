@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		0CB79563C68C21CAF36BC759 /* AppServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */; };
 		0E81C6F6B4308B354B8A4877 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52104617E4FFCEAB354D258C /* LoginView.swift */; };
+		2ED155682FE97505001ADD7F /* OrbitCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D411111111AAAABBBB /* OrbitCore */; };
+		2ED155692FE97505001ADD7F /* OrbitUI in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D412121212AAAABBBB /* OrbitUI */; };
+		2ED1556A2FE97505001ADD7F /* OrbitServices in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D413131313AAAABBBB /* OrbitServices */; };
 		357B45FCD5B15783AFF04E14 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4050C07E21F4EBF1834A54E6 /* FriendsView.swift */; };
 		4325BCC265BADD0B90244CDE /* AvatarEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4026167B4941975EB569E /* AvatarEditorView.swift */; };
 		5A5F042553321041247B447E /* ReportingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */; };
@@ -25,10 +28,6 @@
 		FB18DE14643D698D372B4A17 /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F977FEA5E49A603B31EF /* ConversationsView.swift */; };
 		FD9742195984F61EFF8DF51A /* FriendDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */; };
 		FF4B752F86B987838BE3A409 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */; };
-
-		A1B2C3D421212121AAAABBBB /* OrbitCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D411111111AAAABBBB /* OrbitCore */; };
-		A1B2C3D422222222AAAABBBB /* OrbitUI in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D412121212AAAABBBB /* OrbitUI */; };
-		A1B2C3D423232323AAAABBBB /* OrbitServices in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D413131313AAAABBBB /* OrbitServices */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +35,7 @@
 		0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeView.swift; sourceTree = "<group>"; };
 		12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveBackendService.swift; sourceTree = "<group>"; };
 		22F4026167B4941975EB569E /* AvatarEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarEditorView.swift; sourceTree = "<group>"; };
+		2ED1556C2FE97529001ADD7F /* OrbitCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = OrbitCore; path = Packages/OrbitCore; sourceTree = "<group>"; };
 		38BDB14218C6806634F38CD7 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		3E50F977FEA5E49A603B31EF /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
 		4050C07E21F4EBF1834A54E6 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
@@ -60,6 +60,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2ED1556A2FE97505001ADD7F /* OrbitServices in Frameworks */,
+				2ED155692FE97505001ADD7F /* OrbitUI in Frameworks */,
+				2ED155682FE97505001ADD7F /* OrbitCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,10 +111,18 @@
 		2B731CEFC6751AAE0EC69B98 = {
 			isa = PBXGroup;
 			children = (
-				2E05B2892FE9693600305306 /* Packages */,
+				2ED1556B2FE97529001ADD7F /* Packages */,
 				951A8348117A3E83C2CDAB15 /* Jagat */,
 				0A2C978E52A76F0AA9F68BB5 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		2ED1556B2FE97529001ADD7F /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				2ED1556C2FE97529001ADD7F /* OrbitCore */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 		4D7FDDAC636C0AF4FC828FB7 /* Friends */ = {
@@ -255,12 +266,9 @@
 				Base,
 			);
 			mainGroup = 2B731CEFC6751AAE0EC69B98;
-			productRefGroup = 0A2C978E52A76F0AA9F68BB5 /* Products */;
 			packageReferences = (
-				A1B2C3D401010101AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitCore" */,
-				A1B2C3D402020202AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitUI" */,
-				A1B2C3D403030303AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitServices" */,
 			);
+			productRefGroup = 0A2C978E52A76F0AA9F68BB5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -306,39 +314,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		A1B2C3D401010101AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitCore" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/OrbitCore;
-		};
-		A1B2C3D402020202AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitUI" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/OrbitUI;
-		};
-		A1B2C3D403030303AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitServices" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/OrbitServices;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A1B2C3D411111111AAAABBBB /* OrbitCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D401010101AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitCore" */;
-			productName = OrbitCore;
-		};
-		A1B2C3D412121212AAAABBBB /* OrbitUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D402020202AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitUI" */;
-			productName = OrbitUI;
-		};
-		A1B2C3D413131313AAAABBBB /* OrbitServices */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D403030303AAAABBBB /* XCLocalSwiftPackageReference "Packages/OrbitServices" */;
-			productName = OrbitServices;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0CF8206AA0B385A93D33097D /* Release */ = {
@@ -467,6 +442,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1B2C3D411111111AAAABBBB /* OrbitCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbitCore;
+		};
+		A1B2C3D412121212AAAABBBB /* OrbitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbitUI;
+		};
+		A1B2C3D413131313AAAABBBB /* OrbitServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbitServices;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
 }

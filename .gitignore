@@ -1,3 +1,5 @@
 
 # Swift Package Manager build artifacts
 Packages/**/.build/
+Packages/**/.swiftpm/
+Jagat.xcworkspace/
