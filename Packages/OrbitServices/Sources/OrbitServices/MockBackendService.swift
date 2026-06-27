@@ -4,7 +4,11 @@ import OrbitCore
 @MainActor
 public final class MockBackendService: BackendService {
 
-    private var user: UserProfile?
+    private static let userDefaultsKey = "mock_current_user"
+
+    private var user: UserProfile? {
+        didSet { persistUser() }
+    }
     private var friends: [Friend] = SampleData.friends
     private var conversations: [Conversation] = SampleData.conversations
     private var messagesByConversation: [String: [Message]] = SampleData.messages
@@ -14,7 +18,22 @@ public final class MockBackendService: BackendService {
     private var messageContinuations: [String: AsyncStream<[Message]>.Continuation] = [:]
     private var movementTask: Task<Void, Never>?
 
-    public init() { startMovementSimulation() }
+    public init() {
+        // Restore persisted session
+        if let data = UserDefaults.standard.data(forKey: Self.userDefaultsKey),
+           let profile = try? JSONDecoder().decode(UserProfile.self, from: data) {
+            user = profile
+        }
+        startMovementSimulation()
+    }
+
+    private func persistUser() {
+        if let user, let data = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(data, forKey: Self.userDefaultsKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: Self.userDefaultsKey)
+        }
+    }
 
     // MARK: - Auth
     public func signIn(phone: String, code: String) async throws -> UserProfile {
@@ -27,7 +46,9 @@ public final class MockBackendService: BackendService {
         user = profile; return profile
     }
     public func currentUser() -> UserProfile? { user }
-    public func signOut() { user = nil }
+    public func signOut() {
+        user = nil  // didSet calls persistUser() → removes from UserDefaults
+    }
     public func updateProfile(_ profile: UserProfile) async throws {
         guard user != nil else { throw BackendError.notAuthenticated }
         user = profile
