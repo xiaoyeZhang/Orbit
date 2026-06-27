@@ -32,6 +32,10 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Orbit 需要使用相机来扫描好友的二维码。</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Orbit 需要访问通讯录，以帮助你找到已在使用应用的朋友。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Orbit 需要使用你的位置，才能在地图上与好友实时分享彼此的位置。</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

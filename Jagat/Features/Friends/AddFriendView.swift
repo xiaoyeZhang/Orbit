@@ -332,7 +332,9 @@ struct QRScannerView: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> ScannerVC {
         let vc = ScannerVC()
+        #if !targetEnvironment(simulator)
         vc.delegate = context.coordinator
+        #endif
         return vc
     }
     func updateUIViewController(_ vc: ScannerVC, context: Context) {}
@@ -358,7 +360,11 @@ class ScannerVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        setupCamera()
+        #if targetEnvironment(simulator)
+        showUnavailable()
+        #else
+        checkPermissionAndSetup()
+        #endif
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -369,6 +375,21 @@ class ScannerVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         session?.stopRunning()
+    }
+
+    private func checkPermissionAndSetup() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            setupCamera()
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async {
+                    if granted { self.setupCamera() } else { self.showUnavailable() }
+                }
+            }
+        default:
+            showUnavailable()
+        }
     }
 
     private func setupCamera() {
@@ -414,12 +435,15 @@ class ScannerVC: UIViewController {
     }
 
     private func showUnavailable() {
-        let label = UILabel()
-        label.text = "相机不可用"
-        label.textColor = .white
-        label.textAlignment = .center
-        label.frame = view.bounds
-        view.addSubview(label)
+        DispatchQueue.main.async {
+            let label = UILabel()
+            label.text = "相机不可用\n(模拟器不支持)"
+            label.textColor = .white
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.frame = self.view.bounds
+            self.view.addSubview(label)
+        }
     }
 
     private func cornerBrackets(in rect: CGRect) -> [CAShapeLayer] {
