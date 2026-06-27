@@ -1,38 +1,17 @@
 import SwiftUI
 
-// MARK: - Toast modifier
+// MARK: - Banner
 
-public struct ToastModifier: ViewModifier {
-    @Binding public var message: String?
+public struct ToastBanner: View {
+    public let message: String
     public var icon: String
-    public var position: Alignment
 
-    public init(message: Binding<String?>, icon: String = "checkmark.circle.fill", position: Alignment = .top) {
-        self._message = message
+    public init(message: String, icon: String = "checkmark.circle.fill") {
+        self.message = message
         self.icon = icon
-        self.position = position
     }
 
-    public func body(content: Content) -> some View {
-        content
-            .overlay(alignment: position) {
-                if let msg = message {
-                    ToastBanner(message: msg, icon: icon)
-                        .padding(.top, position == .top ? 56 : 0)
-                        .padding(.bottom, position == .bottom ? 100 : 0)
-                        .transition(.move(edge: position == .top ? .top : .bottom).combined(with: .opacity))
-                        .zIndex(999)
-                }
-            }
-            .animation(.spring(response: 0.38, dampingFraction: 0.72), value: message != nil)
-    }
-}
-
-struct ToastBanner: View {
-    let message: String
-    let icon: String
-
-    var body: some View {
+    public var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.system(size: 15, weight: .semibold))
@@ -45,7 +24,7 @@ struct ToastBanner: View {
         .padding(.vertical, 12)
         .background(.ultraThinMaterial, in: Capsule())
         .overlay(Capsule().strokeBorder(.white.opacity(0.15), lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.35), radius: 16, y: 6)
+        .shadow(color: .black.opacity(0.4), radius: 16, y: 6)
     }
 
     private var iconColor: Color {
@@ -55,20 +34,42 @@ struct ToastBanner: View {
     }
 }
 
-// MARK: - View helpers
+// MARK: - Modifier
 
-public extension View {
-    func toast(_ message: Binding<String?>, icon: String = "checkmark.circle.fill", position: Alignment = .top) -> some View {
-        modifier(ToastModifier(message: message, icon: icon, position: position))
+/// Wraps content in a ZStack and floats the toast on top,
+/// within the safe-area region so it clears the status bar.
+public struct ToastModifier: ViewModifier {
+    @Binding var message: String?
+    var icon: String
+
+    public func body(content: Content) -> some View {
+        ZStack(alignment: .top) {
+            content
+
+            if let msg = message {
+                ToastBanner(message: msg, icon: icon)
+                    .padding(.top, 8)
+                    .zIndex(9999)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .opacity
+                    ))
+                    .allowsHitTesting(false)
+            }
+        }
+        .animation(.spring(response: 0.38, dampingFraction: 0.72), value: message != nil)
     }
 }
 
-// MARK: - Auto-dismiss helper
+// MARK: - View helper
 
 public extension View {
-    /// Show a toast for `duration` seconds, then auto-dismiss.
-    func autoToast(_ message: Binding<String?>, duration: Double = 2.0, icon: String = "checkmark.circle.fill") -> some View {
-        self.toast(message, icon: icon)
+    func autoToast(
+        _ message: Binding<String?>,
+        duration: Double = 2.2,
+        icon: String = "checkmark.circle.fill"
+    ) -> some View {
+        modifier(ToastModifier(message: message, icon: icon))
             .onChange(of: message.wrappedValue) { val in
                 guard val != nil else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration) {

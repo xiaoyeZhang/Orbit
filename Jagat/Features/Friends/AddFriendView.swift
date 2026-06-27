@@ -49,8 +49,9 @@ struct AddFriendView: View {
             .animation(.spring(response: 0.35, dampingFraction: 0.80), value: code.isEmpty)
             .sheet(isPresented: $showQR) { qrSheet }
             .sheet(isPresented: $showScanner) { scannerSheet }
-            .autoToast($toast)
         }
+        // Toast 挂在 NavigationStack 外部，确保浮在最上层
+        .autoToast($toast)
     }
 
     // MARK: - Search bar
