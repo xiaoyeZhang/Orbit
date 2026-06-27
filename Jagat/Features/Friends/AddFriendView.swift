@@ -10,7 +10,6 @@ struct AddFriendView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var code            = ""
-    @State private var toast: String?
     @State private var showQR          = false
     @State private var showScanner     = false
     @State private var contactsStatus  = CNContactStore.authorizationStatus(for: .contacts)
@@ -50,8 +49,6 @@ struct AddFriendView: View {
             .sheet(isPresented: $showQR) { qrSheet }
             .sheet(isPresented: $showScanner) { scannerSheet }
         }
-        // Toast 挂在 NavigationStack 外部，确保浮在最上层
-        .autoToast($toast)
     }
 
     // MARK: - Search bar
@@ -85,8 +82,8 @@ struct AddFriendView: View {
         Button {
             Task {
                 let ok = await session.addFriend(code: code)
-                if ok { toast = "已添加好友 🎉"; code = "" }
-                else  { toast = session.errorMessage ?? "添加失败，请检查邀请码" }
+                if ok { Toast.show("已添加好友 🎉"); code = "" }
+                else  { Toast.show(session.errorMessage ?? "添加失败，请检查邀请码", icon: "xmark.circle.fill") }
             }
         } label: {
             Group {
@@ -176,7 +173,7 @@ struct AddFriendView: View {
 
             Button {
                 UIPasteboard.general.string = session.currentUser?.inviteCode
-                toast = "已复制邀请码"
+                Toast.show("已复制邀请码")
             } label: {
                 Label("复制", systemImage: "doc.on.doc")
                     .font(.system(size: 14, weight: .bold))
@@ -271,7 +268,7 @@ struct AddFriendView: View {
             QRScannerView { result in
                 showScanner = false
                 code = result
-                toast = "已扫描，点击添加好友"
+                Toast.show("已扫描，点击添加好友")
             }
             .ignoresSafeArea()
             .navigationTitle("扫一扫")
@@ -300,12 +297,13 @@ struct AddFriendView: View {
     private func requestContacts() {
         switch contactsStatus {
         case .authorized:
-            toast = "通讯录已开启"
+            Toast.show("通讯录已开启")
         case .notDetermined:
             CNContactStore().requestAccess(for: .contacts) { granted, _ in
                 DispatchQueue.main.async {
                     contactsStatus = CNContactStore.authorizationStatus(for: .contacts)
-                    toast = granted ? "通讯录已开启 ✓" : "未获得通讯录权限"
+                    Toast.show(granted ? "通讯录已开启" : "未获得通讯录权限",
+                               icon: granted ? "checkmark.circle.fill" : "xmark.circle.fill")
                 }
             }
         default:
