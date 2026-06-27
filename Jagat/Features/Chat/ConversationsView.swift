@@ -42,7 +42,7 @@ struct ConversationsView: View {
                                 } label: {
                                     conversationRow(convo)
                                 }
-                                .buttonStyle(.pressable(scale: 0.97))
+                                .buttonStyle(.pressable(scale: 0.94))
                             }
                         }
                         .padding(.top, 4)
@@ -162,7 +162,7 @@ struct ConversationsView: View {
                 }
             }
         }
-        .buttonStyle(.pressable(scale: 0.97))
+        .buttonStyle(.pressable(scale: 0.94))
     }
 
     // MARK: - Conversation row

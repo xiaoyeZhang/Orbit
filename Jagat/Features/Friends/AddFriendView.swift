@@ -161,7 +161,7 @@ struct AddFriendView: View {
                 }
             }
         }
-        .buttonStyle(.pressable(scale: 0.97))
+        .buttonStyle(.pressable(scale: 0.94))
     }
 
     // MARK: - My invite code
@@ -191,7 +191,7 @@ struct AddFriendView: View {
                     .background(Theme.Palette.primary.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
                     .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.primary.opacity(0.4), lineWidth: 0.8))
             }
-            .buttonStyle(.pressable(scale: 0.97))
+            .buttonStyle(.pressable(scale: 0.94))
         }
         .padding(16)
         .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 16))
@@ -218,7 +218,7 @@ struct AddFriendView: View {
                         in: RoundedRectangle(cornerRadius: 14)
                     )
             }
-            .buttonStyle(.pressable(scale: 0.97))
+            .buttonStyle(.pressable(scale: 0.94))
             .disabled(contactsStatus == .authorized)
         }
         .padding(16)

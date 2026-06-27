@@ -141,7 +141,7 @@ struct FriendsView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .buttonStyle(.pressable(scale: 0.97))
+        .buttonStyle(.pressable(scale: 0.94))
         .swipeActions(edge: .leading) {
             Button {
                 Task { await session.toggleFavorite(friend) }

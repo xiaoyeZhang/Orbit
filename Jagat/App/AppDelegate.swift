@@ -11,6 +11,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        // 让 ScrollView 内的 Button 立即响应按压，不等待滚动判断
+        UIScrollView.appearance().delaysContentTouches = false
         ReportingDefaults.register()
 
         if launchOptions?[.location] != nil {

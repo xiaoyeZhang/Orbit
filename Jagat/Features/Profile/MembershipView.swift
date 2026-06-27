@@ -146,6 +146,6 @@ struct MembershipView: View {
                 }
             }
         }
-        .buttonStyle(.pressable(scale: 0.97))
+        .buttonStyle(.pressable(scale: 0.94))
     }
 }

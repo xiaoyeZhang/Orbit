@@ -269,7 +269,7 @@ struct ProfileView: View {
                     .padding(.vertical, 13)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.pressable(scale: 0.97))
+                .buttonStyle(.pressable(scale: 0.94))
 
                 divider
 
@@ -292,7 +292,7 @@ struct ProfileView: View {
                     .padding(.vertical, 13)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.pressable(scale: 0.97))
+                .buttonStyle(.pressable(scale: 0.94))
 
                 divider
 
@@ -300,7 +300,7 @@ struct ProfileView: View {
                 Button { showMembership = true } label: {
                     membershipRow
                 }
-                .buttonStyle(.pressable(scale: 0.97))
+                .buttonStyle(.pressable(scale: 0.94))
             }
 
             Group {
@@ -322,7 +322,7 @@ struct ProfileView: View {
                     .padding(.vertical, 13)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.pressable(scale: 0.97))
+                .buttonStyle(.pressable(scale: 0.94))
 
                 divider
 
@@ -333,7 +333,7 @@ struct ProfileView: View {
                 } label: {
                     signOutRow
                 }
-                .buttonStyle(.pressable(scale: 0.97))
+                .buttonStyle(.pressable(scale: 0.94))
             }
         }
         .card()
