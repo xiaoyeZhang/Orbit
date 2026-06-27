@@ -32,6 +32,7 @@
 		FB18DE14643D698D372B4A17 /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F977FEA5E49A603B31EF /* ConversationsView.swift */; };
 		FD9742195984F61EFF8DF51A /* FriendDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */; };
 		FF4B752F86B987838BE3A409 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */; };
+		F59ECA25DF584B7185507A00 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DC978677544AF1AB630200 /* LanguageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,8 +53,8 @@
 		B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailSheet.swift; sourceTree = "<group>"; };
 		B7CDA78EA1804CD18AC7D530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusHistoryView.swift; sourceTree = "<group>"; };
-		ED18D1181A1D44C383490FEE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		1B0F00EF254645078964A239 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		ED18D1181A1D44C383490FEE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "Jagat/en.lproj/Localizable.strings"; sourceTree = SOURCE_ROOT; };
+		1B0F00EF254645078964A239 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Jagat/zh-Hans.lproj/Localizable.strings"; sourceTree = SOURCE_ROOT; };
 
 		E181889029FE4C18AD9AFD4D /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
@@ -70,6 +71,7 @@
 		E26D2C975F40BC83CEBAC7BA /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServices.swift; sourceTree = "<group>"; };
 		ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		B5DC978677544AF1AB630200 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportingSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -240,6 +242,7 @@
 			children = (
 				07E8C556A3BE663970296473 /* AppDelegate.swift */,
 				ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */,
+				B5DC978677544AF1AB630200 /* LanguageManager.swift */,
 				E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */,
 				A4292FC0DA5387F8CB84084B /* JagatApp.swift */,
 				6B517D591155834DFE63229E /* RootView.swift */,
@@ -324,6 +327,7 @@
 			files = (
 				9E0CAE2BE0F6975A245BB273 /* AppDelegate.swift in Sources */,
 				FF4B752F86B987838BE3A409 /* AppEnvironment.swift in Sources */,
+				F59ECA25DF584B7185507A00 /* LanguageManager.swift in Sources */,
 				0CB79563C68C21CAF36BC759 /* AppServices.swift in Sources */,
 				F0097559B104D2E1D5AFEC7F /* JagatApp.swift in Sources */,
 				6F27C16891ACCAF8DA512449 /* RootView.swift in Sources */,

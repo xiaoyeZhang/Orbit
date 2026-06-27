@@ -7,7 +7,7 @@ struct ProfileView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var reporter: PresenceReporter
 
-    @EnvironmentObject private var langMgr: LanguageManager
+    @ObservedObject private var langMgr = LanguageManager.shared
 
     @State private var showAvatarEditor  = false
     @State private var showReporting     = false
