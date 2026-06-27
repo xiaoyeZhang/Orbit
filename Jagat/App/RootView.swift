@@ -31,6 +31,7 @@ struct MainTabView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var reporter: PresenceReporter
     @State private var selection = 0
+    @State private var sheetDragOffset: CGFloat = 0
     @Namespace private var tabNS
 
     var body: some View {
@@ -71,12 +72,39 @@ struct MainTabView: View {
                             .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
                     }
                     .shadow(color: .black.opacity(0.6), radius: 40, y: -8)
+                    .offset(y: max(0, sheetDragOffset))
+                    .gesture(
+                        DragGesture(minimumDistance: 12, coordinateSpace: .local)
+                            .onChanged { value in
+                                // 只允许向下拖
+                                if value.translation.height > 0 {
+                                    sheetDragOffset = value.translation.height
+                                }
+                            }
+                            .onEnded { value in
+                                let velocity = value.predictedEndTranslation.height
+                                if value.translation.height > 80 || velocity > 300 {
+                                    // 超过阈值 → 收起
+                                    Haptics.selection()
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
+                                        sheetDragOffset = 0
+                                        selection = 0
+                                    }
+                                } else {
+                                    // 弹回原位
+                                    withAnimation(.spring(response: 0.30, dampingFraction: 0.75)) {
+                                        sheetDragOffset = 0
+                                    }
+                                }
+                            }
+                    )
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     .transition(.asymmetric(
                         insertion: .move(edge: .bottom).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
                     .ignoresSafeArea(edges: .bottom)
+                    .onChange(of: selection) { _ in sheetDragOffset = 0 }
             }
 
             // ── Floating dark tab bar (always on top) ──

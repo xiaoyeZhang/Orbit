@@ -13,8 +13,9 @@ struct LoginView: View {
 
     var body: some View {
         ZStack {
-            // 流动极光底
+            // 流动极光底（单独忽略安全区）
             AuroraBackground()
+                .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 Spacer()
@@ -23,7 +24,8 @@ struct LoginView: View {
                 formSection
             }
         }
-        .ignoresSafeArea()
+        // 不忽略键盘安全区，让表单随键盘上移
+        .ignoresSafeArea(.container, edges: [.top, .horizontal])
         .animation(.spring(response: 0.42, dampingFraction: 0.78), value: codeSent)
         .onAppear {
             withAnimation(.spring(response: 0.65, dampingFraction: 0.62).delay(0.15)) {
