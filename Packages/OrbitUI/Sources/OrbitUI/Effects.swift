@@ -245,4 +245,9 @@ public struct ShimmerEffect: ViewModifier {
 }
 public extension View {
     func shimmer(_ color: Color = .white.opacity(0.4)) -> some View { modifier(ShimmerEffect(color: color)) }
+
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
+                                        to: nil, from: nil, for: nil)
+    }
 }

@@ -24,6 +24,8 @@ struct LoginView: View {
                 formSection
             }
         }
+        // 点击空白收起键盘
+        .onTapGesture { hideKeyboard() }
         // 不忽略键盘安全区，让表单随键盘上移
         .ignoresSafeArea(.container, edges: [.top, .horizontal])
         .animation(.spring(response: 0.42, dampingFraction: 0.78), value: codeSent)
@@ -103,6 +105,14 @@ struct LoginView: View {
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(.white)
                     .tint(.white)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("完成") { hideKeyboard() }
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Theme.Palette.primary)
+                        }
+                    }
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 15)
