@@ -24,6 +24,17 @@ public struct Coordinate: Codable, Equatable, Hashable, Sendable {
     public func distance(to other: Coordinate) -> CLLocationDistance {
         clLocation.distance(from: other.clLocation)
     }
+
+    /// Compass bearing (0° = north, clockwise) from self to other.
+    public func bearing(to other: Coordinate) -> Double {
+        let lat1 = latitude  * .pi / 180
+        let lat2 = other.latitude  * .pi / 180
+        let dLon = (other.longitude - longitude) * .pi / 180
+        let y = sin(dLon) * cos(lat2)
+        let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
+        let b = atan2(y, x) * 180 / .pi
+        return (b + 360).truncatingRemainder(dividingBy: 360)
+    }
 }
 
 extension CLLocationDistance {

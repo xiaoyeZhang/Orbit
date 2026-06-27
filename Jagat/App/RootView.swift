@@ -26,146 +26,135 @@ struct RootView: View {
     }
 }
 
-// MARK: - 主界面（ZStack + 自定义悬浮标签栏，完全绕过系统 TabBar）
+// MARK: - 主界面（3-Tab 深色浮动栏）
 struct MainTabView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var reporter: PresenceReporter
-    @State private var selection = MainTabView.initialTab
+    @State private var selection = 0
     @Namespace private var tabNS
-
-    private struct TabItem {
-        let icon: String
-        let activeIcon: String
-        let label: String
-    }
-
-    private let tabs: [TabItem] = [
-        TabItem(icon: "map",                          activeIcon: "map.fill",                          label: "地图"),
-        TabItem(icon: "person.2",                     activeIcon: "person.2.fill",                     label: "好友"),
-        TabItem(icon: "bubble.left.and.bubble.right", activeIcon: "bubble.left.and.bubble.right.fill", label: "消息"),
-        TabItem(icon: "person.crop.circle",           activeIcon: "person.crop.circle.fill",           label: "我的"),
-    ]
-
-    // 悬浮栏高度（Capsule 高度 + 底部 safe area padding）
-    private let tabBarVisualHeight: CGFloat = 68
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // 四个页面常驻内存，用 opacity + allowsHitTesting 切换，避免系统 TabBar
+            // ── Pages ──
             ZStack {
                 MapHomeView()
                     .opacity(selection == 0 ? 1 : 0)
                     .allowsHitTesting(selection == 0)
 
-                FriendsView()
+                NotificationCenterView()
                     .opacity(selection == 1 ? 1 : 0)
                     .allowsHitTesting(selection == 1)
 
-                ConversationsView()
+                ProfileView()
                     .opacity(selection == 2 ? 1 : 0)
                     .allowsHitTesting(selection == 2)
-
-                ProfileView()
-                    .opacity(selection == 3 ? 1 : 0)
-                    .allowsHitTesting(selection == 3)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            // 为标签栏留出底部空间（MapHomeView 自己处理 padding，其余靠 safeAreaInset）
             .safeAreaInset(edge: .bottom) {
-                // Tab 栏胶囊高度 68 + 底部 padding 24 + 安全余量 12 = 104
-                Color.clear.frame(height: tabBarVisualHeight + 36)
+                Color.clear.frame(height: 88)
             }
 
-            floatingTabBar
+            // ── Floating dark tab bar ──
+            darkTabBar
         }
         .ignoresSafeArea(edges: .bottom)
-        .tint(Theme.Palette.primary)
         .onAppear { reporter.start() }
         .onDisappear { reporter.stop() }
     }
 
-    // MARK: - 悬浮标签栏
-    private var floatingTabBar: some View {
+    // MARK: - Tab bar
+    private var darkTabBar: some View {
         HStack(spacing: 0) {
-            ForEach(Array(tabs.enumerated()), id: \.offset) { idx, tab in
-                tabButton(index: idx, item: tab)
+            // Left: Map
+            tabBtn(index: 0) {
+                VStack(spacing: 3) {
+                    ZStack {
+                        if selection == 0 {
+                            Circle()
+                                .fill(Theme.Palette.sky.opacity(0.18))
+                                .frame(width: 40, height: 40)
+                        }
+                        Image(systemName: selection == 0 ? "map.fill" : "map")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(selection == 0 ? Theme.Palette.sky : Theme.Palette.textSecondary)
+                    }
+                }
+            }
+
+            Spacer()
+
+            // Center: Messages count pill
+            tabBtn(index: 1) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(selection == 1
+                              ? Theme.Palette.primary
+                              : Theme.Palette.card2)
+                        .frame(width: 64, height: 38)
+
+                    if session.totalUnread > 0 {
+                        Text(session.totalUnread > 99 ? "99+" : "\(session.totalUnread)")
+                            .font(.system(size: 22, weight: .heavy, design: .rounded))
+                            .foregroundStyle(.white)
+                    } else {
+                        Image(systemName: "bubble.left.and.bubble.right.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(selection == 1 ? .white : Theme.Palette.textSecondary)
+                    }
+                }
+            }
+
+            Spacer()
+
+            // Right: Profile
+            tabBtn(index: 2) {
+                VStack(spacing: 3) {
+                    ZStack {
+                        if selection == 2 {
+                            Circle()
+                                .fill(Theme.Palette.accent.opacity(0.18))
+                                .frame(width: 40, height: 40)
+                        }
+                        Image(systemName: selection == 2 ? "person.crop.circle.fill" : "person.crop.circle")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(selection == 2 ? Theme.Palette.accent : Theme.Palette.textSecondary)
+                    }
+                }
             }
         }
-        .padding(.horizontal, 6)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 36)
+        .padding(.vertical, 12)
         .background {
-            Capsule()
-                .fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(Theme.Palette.card.opacity(0.96))
                 .overlay {
-                    Capsule().strokeBorder(.white.opacity(0.30), lineWidth: 0.7)
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
                 }
-                .shadow(color: .black.opacity(0.20), radius: 28, y: 12)
+                .shadow(color: .black.opacity(0.55), radius: 32, y: 12)
         }
-        .padding(.horizontal, 22)
-        .padding(.bottom, 24)
-        .animation(.spring(response: 0.38, dampingFraction: 0.72), value: selection)
+        .padding(.horizontal, 28)
+        .padding(.bottom, 28)
     }
 
-    private func tabButton(index: Int, item: TabItem) -> some View {
-        let active = selection == index
-
-        return Button {
+    private func tabBtn<Label: View>(index: Int, @ViewBuilder label: () -> Label) -> some View {
+        Button {
             guard selection != index else { return }
             Haptics.selection()
-            withAnimation(.spring(response: 0.38, dampingFraction: 0.70)) {
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.78)) {
                 selection = index
             }
         } label: {
-            HStack(spacing: active ? 6 : 0) {
-                Image(systemName: active ? item.activeIcon : item.icon)
-                    .font(.system(size: 16, weight: active ? .bold : .regular))
-                    .frame(width: 20)
-                    .scaleEffect(active ? 1.05 : 1.0)
-
-                if active {
-                    Text(item.label)
-                        .font(.system(size: 13, weight: .bold))
-                        .fixedSize()
-                        .transition(.asymmetric(
-                            insertion: .scale(scale: 0.55, anchor: .leading).combined(with: .opacity),
-                            removal:   .scale(scale: 0.55, anchor: .leading).combined(with: .opacity)
-                        ))
-                }
-            }
-            .foregroundStyle(active ? .white : Theme.Palette.subtle)
-            .padding(.horizontal, active ? 16 : 0)
-            .padding(.vertical, 10)
-            .frame(maxWidth: active ? nil : .infinity)
-            .background {
-                if active {
-                    Capsule()
-                        .fill(Theme.brandGradient)
-                        .matchedGeometryEffect(id: "activeTab", in: tabNS)
-                        .shadow(color: Theme.Palette.primary.opacity(0.50), radius: 10, y: 4)
-                }
-            }
+            label()
+                .frame(minWidth: 44, minHeight: 44)
         }
-        .buttonStyle(.pressable(scale: 0.88))
-        .overlay(alignment: .topTrailing) {
-            if index == 2 && session.totalUnread > 0 {
-                Text(session.totalUnread > 9 ? "9+" : "\(session.totalUnread)")
-                    .font(.system(size: 9, weight: .heavy))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 4).padding(.vertical, 2)
-                    .background(Capsule().fill(Theme.Palette.accent))
-                    .shadow(color: Theme.Palette.accent.opacity(0.5), radius: 4, y: 2)
-                    .offset(x: active ? 10 : 4, y: -2)
-                    .popIn()
-            }
-        }
+        .buttonStyle(.pressable(scale: 0.86))
     }
+}
 
-    private static var initialTab: Int {
-        switch ProcessInfo.processInfo.environment["JAGAT_TAB"] {
-        case "friends": return 1
-        case "chat":    return 2
-        case "profile": return 3
-        default:        return 0
-        }
+// MARK: - Notification Center (消息 tab)
+private struct NotificationCenterView: View {
+    var body: some View {
+        ConversationsView()
     }
 }

@@ -7,9 +7,10 @@ struct ProfileView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var reporter: PresenceReporter
 
-    @State private var showAvatarEditor = false
-    @State private var showReporting    = false
-    @State private var ghostMode        = false
+    @State private var showAvatarEditor  = false
+    @State private var showReporting     = false
+    @State private var showHistory       = false
+    @State private var ghostMode         = false
 
     var body: some View {
         NavigationStack {
@@ -41,6 +42,9 @@ struct ProfileView: View {
             .sheet(isPresented: $showReporting) {
                 ReportingSettingsView()
                     .environmentObject(AppServices.shared.location)
+            }
+            .sheet(isPresented: $showHistory) {
+                StatusHistoryView()
             }
             .onAppear {
                 if ProcessInfo.processInfo.environment["JAGAT_OPEN"] == "reporting" {
@@ -228,6 +232,25 @@ struct ProfileView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 13)
+
+            divider
+
+            // 历史状态
+            Button { showHistory = true } label: {
+                HStack(spacing: 14) {
+                    settingIcon(systemName: "clock.arrow.circlepath", gradient: Theme.skyGradient)
+                    Text("我的历史状态")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Theme.Palette.ink)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.bold())
+                        .foregroundStyle(Theme.Palette.subtle)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 13)
+            }
+            .buttonStyle(.pressable(scale: 0.97))
 
             divider
 

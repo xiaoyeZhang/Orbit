@@ -9,6 +9,7 @@ public final class LocationManager: NSObject, ObservableObject {
     @Published public var authorizationStatus: CLAuthorizationStatus
     @Published public var heading: Double = 0
     @Published public var speedKmh: Double = 0
+    @Published public var accuracyMeters: Int = 0
 
     public var onLocation: ((Coordinate) -> Void)?
 
@@ -77,6 +78,7 @@ extension LocationManager: CLLocationManagerDelegate {
         let coord = Coordinate(loc.coordinate)
         userCoordinate = coord
         speedKmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
+        accuracyMeters = loc.horizontalAccuracy >= 0 ? Int(loc.horizontalAccuracy) : 0
         onLocation?(coord)
     }
 

@@ -15,6 +15,14 @@ public enum Theme {
         public static let subtle       = Color(.secondaryLabel)
         public static let surface      = Color(.systemBackground)
         public static let groupedBackground = Color(.systemGroupedBackground)
+
+        // Dark-first palette
+        public static let bg           = Color(hex: 0x0D0D0D)
+        public static let card         = Color(hex: 0x1C1C1E)
+        public static let card2        = Color(hex: 0x2C2C2E)
+        public static let separator    = Color(white: 1.0, opacity: 0.08)
+        public static let textPrimary  = Color.white
+        public static let textSecondary = Color(white: 1.0, opacity: 0.50)
     }
 
     public static var brandGradient: LinearGradient {
@@ -69,6 +77,9 @@ public struct CardBackground: ViewModifier {
 public extension View {
     func card(_ fill: Color = Theme.Palette.surface) -> some View {
         modifier(CardBackground(fill: fill))
+    }
+    func darkCard() -> some View {
+        modifier(CardBackground(fill: Theme.Palette.card))
     }
     func glassCard(cornerRadius: CGFloat = 20) -> some View {
         modifier(GlassCard(cornerRadius: cornerRadius))

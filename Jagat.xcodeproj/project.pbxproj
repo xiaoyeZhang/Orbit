@@ -21,6 +21,7 @@
 		A372222470D084277614F99E /* FirebaseBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90A8B120A9AA97971E6ADC6 /* FirebaseBackendService.swift */; };
 		AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */; };
 		BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */; };
+		CD4D6385348CB1F505F7F62D /* StatusHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */; };
 		DA5D5BA1393E072F3CB048E3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D2C975F40BC83CEBAC7BA /* ChatView.swift */; };
 		DF5B16AA480083FBCEAB0050 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48414B089652D9C90B8F8D2D /* AddFriendView.swift */; };
 		E9B67305A3E41997FDE5B343 /* OrbitServices in Frameworks */ = {isa = PBXBuildFile; productRef = 6CF308983486947A37BA37F0 /* OrbitServices */; };
@@ -47,6 +48,7 @@
 		ACFBDAB4DE1CCFDAF9F419C7 /* GoogleService-Info.plist.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = "GoogleService-Info.plist.sample"; sourceTree = "<group>"; };
 		B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailSheet.swift; sourceTree = "<group>"; };
 		B7CDA78EA1804CD18AC7D530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusHistoryView.swift; sourceTree = "<group>"; };
 		DE384496F97606BD6D7C5641 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E26D2C975F40BC83CEBAC7BA /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServices.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				68B3D185FB3B0BDE0F99B1EA /* Map */,
 				A1E6E0C477635B981873F8A0 /* Onboarding */,
 				1B74021AEA72C5B36AD68E0D /* Profile */,
+				45782AD4D7A31215202EA2F3 /* History */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -121,6 +124,15 @@
 			children = (
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		45782AD4D7A31215202EA2F3 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */,
+			);
+			name = History;
+			path = History;
 			sourceTree = "<group>";
 		};
 		4D7FDDAC636C0AF4FC828FB7 /* Friends */ = {
@@ -311,6 +323,7 @@
 				5A5F042553321041247B447E /* ReportingSettingsView.swift in Sources */,
 				A372222470D084277614F99E /* FirebaseBackendService.swift in Sources */,
 				AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */,
+				CD4D6385348CB1F505F7F62D /* StatusHistoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

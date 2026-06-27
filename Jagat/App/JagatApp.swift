@@ -23,6 +23,7 @@ struct OrbitApp: App {
                 .environmentObject(session)
                 .environmentObject(location)
                 .environmentObject(reporter)
+                .preferredColorScheme(.dark)
         }
         .onChange(of: scenePhase) { phase in
             switch phase {

@@ -1,5 +1,6 @@
 import SwiftUI
 import MapKit
+import CoreLocation
 import OrbitCore
 import OrbitUI
 import OrbitServices
@@ -34,8 +35,12 @@ struct MapHomeView: View {
     )
     @State private var selection: FriendSelection?
     @State private var showAddFriend = false
+    @State private var showFriends   = false
     @State private var didInitialCenter = false
-    @State private var carouselShown = false
+
+    // Top-left info
+    @State private var cityName    = ""
+    @State private var temperature: Double? = nil
 
     private var entities: [MapEntity] {
         var list: [MapEntity] = []
@@ -47,47 +52,56 @@ struct MapHomeView: View {
     }
 
     var body: some View {
-        // 用 overlay(alignment:) 叠加 UI，避免 VStack+Spacer 撑高 topBar
-        map
-            .overlay(alignment: .top) {
-                topBar
-                    .padding(.horizontal, 16)
-                    .padding(.top, 6)
+        ZStack(alignment: .bottom) {
+            // ── Map ──
+            map
+                .ignoresSafeArea()
+
+            // ── Top-left: city + weather + accuracy ──
+            topLeftInfo
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(.leading, 16)
+                .padding(.top, 60)
+                .allowsHitTesting(false)
+
+            // ── Right sidebar ──
+            rightSidebar
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                .padding(.trailing, 12)
+                .padding(.top, 60)
+
+            // ── Bottom "好友" pill ──
+            bottomPill
+                .padding(.bottom, 120)
+        }
+        .ignoresSafeArea(edges: .bottom)
+        .sheet(item: $selection) { sel in
+            FriendDetailSheet(friendId: sel.id, onOpenChat: {})
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showAddFriend) {
+            AddFriendView().presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showFriends) {
+            NavigationStack {
+                FriendsView()
             }
-            .overlay(alignment: .bottomTrailing) {
-                locateButton
-                    .padding(.trailing, 16)
-                    .padding(.bottom, carouselShown ? 150 : 130)
-            }
-            .overlay(alignment: .bottom) {
-                if !session.friends.isEmpty {
-                    friendCarousel
-                        .offset(y: carouselShown ? 0 : 80)
-                        .opacity(carouselShown ? 1 : 0)
-                        .padding(.bottom, 122)
-                }
-            }
-            .ignoresSafeArea(edges: .bottom)
-            .sheet(item: $selection) { sel in
-                FriendDetailSheet(friendId: sel.id, onOpenChat: {})
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
-            }
-            .sheet(isPresented: $showAddFriend) {
-                AddFriendView().presentationDetents([.medium])
-            }
-            .onAppear {
-                location.requestPermission()
-                location.start()
-                centerOnMeIfNeeded()
-                withAnimation(.spring(response: 0.55, dampingFraction: 0.80).delay(0.25)) {
-                    carouselShown = true
-                }
-            }
-            .onChange(of: location.userCoordinate) { _ in centerOnMeIfNeeded() }
+        }
+        .onAppear {
+            location.requestPermission()
+            location.start()
+            centerOnMeIfNeeded()
+        }
+        .onChange(of: location.userCoordinate) { coord in
+            centerOnMeIfNeeded()
+            guard let c = coord else { return }
+            fetchCityName(for: c)
+            if temperature == nil { fetchWeather(for: c) }
+        }
     }
 
-    // MARK: - 地图
+    // MARK: - Map
     private var map: some View {
         Map(coordinateRegion: $region,
             showsUserLocation: false,
@@ -97,142 +111,121 @@ struct MapHomeView: View {
                 case .me(_, let avatar):
                     SelfMapBubble(avatar: avatar)
                         .onTapGesture { centerOnMe() }
-                        .background(.clear)
                 case .friend(let friend):
-                    FriendMapBubble(friend: friend, isSelected: selection?.id == friend.id)
-                        .onTapGesture { focus(on: friend) }
-                        .background(.clear)
+                    FriendMapBubble(
+                        friend: friend,
+                        isSelected: selection?.id == friend.id,
+                        userCoordinate: location.effectiveCoordinate
+                    )
+                    .onTapGesture { focus(on: friend) }
                 }
             }
         }
-        .ignoresSafeArea()
     }
 
-    // MARK: - 顶部栏
-    private var topBar: some View {
-        HStack(spacing: 10) {
-            if let user = session.currentUser {
-                Button { centerOnMe() } label: {
-                    AvatarView(config: user.avatar, size: 36, showsRing: true)
-                        .shadow(color: Theme.Palette.primary.opacity(0.25), radius: 5, y: 2)
+    // MARK: - Top-left info block
+    private var topLeftInfo: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            // City name
+            Text(cityName.isEmpty ? "..." : cityName)
+                .font(.system(size: 34, weight: .heavy))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.45), radius: 6, y: 2)
+
+            // Row: weather + map type
+            HStack(spacing: 8) {
+                if let t = temperature {
+                    Label(String(format: "%.1f°C", t), systemImage: "cloud.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .background(.ultraThinMaterial, in: Capsule())
+                }
+
+                HStack(spacing: 4) {
+                    Image(systemName: "person.2.fill")
+                        .font(.system(size: 11))
+                    Text("好友地图")
+                        .font(.system(size: 12, weight: .semibold))
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 9, weight: .bold))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 10).padding(.vertical, 5)
+                .background(.ultraThinMaterial, in: Capsule())
+            }
+
+            // Accuracy
+            if location.accuracyMeters > 0 {
+                HStack(spacing: 4) {
+                    Image(systemName: "scope").font(.system(size: 10))
+                    Text("定位精度: \(location.accuracyMeters)m")
+                        .font(.system(size: 11, weight: .medium))
+                    Image(systemName: "chevron.right").font(.system(size: 8, weight: .bold))
+                }
+                .foregroundStyle(.white.opacity(0.85))
+                .padding(.horizontal, 10).padding(.vertical, 4)
+                .background(Color.white.opacity(0.14), in: Capsule())
+            }
+        }
+    }
+
+    // MARK: - Right sidebar
+    private var rightSidebar: some View {
+        VStack(spacing: 10) {
+            // Add friend
+            Button { showAddFriend = true } label: {
+                sidebarButton(icon: "plus", color: .white)
+            }
+            .buttonStyle(.pressable(scale: 0.88))
+
+            // Friend avatars (first 4)
+            ForEach(session.friends.prefix(4)) { friend in
+                Button { focus(on: friend) } label: {
+                    AvatarView(config: friend.avatar, size: 44, showsRing: true,
+                               ringColor: selection?.id == friend.id ? Theme.Palette.sky : .white)
+                        .shadow(color: .black.opacity(0.35), radius: 6, y: 3)
                 }
                 .buttonStyle(.pressable(scale: 0.88))
             }
 
-            VStack(alignment: .leading, spacing: 1) {
-                Text("你好，\(session.currentUser?.displayName ?? "我")")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(Color(.label))
-                HStack(spacing: 4) {
-                    OnlineDot(size: 6)
-                    Text("\(session.friends.count) 位好友在线")
-                        .font(.system(size: 11))
-                        .foregroundStyle(Color(.secondaryLabel))
-                }
-            }
-
-            Spacer()
-
-            Button { showAddFriend = true } label: {
-                Image(systemName: "person.badge.plus")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.primary)
-                    .frame(width: 34, height: 34)
-                    .background {
-                        Circle()
-                            .fill(Color(.systemBackground))
-                            .shadow(color: .black.opacity(0.10), radius: 5, y: 2)
-                    }
+            // Locate me
+            Button(action: centerOnMe) {
+                sidebarButton(icon: "location.fill", color: Theme.Palette.sky)
             }
             .buttonStyle(.pressable(scale: 0.88))
         }
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background {
-            Capsule(style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay {
-                    Capsule(style: .continuous)
-                        .strokeBorder(Theme.Palette.primary.opacity(0.18), lineWidth: 1.0)
-                }
-                .shadow(color: .black.opacity(0.12), radius: 12, y: 5)
-        }
     }
 
-    // MARK: - 定位按钮
-    private var locateButton: some View {
-        Button(action: centerOnMe) {
-            ZStack {
-                Circle()
-                    .fill(Theme.brandGradient)
-                    .frame(width: 46, height: 46)
-                    .shadow(color: Theme.Palette.primary.opacity(0.40), radius: 10, y: 4)
-                Image(systemName: "location.fill")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
+    private func sidebarButton(icon: String, color: Color) -> some View {
+        Image(systemName: icon)
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(color)
+            .frame(width: 44, height: 44)
+            .background(Theme.Palette.card, in: Circle())
+            .overlay(Circle().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
+            .shadow(color: .black.opacity(0.35), radius: 6, y: 3)
+    }
+
+    // MARK: - Bottom pill
+    private var bottomPill: some View {
+        Button { showFriends = true } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "person.2.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("好友")
+                    .font(.system(size: 14, weight: .bold))
             }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 22).padding(.vertical, 11)
+            .background(Theme.Palette.card.opacity(0.92), in: Capsule())
+            .overlay(Capsule().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
+            .shadow(color: .black.opacity(0.35), radius: 10, y: 4)
         }
-        .buttonStyle(.pressable(scale: 0.88))
+        .buttonStyle(.pressable(scale: 0.92))
     }
 
-    // MARK: - 好友横滑卡片
-    private var friendCarousel: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(session.friends) { friend in
-                    Button { focus(on: friend) } label: {
-                        friendCard(friend)
-                    }
-                    .buttonStyle(.pressable(scale: 0.93))
-                }
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-        }
-        .frame(height: 108)
-        .background {
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 26, style: .continuous)
-                        .strokeBorder(.white.opacity(0.35), lineWidth: 0.8)
-                }
-                .shadow(color: .black.opacity(0.12), radius: 20, y: -4)
-        }
-        .padding(.horizontal, 10)
-    }
-
-    private func friendCard(_ friend: Friend) -> some View {
-        let isSelected = selection?.id == friend.id
-        return VStack(spacing: 4) {
-            ZStack(alignment: .bottomTrailing) {
-                AvatarView(config: friend.avatar, size: 50,
-                           showsRing: true,
-                           ringColor: isSelected ? Theme.Palette.primary : .white)
-                    .shadow(color: isSelected ? Theme.Palette.primary.opacity(0.40) : .black.opacity(0.08),
-                            radius: isSelected ? 8 : 4, y: 2)
-                    .scaleEffect(isSelected ? 1.07 : 1.0)
-                    .animation(.jelly, value: isSelected)
-
-                if !friend.isGhostMode {
-                    OnlineDot(size: 8).offset(x: 2, y: 2)
-                }
-            }
-
-            Text(friend.displayName)
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(isSelected ? Theme.Palette.primary : Color(.label))
-                .lineLimit(1)
-
-            MovementChip(presence: friend.presence)
-                .scaleEffect(0.75)
-                .frame(height: 14)
-        }
-        .frame(width: 62)
-    }
-
-    // MARK: - 行为
+    // MARK: - Actions
     private func focus(on friend: Friend) {
         Haptics.light()
         withAnimation(.spring(response: 0.40, dampingFraction: 0.82)) {
@@ -260,5 +253,30 @@ struct MapHomeView: View {
         guard !didInitialCenter, location.userCoordinate != nil else { return }
         didInitialCenter = true
         centerOnMe()
+    }
+
+    // MARK: - Data fetching
+    private func fetchCityName(for coord: Coordinate) {
+        let geocoder = CLGeocoder()
+        let loc = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
+        geocoder.reverseGeocodeLocation(loc) { placemarks, _ in
+            DispatchQueue.main.async {
+                if let p = placemarks?.first {
+                    cityName = p.locality ?? p.subLocality ?? p.name ?? ""
+                }
+            }
+        }
+    }
+
+    private func fetchWeather(for coord: Coordinate) {
+        Task {
+            let urlStr = "https://api.open-meteo.com/v1/forecast?latitude=\(coord.latitude)&longitude=\(coord.longitude)&current=temperature_2m"
+            guard let url = URL(string: urlStr),
+                  let (data, _) = try? await URLSession.shared.data(from: url),
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let current = json["current"] as? [String: Any],
+                  let temp = current["temperature_2m"] as? Double else { return }
+            await MainActor.run { temperature = temp }
+        }
     }
 }
