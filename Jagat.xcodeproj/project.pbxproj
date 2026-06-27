@@ -276,11 +276,6 @@
 				Base,
 			);
 			mainGroup = 2B731CEFC6751AAE0EC69B98;
-			packageReferences = (
-				5D17B3B4AABE021AC52A0336 /* XCLocalSwiftPackageReference "OrbitCore" */,
-				23B12CFCC9D5A9D7EE96D0BC /* XCLocalSwiftPackageReference "OrbitUI" */,
-				A681AEA01C319BB60F521984 /* XCLocalSwiftPackageReference "OrbitServices" */,
-			);
 			productRefGroup = 0A2C978E52A76F0AA9F68BB5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -457,35 +452,17 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		23B12CFCC9D5A9D7EE96D0BC /* XCLocalSwiftPackageReference "OrbitUI" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/OrbitUI;
-		};
-		5D17B3B4AABE021AC52A0336 /* XCLocalSwiftPackageReference "OrbitCore" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/OrbitCore;
-		};
-		A681AEA01C319BB60F521984 /* XCLocalSwiftPackageReference "OrbitServices" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/OrbitServices;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
 		6CF308983486947A37BA37F0 /* OrbitServices */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A681AEA01C319BB60F521984 /* XCLocalSwiftPackageReference "OrbitServices" */;
 			productName = OrbitServices;
 		};
 		9006EC29068E2AE2A5CB73BC /* OrbitUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 23B12CFCC9D5A9D7EE96D0BC /* XCLocalSwiftPackageReference "OrbitUI" */;
 			productName = OrbitUI;
 		};
 		B7CD6A791B4B17FB6173EFDE /* OrbitCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5D17B3B4AABE021AC52A0336 /* XCLocalSwiftPackageReference "OrbitCore" */;
 			productName = OrbitCore;
 		};
 /* End XCSwiftPackageProductDependency section */
