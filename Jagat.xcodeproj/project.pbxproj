@@ -22,6 +22,7 @@
 		AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */; };
 		BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */; };
 		CD4D6385348CB1F505F7F62D /* StatusHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */; };
+		64B6B361845D40DE8310C59C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E181889029FE4C18AD9AFD4D /* Localizable.strings */; };
 		495B545BEC804FE79A9C0392 /* WeatherDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD22F943B27846398963B03E /* WeatherDetailView.swift */; };
 		CEE76672AED549A4A3F1F5B2 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */; };
 		DA5D5BA1393E072F3CB048E3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D2C975F40BC83CEBAC7BA /* ChatView.swift */; };
@@ -51,6 +52,18 @@
 		B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailSheet.swift; sourceTree = "<group>"; };
 		B7CDA78EA1804CD18AC7D530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusHistoryView.swift; sourceTree = "<group>"; };
+		ED18D1181A1D44C383490FEE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1B0F00EF254645078964A239 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+
+		E181889029FE4C18AD9AFD4D /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				ED18D1181A1D44C383490FEE /* en */,
+				1B0F00EF254645078964A239 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		AD22F943B27846398963B03E /* WeatherDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailView.swift; sourceTree = "<group>"; };
 		FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
 		DE384496F97606BD6D7C5641 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -135,6 +148,7 @@
 			isa = PBXGroup;
 			children = (
 				C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */,
+				E181889029FE4C18AD9AFD4D /* Localizable.strings */,
 			);
 			name = History;
 			path = History;
@@ -297,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BE5F94F2F49E63846C9521B /* Assets.xcassets in Resources */,
+				64B6B361845D40DE8310C59C /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

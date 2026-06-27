@@ -1,0 +1,109 @@
+/* Map */
+"好友地图" = "Friends Map";
+"在线" = "Online";
+"此刻" = "Now";
+"好友" = "Friends";
+"邀请" = "Invite";
+"定位精度: " = "Accuracy: ";
+"定位精度" = "GPS Accuracy";
+
+/* Friend Bubble */
+"分钟" = "min";
+"小时" = "hr";
+
+/* Tab Bar */
+"地图" = "Map";
+"消息" = "Messages";
+"我的" = "Profile";
+
+/* Conversations */
+"点击开启通知权限，不错过任何互动消息" = "Enable notifications to stay connected";
+"群聊" = "Group Chat";
+"你已保存0个群组" = "0 groups saved";
+"好友申请" = "Friend Requests";
+"在这里添加新好友" = "Add new friends here";
+"活动通知" = "Activity";
+"系统通知" = "System";
+"搜索" = "Search";
+"还没有私信" = "No messages yet";
+"在地图上点击好友即可发起聊天" = "Tap a friend on the map to start chatting";
+"开始聊天吧 👋" = "Start chatting 👋";
+"恭喜挑战赛第四期的摸鱼..." = "Congrats on Week 4 Challenge...";
+"再不记录帮你叫医生了！" = "Record now or we'll call a doctor!";
+
+/* History */
+"我的历史状态" = "My History";
+"现在在做什么呢?" = "What are you up to?";
+"安全守护" = "Safety Guard";
+"健康用机" = "Healthy Usage";
+"地点提醒" = "Location Alerts";
+"每日报告" = "Daily Report";
+"今天" = "Today";
+"在留宿地" = "At Accommodation";
+"在夜间地点" = "At Night Spot";
+"留宿地" = "Accommodation";
+"系统识别，仅供参考" = "System detected, for reference only";
+"查看" = "View";
+"重置" = "Reset";
+
+/* Add Friend */
+"添加好友" = "Add Friends";
+"通过用户ID搜索" = "Search by User ID";
+"我的二维码" = "My QR Code";
+"让好友扫码添加你" = "Let friends scan to add you";
+"通过通讯录" = "Via Contacts";
+"同步手机联系人" = "Sync phone contacts";
+"扫一扫" = "Scan QR";
+"扫好友二维码" = "Scan friend's QR code";
+"我的邀请码" = "My Invite Code";
+"复制" = "Copy";
+"已复制邀请码" = "Invite code copied";
+"同步你的联系人" = "Sync Your Contacts";
+"给应用开启通讯录权限，我们可以帮助你找到已在应用上的朋友" = "Grant contacts access to find friends already using the app";
+"去同步" = "Sync Now";
+"已添加好友 🎉" = "Friend added 🎉";
+"完成" = "Done";
+
+/* Profile */
+"隐身模式" = "Ghost Mode";
+"邀请码" = "Invite Code";
+"会员中心" = "Membership";
+"解锁10+权益" = "Unlock 10+ benefits";
+"上报与隐私" = "Reporting & Privacy";
+"退出登录" = "Sign Out";
+"语言" = "Language";
+"关闭" = "Close";
+
+/* Membership */
+"Jagat最佳体验" = "Best Jagat Experience";
+"单人会员" = "Individual Plan";
+"查看实时定位、分享自己今日轨迹，尊享10+权益" = "View real-time location, share today's journey, enjoy 10+ benefits";
+"订阅" = "Subscribe";
+"享受10+会员权益" = "Enjoy 10+ Member Benefits";
+"免广告特权" = "Ad-Free Experience";
+"畅享丝滑社交，告别广告打扰" = "Smooth social without ads";
+"在TA离开/到达某地时提醒我" = "Notify when they leave/arrive";
+"实时动态精确定位" = "Precise Real-time Location";
+"多重定位方式，让位置更准确" = "Multiple methods for better accuracy";
+"查看TA的历史动态" = "View Their History";
+"你在意的TA，每一个状态不容错过" = "Don't miss any moment";
+"每天生成今日行动报告" = "Generate daily activity reports";
+
+/* Weather */
+"温馨提示:" = "Tips:";
+"立即解锁" = "Unlock Now";
+"湿度" = "Humidity";
+"GPS定位精度" = "GPS Accuracy";
+"海拔" = "Altitude";
+"经度" = "Longitude";
+"纬度" = "Latitude";
+"获取中" = "Loading";
+
+/* Login */
+"实时分享，随时同在" = "Share in real-time, always together";
+"手机号码" = "Phone Number";
+"输入 6 位验证码" = "Enter 6-digit code";
+"获取验证码" = "Get Verification Code";
+"进入 Orbit" = "Enter Orbit";
+"演示模式：任意手机号 + 4 位以上验证码即可登录" = "Demo: any phone + 4+ digit code";
+"开启" = "Enable";

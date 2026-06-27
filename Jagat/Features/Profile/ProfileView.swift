@@ -7,10 +7,13 @@ struct ProfileView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var reporter: PresenceReporter
 
+    @EnvironmentObject private var langMgr: LanguageManager
+
     @State private var showAvatarEditor  = false
     @State private var showReporting     = false
     @State private var showHistory       = false
     @State private var showMembership    = false
+    @State private var showLangPicker    = false
     @State private var ghostMode         = false
 
     var body: some View {
@@ -49,6 +52,16 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showMembership) {
                 MembershipView()
+            }
+            .confirmationDialog(Text("语言"), isPresented: $showLangPicker, titleVisibility: .visible) {
+                ForEach(AppLanguage.allCases) { lang in
+                    Button {
+                        withAnimation { langMgr.current = lang }
+                    } label: {
+                        Text("\(lang.flag) \(lang.displayName)")
+                    }
+                }
+                Button("取消 / Cancel", role: .cancel) {}
             }
             .onAppear {
                 if ProcessInfo.processInfo.environment["JAGAT_OPEN"] == "reporting" {
@@ -248,6 +261,29 @@ struct ProfileView: View {
                             .font(.system(size: 15, weight: .medium))
                             .foregroundStyle(Theme.Palette.ink)
                         Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(Theme.Palette.subtle)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 13)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.pressable(scale: 0.97))
+
+                divider
+
+                // 语言
+                Button { showLangPicker = true } label: {
+                    HStack(spacing: 14) {
+                        settingIcon(systemName: "globe", gradient: Theme.oceanGradient)
+                        Text("语言")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(Theme.Palette.ink)
+                        Spacer()
+                        Text("\(langMgr.current.flag) \(langMgr.current.displayName)")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(Theme.Palette.subtle)
                         Image(systemName: "chevron.right")
                             .font(.caption.bold())
                             .foregroundStyle(Theme.Palette.subtle)

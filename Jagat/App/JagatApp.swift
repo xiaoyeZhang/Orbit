@@ -11,9 +11,10 @@ import OrbitServices
 struct OrbitApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
-    @StateObject private var session = AppServices.shared.session
+    @StateObject private var session  = AppServices.shared.session
     @StateObject private var location = AppServices.shared.location
     @StateObject private var reporter = AppServices.shared.reporter
+    @StateObject private var langMgr  = LanguageManager.shared
 
     @Environment(\.scenePhase) private var scenePhase
 
@@ -23,6 +24,8 @@ struct OrbitApp: App {
                 .environmentObject(session)
                 .environmentObject(location)
                 .environmentObject(reporter)
+                .environmentObject(langMgr)
+                .environment(\.locale, langMgr.current.locale)
                 .preferredColorScheme(.dark)
         }
         .onChange(of: scenePhase) { phase in
