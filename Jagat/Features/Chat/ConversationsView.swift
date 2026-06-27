@@ -122,42 +122,47 @@ struct ConversationsView: View {
     }
 
     private func categoryRow(emoji: String, label: String, sub: String,
-                             badge: Int?, date: String? = nil, last: Bool = false) -> some View {
-        HStack(spacing: 14) {
-            Text(emoji)
-                .font(.system(size: 28))
-                .frame(width: 48, height: 48)
-                .background(Theme.Palette.card2, in: Circle())
+                             badge: Int?, date: String? = nil, last: Bool = false,
+                             action: @escaping () -> Void = {}) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Text(emoji)
+                    .font(.system(size: 28))
+                    .frame(width: 48, height: 48)
+                    .background(Theme.Palette.card2, in: Circle())
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(label)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                Text(sub)
-                    .font(.system(size: 13))
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                    .lineLimit(1)
-            }
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 5) {
-                if let date { Text(date).font(.system(size: 12)).foregroundStyle(Theme.Palette.textSecondary) }
-                if let badge, badge > 0 {
-                    Text("\(min(badge, 99))")
-                        .font(.system(size: 11, weight: .heavy))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(label)
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(.white)
-                        .padding(.horizontal, 6).padding(.vertical, 3)
-                        .background(Theme.Palette.accent, in: Capsule())
+                    Text(sub)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 5) {
+                    if let date { Text(date).font(.system(size: 12)).foregroundStyle(Theme.Palette.textSecondary) }
+                    if let badge, badge > 0 {
+                        Text("\(min(badge, 99))")
+                            .font(.system(size: 11, weight: .heavy))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6).padding(.vertical, 3)
+                            .background(Theme.Palette.accent, in: Capsule())
+                    }
+                }
+            }
+            .padding(.horizontal, 16).padding(.vertical, 13)
+            .contentShape(Rectangle())
+            .overlay(alignment: .bottom) {
+                if !last {
+                    Rectangle().fill(Theme.Palette.separator).frame(height: 0.5).padding(.leading, 78)
                 }
             }
         }
-        .padding(.horizontal, 16).padding(.vertical, 13)
-        .overlay(alignment: .bottom) {
-            if !last {
-                Rectangle().fill(Theme.Palette.separator).frame(height: 0.5).padding(.leading, 78)
-            }
-        }
+        .buttonStyle(.pressable(scale: 0.97))
     }
 
     // MARK: - Conversation row

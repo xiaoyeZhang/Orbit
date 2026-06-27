@@ -129,21 +129,27 @@ struct StatusHistoryView: View {
 
     // MARK: - Feature cell
     private func featureCell(_ f: QuickFeature) -> some View {
-        VStack(spacing: 8) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(f.color.opacity(0.15))
-                    .frame(width: 56, height: 56)
-                Image(systemName: f.icon)
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(f.color)
+        Button {
+            // Feature detail (future)
+        } label: {
+            VStack(spacing: 8) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(f.color.opacity(0.15))
+                        .frame(width: 56, height: 56)
+                    Image(systemName: f.icon)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(f.color)
+                }
+                Text(f.label)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .multilineTextAlignment(.center)
             }
-            Text(f.label)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(Theme.Palette.textSecondary)
-                .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
         }
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.pressable(scale: 0.88))
     }
 
     // MARK: - Section block
@@ -289,8 +295,10 @@ struct StatusHistoryView: View {
                     .font(.system(size: 13, weight: .medium))
             }
             .foregroundStyle(Theme.Palette.textSecondary)
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
         }
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.pressable(scale: 0.94))
     }
 
     private func timeString(_ date: Date) -> String {

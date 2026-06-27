@@ -51,6 +51,17 @@ struct MainTabView: View {
 
             // ── Messages slides up as bottom sheet ──
             if selection == 1 {
+                // Tap-outside dismiss overlay
+                Color.black.opacity(0.35)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        Haptics.selection()
+                        withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
+                            selection = 0
+                        }
+                    }
+                    .transition(.opacity)
+
                 ConversationsView()
                     .frame(maxWidth: .infinity)
                     .frame(height: UIScreen.main.bounds.height * 0.72)
@@ -153,6 +164,14 @@ struct MainTabView: View {
 
     private func tabBtn<Label: View>(index: Int, @ViewBuilder label: () -> Label) -> some View {
         Button {
+            // Tapping the messages tab again collapses it back to map
+            if index == 1 && selection == 1 {
+                Haptics.selection()
+                withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
+                    selection = 0
+                }
+                return
+            }
             guard selection != index else { return }
             Haptics.selection()
             withAnimation(.spring(response: 0.32, dampingFraction: 0.78)) {

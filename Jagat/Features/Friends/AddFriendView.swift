@@ -99,38 +99,42 @@ struct AddFriendView: View {
 
     // MARK: - Option row
     private func optionRow(icon: String, iconColor: Color, label: String,
-                           sub: String, last: Bool = false) -> some View {
-        HStack(spacing: 14) {
-            Image(systemName: icon)
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(iconColor)
-                .frame(width: 44, height: 44)
-                .background(iconColor.opacity(0.15), in: Circle())
+                           sub: String, last: Bool = false, action: @escaping () -> Void = {}) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(iconColor)
+                    .frame(width: 44, height: 44)
+                    .background(iconColor.opacity(0.15), in: Circle())
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(label)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                Text(sub)
-                    .font(.system(size: 12))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(label)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                    Text(sub)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Theme.Palette.textSecondary)
-        }
-        .padding(.horizontal, 16).padding(.vertical, 13)
-        .overlay(alignment: .bottom) {
-            if !last {
-                Rectangle()
-                    .fill(Theme.Palette.separator)
-                    .frame(height: 0.5)
-                    .padding(.leading, 74)
+            .padding(.horizontal, 16).padding(.vertical, 13)
+            .contentShape(Rectangle())
+            .overlay(alignment: .bottom) {
+                if !last {
+                    Rectangle()
+                        .fill(Theme.Palette.separator)
+                        .frame(height: 0.5)
+                        .padding(.leading, 74)
+                }
             }
         }
+        .buttonStyle(.pressable(scale: 0.97))
     }
 
     // MARK: - My invite code

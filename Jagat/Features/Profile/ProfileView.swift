@@ -254,6 +254,7 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.pressable(scale: 0.97))
 
@@ -283,6 +284,7 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.pressable(scale: 0.97))
 
@@ -326,6 +328,7 @@ struct ProfileView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
+        .contentShape(Rectangle())
     }
 
     private var membershipRow: some View {
@@ -351,5 +354,6 @@ struct ProfileView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
+        .contentShape(Rectangle())
     }
 }

@@ -113,33 +113,39 @@ struct MembershipView: View {
     // MARK: - Benefit row
     private func benefitRow(icon: String, title: String, sub: String,
                             color: Color, last: Bool) -> some View {
-        HStack(spacing: 14) {
-            Image(systemName: icon)
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(color)
-                .frame(width: 44, height: 44)
-                .background(color.opacity(0.15), in: Circle())
+        Button {
+            // Premium feature detail (future)
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(color)
+                    .frame(width: 44, height: 44)
+                    .background(color.opacity(0.15), in: Circle())
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                Text(sub)
-                    .font(.system(size: 12))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                    Text(sub)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Theme.Palette.textSecondary)
-        }
-        .padding(.horizontal, 16).padding(.vertical, 13)
-        .overlay(alignment: .bottom) {
-            if !last {
-                Rectangle().fill(Theme.Palette.separator).frame(height: 0.5).padding(.leading, 74)
+            .padding(.horizontal, 16).padding(.vertical, 13)
+            .contentShape(Rectangle())
+            .overlay(alignment: .bottom) {
+                if !last {
+                    Rectangle().fill(Theme.Palette.separator).frame(height: 0.5).padding(.leading, 74)
+                }
             }
         }
+        .buttonStyle(.pressable(scale: 0.97))
     }
 }
