@@ -1,0 +1,47 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://jagat:jagat_pass@db:5432/jagat
+      REDIS_URL:    redis://redis:6379
+      JWT_SECRET:   ${JWT_SECRET:?请在 .env 中设置 JWT_SECRET}
+      NODE_ENV:     ${NODE_ENV:-production}
+      PORT:         3000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       jagat
+      POSTGRES_USER:     jagat
+      POSTGRES_PASSWORD: jagat_pass
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jagat -d jagat"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pg_data:
+  redis_data:
