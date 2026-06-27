@@ -32,13 +32,6 @@ struct AddFriendView: View {
 
                     syncCard
 
-                    if let toast {
-                        Text(toast)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Theme.Palette.mint)
-                            .padding(.top, 4)
-                    }
-
                     Color.clear.frame(height: 20)
                 }
                 .padding(.horizontal, 16)
@@ -56,6 +49,7 @@ struct AddFriendView: View {
             .animation(.spring(response: 0.35, dampingFraction: 0.80), value: code.isEmpty)
             .sheet(isPresented: $showQR) { qrSheet }
             .sheet(isPresented: $showScanner) { scannerSheet }
+            .autoToast($toast)
         }
     }
 
@@ -181,8 +175,7 @@ struct AddFriendView: View {
 
             Button {
                 UIPasteboard.general.string = session.currentUser?.inviteCode
-                withAnimation { toast = "已复制邀请码" }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { toast = nil }
+                toast = "已复制邀请码"
             } label: {
                 Label("复制", systemImage: "doc.on.doc")
                     .font(.system(size: 14, weight: .bold))
@@ -277,6 +270,7 @@ struct AddFriendView: View {
             QRScannerView { result in
                 showScanner = false
                 code = result
+                toast = "已扫描，点击添加好友"
             }
             .ignoresSafeArea()
             .navigationTitle("扫一扫")
@@ -305,7 +299,7 @@ struct AddFriendView: View {
     private func requestContacts() {
         switch contactsStatus {
         case .authorized:
-            toast = "通讯录已同步 ✓"
+            toast = "通讯录已开启"
         case .notDetermined:
             CNContactStore().requestAccess(for: .contacts) { granted, _ in
                 DispatchQueue.main.async {
