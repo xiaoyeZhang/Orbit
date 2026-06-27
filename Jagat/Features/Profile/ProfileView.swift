@@ -10,6 +10,7 @@ struct ProfileView: View {
     @State private var showAvatarEditor  = false
     @State private var showReporting     = false
     @State private var showHistory       = false
+    @State private var showMembership    = false
     @State private var ghostMode         = false
 
     var body: some View {
@@ -45,6 +46,9 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showHistory) {
                 StatusHistoryView()
+            }
+            .sheet(isPresented: $showMembership) {
+                MembershipView()
             }
             .onAppear {
                 if ProcessInfo.processInfo.environment["JAGAT_OPEN"] == "reporting" {
@@ -199,98 +203,100 @@ struct ProfileView: View {
     // MARK: - 设置区
     private var settingsSection: some View {
         VStack(spacing: 0) {
-            // 隐身模式
-            HStack(spacing: 14) {
-                settingIcon(systemName: "moon.zzz.fill", gradient: Theme.brandGradient)
-                Text("隐身模式")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(Theme.Palette.ink)
-                Spacer()
-                Toggle("", isOn: $ghostMode)
-                    .labelsHidden()
-                    .tint(Theme.Palette.primary)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 13)
-            .onChange(of: ghostMode) { on in
-                Haptics.light()
-                Task { try? await session.backend.setGhostMode(on) }
-            }
-
-            divider
-
-            // 邀请码
-            HStack(spacing: 14) {
-                settingIcon(systemName: "qrcode", gradient: Theme.oceanGradient)
-                Text("邀请码")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(Theme.Palette.ink)
-                Spacer()
-                Text(session.currentUser?.inviteCode ?? "—")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Theme.Palette.subtle)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 13)
-
-            divider
-
-            // 历史状态
-            Button { showHistory = true } label: {
+            Group {
+                // 隐身模式
                 HStack(spacing: 14) {
-                    settingIcon(systemName: "clock.arrow.circlepath", gradient: Theme.skyGradient)
-                    Text("我的历史状态")
+                    settingIcon(systemName: "moon.zzz.fill", gradient: Theme.brandGradient)
+                    Text("隐身模式")
                         .font(.system(size: 15, weight: .medium))
                         .foregroundStyle(Theme.Palette.ink)
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption.bold())
+                    Toggle("", isOn: $ghostMode)
+                        .labelsHidden()
+                        .tint(Theme.Palette.primary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 13)
+                .onChange(of: ghostMode) { on in
+                    Haptics.light()
+                    Task { try? await session.backend.setGhostMode(on) }
+                }
+
+                divider
+
+                // 邀请码
+                HStack(spacing: 14) {
+                    settingIcon(systemName: "qrcode", gradient: Theme.oceanGradient)
+                    Text("邀请码")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Theme.Palette.ink)
+                    Spacer()
+                    Text(session.currentUser?.inviteCode ?? "—")
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
                         .foregroundStyle(Theme.Palette.subtle)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 13)
-            }
-            .buttonStyle(.pressable(scale: 0.97))
 
-            divider
+                divider
 
-            // 上报与隐私
-            Button { showReporting = true } label: {
-                HStack(spacing: 14) {
-                    settingIcon(systemName: "dot.radiowaves.left.and.right", gradient: Theme.sunsetGradient)
-                    Text("上报与隐私")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Theme.Palette.ink)
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption.bold())
-                        .foregroundStyle(Theme.Palette.subtle.opacity(0.5))
+                // 历史状态
+                Button { showHistory = true } label: {
+                    HStack(spacing: 14) {
+                        settingIcon(systemName: "clock.arrow.circlepath", gradient: Theme.skyGradient)
+                        Text("我的历史状态")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(Theme.Palette.ink)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(Theme.Palette.subtle)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 13)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 13)
-            }
-            .buttonStyle(.pressable(scale: 0.97))
+                .buttonStyle(.pressable(scale: 0.97))
 
-            divider
+                divider
 
-            // 退出登录
-            Button(role: .destructive) {
-                Haptics.medium()
-                session.signOut()
-            } label: {
-                HStack(spacing: 14) {
-                    settingIcon(systemName: "rectangle.portrait.and.arrow.right",
-                                gradient: LinearGradient(colors: [Theme.Palette.danger, Theme.Palette.sunshine],
-                                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-                    Text("退出登录")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Theme.Palette.danger)
-                    Spacer()
+                // 会员中心
+                Button { showMembership = true } label: {
+                    membershipRow
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 13)
+                .buttonStyle(.pressable(scale: 0.97))
             }
-            .buttonStyle(.pressable(scale: 0.97))
+
+            Group {
+                divider
+
+                // 上报与隐私
+                Button { showReporting = true } label: {
+                    HStack(spacing: 14) {
+                        settingIcon(systemName: "dot.radiowaves.left.and.right", gradient: Theme.sunsetGradient)
+                        Text("上报与隐私")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(Theme.Palette.ink)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(Theme.Palette.subtle.opacity(0.5))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 13)
+                }
+                .buttonStyle(.pressable(scale: 0.97))
+
+                divider
+
+                // 退出登录
+                Button {
+                    Haptics.medium()
+                    session.signOut()
+                } label: {
+                    signOutRow
+                }
+                .buttonStyle(.pressable(scale: 0.97))
+            }
         }
         .card()
     }
@@ -308,5 +314,42 @@ struct ProfileView: View {
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(.white)
         }
+    }
+
+    private var signOutRow: some View {
+        HStack(spacing: 14) {
+            settingIcon(systemName: "rectangle.portrait.and.arrow.right", gradient: Theme.sunsetGradient)
+            Text("退出登录")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Theme.Palette.danger)
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
+    }
+
+    private var membershipRow: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "crown.fill")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color(hex: 0xFFC312))
+                .frame(width: 36, height: 36)
+                .background(Color(hex: 0xFFC312).opacity(0.18), in: RoundedRectangle(cornerRadius: 10))
+
+            Text("会员中心")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Theme.Palette.ink)
+            Spacer()
+            Text("解锁10+权益")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(Color(hex: 0xFFC312))
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(Color(hex: 0xFFC312).opacity(0.15), in: Capsule())
+            Image(systemName: "chevron.right")
+                .font(.caption.bold())
+                .foregroundStyle(Theme.Palette.subtle)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
     }
 }

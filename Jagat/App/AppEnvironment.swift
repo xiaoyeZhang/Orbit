@@ -15,7 +15,7 @@ enum AppEnvironment {
     enum BackendKind { case mock, supabase, firebase, rest }
 
     /// ⬇️ 改这一行即可切换后端
-    static let backendKind: BackendKind = .supabase
+    static let backendKind: BackendKind = .mock
 
     /// 自定义 REST 后端地址（backendKind == .rest 时使用）。
     static let liveBaseURL = URL(string: "https://api.example.com")!

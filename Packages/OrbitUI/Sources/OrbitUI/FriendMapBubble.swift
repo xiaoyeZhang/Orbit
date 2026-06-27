@@ -2,40 +2,47 @@ import SwiftUI
 import MapKit
 import OrbitCore
 
-// MARK: - Direction beam shape (apex at bottom-center, fans upward = north by default)
+// MARK: - Direction beam (apex at bottom-center, fans upward = north)
 private struct DirectionalBeam: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
-        p.move(to: CGPoint(x: rect.midX, y: rect.maxY))    // apex (bottom center)
-        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY)) // fan left
-        p.addLine(to: CGPoint(x: rect.maxX, y: rect.minY)) // fan right
+        p.move(to: CGPoint(x: rect.midX, y: rect.maxY))
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
         p.closeSubpath()
         return p
     }
 }
 
-// MARK: - Friend bubble
+// MARK: - Friend bubble (solid color circle + name, reference-style)
 public struct FriendMapBubble: View {
     public let friend: Friend
     public var isSelected: Bool = false
     public var userCoordinate: Coordinate? = nil
 
     private var moving: Bool { friend.presence.movement != .stationary && !friend.isGhostMode }
-    private var avatarSize: CGFloat { isSelected ? 52 : 42 }
-    private var totalSize: CGFloat  { avatarSize + 20 }
+    private var bubbleSize: CGFloat { isSelected ? 58 : 48 }
 
     @State private var glowPulse = false
 
-    /// Compass bearing from friend toward user — beam points "you are over there".
     private var bearingToUser: Double? {
         guard let uc = userCoordinate, !friend.isGhostMode else { return nil }
         return friend.coordinate.bearing(to: uc)
     }
 
-    private var batteryColor: Color {
-        if friend.presence.isCharging   { return Theme.Palette.mint }
-        if friend.presence.isLowBattery { return Theme.Palette.danger }
-        return .white.opacity(0.75)
+    private var bubbleColor: Color {
+        // Derive color from avatar hue or use sky as default
+        switch (friend.id.hashValue % 5 + 5) % 5 {
+        case 0: return Theme.Palette.sky
+        case 1: return Theme.Palette.primary
+        case 2: return Theme.Palette.mint
+        case 3: return Color(hex: 0xFF9F43)
+        default: return Color(hex: 0xEE5A24)
+        }
+    }
+
+    private var batteryFraction: Double {
+        Double(friend.presence.batteryLevel) / 100.0
     }
 
     public init(friend: Friend, isSelected: Bool = false, userCoordinate: Coordinate? = nil) {
@@ -45,94 +52,131 @@ public struct FriendMapBubble: View {
     }
 
     public var body: some View {
-        VStack(spacing: 3) {
+        VStack(spacing: 0) {
+            // ── "在线" badge ──
+            if !friend.isGhostMode {
+                Text("在线")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 7).padding(.vertical, 3)
+                    .background(Theme.Palette.online, in: Capsule())
+                    .shadow(color: Theme.Palette.online.opacity(0.5), radius: 4, y: 2)
+                    .padding(.bottom, 4)
+            }
+
+            // ── Main bubble ──
             ZStack {
-                // ── Direction beam (rotated around apex at bottom-center) ──
+                // Direction beam behind bubble
                 if let b = bearingToUser {
                     DirectionalBeam()
                         .fill(
                             LinearGradient(
-                                colors: [Theme.Palette.sky.opacity(0.55), .clear],
+                                colors: [Theme.Palette.sky.opacity(0.60), .clear],
                                 startPoint: .bottom, endPoint: .top
                             )
                         )
-                        .frame(width: 34, height: 76)
+                        .frame(width: 36, height: 80)
                         .rotationEffect(.degrees(b), anchor: .bottom)
-                        .offset(y: -(avatarSize * 0.45))
+                        .offset(y: -(bubbleSize * 0.42))
                         .allowsHitTesting(false)
                 }
 
-                // ── Moving glow ring ──
+                // Moving glow
                 if moving {
                     Circle()
-                        .fill(ringColor.opacity(glowPulse ? 0.0 : 0.35))
-                        .frame(width: avatarSize + 16, height: avatarSize + 16)
-                        .animation(
-                            .easeInOut(duration: 1.4).repeatForever(autoreverses: true),
-                            value: glowPulse
-                        )
+                        .fill(bubbleColor.opacity(glowPulse ? 0 : 0.3))
+                        .frame(width: bubbleSize + 18, height: bubbleSize + 18)
+                        .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true),
+                                   value: glowPulse)
                 }
 
-                // ── Avatar ──
-                AvatarView(config: friend.avatar,
-                           size: avatarSize,
-                           showsRing: true,
-                           ringColor: ringColor)
-                    .shadow(color: ringColor.opacity(isSelected ? 0.55 : 0.28),
-                            radius: isSelected ? 12 : 6, y: 2)
-                    .scaleEffect(isSelected ? 1.06 : 1.0)
+                // Main circle
+                Circle()
+                    .fill(bubbleColor)
+                    .frame(width: bubbleSize, height: bubbleSize)
+                    .shadow(color: bubbleColor.opacity(isSelected ? 0.6 : 0.3),
+                            radius: isSelected ? 14 : 8, y: 3)
+                    .scaleEffect(isSelected ? 1.08 : 1.0)
                     .animation(.jelly, value: isSelected)
 
-                // ── Status badges ──
-                if friend.presence.isLowBattery && !friend.isGhostMode {
-                    badge(color: Theme.Palette.danger, system: "bolt.slash.fill")
-                }
+                // Name inside circle
+                Text(friend.displayName)
+                    .font(.system(size: bubbleSize * 0.28, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .frame(width: bubbleSize * 0.75)
+                    .scaleEffect(isSelected ? 1.08 : 1.0)
+                    .animation(.jelly, value: isSelected)
+
+                // Ghost mode overlay
                 if friend.isGhostMode {
-                    badge(color: Color(hex: 0x1C1C1E).opacity(0.9), system: "moon.zzz.fill")
+                    Circle()
+                        .fill(Color(hex: 0x1C1C1E).opacity(0.75))
+                        .frame(width: bubbleSize, height: bubbleSize)
+                    Image(systemName: "moon.zzz.fill")
+                        .font(.system(size: bubbleSize * 0.3))
+                        .foregroundStyle(.white.opacity(0.7))
+                }
+
+                // Low battery badge
+                if friend.presence.isLowBattery && !friend.isGhostMode {
+                    Image(systemName: "bolt.slash.fill")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(4)
+                        .background(Circle().fill(Theme.Palette.danger))
+                        .overlay(Circle().strokeBorder(.white, lineWidth: 1))
+                        .offset(x: bubbleSize * 0.38, y: -bubbleSize * 0.38)
                 }
             }
-            .frame(width: totalSize, height: totalSize)
+            .frame(width: bubbleSize + 20, height: bubbleSize + 20)
 
-            // ── Name tag ──
-            Text(friend.displayName)
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 8).padding(.vertical, 3)
-                .background(Color.black.opacity(0.60), in: Capsule())
-                .overlay(Capsule().strokeBorder(.white.opacity(0.22), lineWidth: 0.5))
-                .shadow(color: .black.opacity(0.30), radius: 4, y: 1)
+            // ── "此刻 | battery bar | %" ──
+            HStack(spacing: 5) {
+                Text(lastSeenLabel)
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.7))
 
-            // ── Battery % ──
-            HStack(spacing: 3) {
-                Image(systemName: friend.presence.isCharging ? "bolt.fill" : "battery.75")
-                    .font(.system(size: 8, weight: .semibold))
+                Rectangle()
+                    .fill(Color.white.opacity(0.25))
+                    .frame(width: 0.5, height: 9)
+
+                // Battery bar
+                GeometryReader { _ in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(.white.opacity(0.2))
+                            .frame(width: 22, height: 8)
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(batteryBarColor)
+                            .frame(width: 22 * batteryFraction, height: 8)
+                    }
+                }
+                .frame(width: 22, height: 8)
+
                 Text("\(friend.presence.batteryLevel)%")
-                    .font(.system(size: 9, weight: .bold))
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.85))
             }
-            .foregroundStyle(batteryColor)
-            .padding(.horizontal, 6).padding(.vertical, 2)
-            .background(Color.black.opacity(0.50), in: Capsule())
+            .padding(.horizontal, 8).padding(.vertical, 4)
+            .background(Color.black.opacity(0.55), in: Capsule())
+            .padding(.top, 4)
         }
         .onAppear { glowPulse = true }
     }
 
-    private func badge(color: Color, system: String) -> some View {
-        Image(systemName: system)
-            .font(.system(size: avatarSize * 0.2, weight: .bold))
-            .foregroundStyle(.white)
-            .padding(avatarSize * 0.08)
-            .background(Circle().fill(color))
-            .overlay(Circle().strokeBorder(.white, lineWidth: 1.5))
-            .offset(x: avatarSize * 0.34, y: -avatarSize * 0.34)
+    private var batteryBarColor: Color {
+        if friend.presence.isCharging { return Theme.Palette.mint }
+        if friend.presence.isLowBattery { return Theme.Palette.danger }
+        return Theme.Palette.online
     }
 
-    private var ringColor: Color {
-        switch friend.presence.movement {
-        case .stationary: return .white
-        case .walking:    return Theme.Palette.mint
-        case .driving:    return Theme.Palette.sky
-        case .flying:     return Theme.Palette.primary
-        }
+    private var lastSeenLabel: String {
+        let s = Date().timeIntervalSince(friend.lastUpdated)
+        if s < 60 { return "此刻" }
+        if s < 3600 { return "\(Int(s/60))分钟" }
+        return "\(Int(s/3600))小时"
     }
 }
 

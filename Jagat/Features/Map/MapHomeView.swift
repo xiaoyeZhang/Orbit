@@ -34,8 +34,9 @@ struct MapHomeView: View {
         span:   MKCoordinateSpan(latitudeDelta: 0.08, longitudeDelta: 0.08)
     )
     @State private var selection: FriendSelection?
-    @State private var showAddFriend = false
-    @State private var showFriends   = false
+    @State private var showAddFriend   = false
+    @State private var showFriends     = false
+    @State private var showWeather     = false
     @State private var didInitialCenter = false
 
     // Top-left info
@@ -73,6 +74,12 @@ struct MapHomeView: View {
             // ── Bottom "好友" pill ──
             bottomPill
                 .padding(.bottom, 120)
+
+            // ── Invite sticker (bottom-left) ──
+            inviteSticker
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                .padding(.leading, 16)
+                .padding(.bottom, 136)
         }
         .ignoresSafeArea(edges: .bottom)
         .sheet(item: $selection) { sel in
@@ -87,6 +94,13 @@ struct MapHomeView: View {
             NavigationStack {
                 FriendsView()
             }
+        }
+        .sheet(isPresented: $showWeather) {
+            WeatherDetailView(
+                temperature: temperature ?? 0,
+                cityName: cityName
+            )
+            .presentationDetents([.large])
         }
         .onAppear {
             location.requestPermission()
@@ -135,11 +149,14 @@ struct MapHomeView: View {
             // Row: weather + map type
             HStack(spacing: 8) {
                 if let t = temperature {
-                    Label(String(format: "%.1f°C", t), systemImage: "cloud.fill")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10).padding(.vertical, 5)
-                        .background(.ultraThinMaterial, in: Capsule())
+                    Button { showWeather = true } label: {
+                        Label(String(format: "%.1f°C", t), systemImage: "cloud.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(.ultraThinMaterial, in: Capsule())
+                    }
+                    .buttonStyle(.pressable(scale: 0.92))
                 }
 
                 HStack(spacing: 4) {
@@ -211,8 +228,8 @@ struct MapHomeView: View {
     private var bottomPill: some View {
         Button { showFriends = true } label: {
             HStack(spacing: 6) {
-                Image(systemName: "person.2.fill")
-                    .font(.system(size: 13, weight: .semibold))
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 12, weight: .semibold))
                 Text("好友")
                     .font(.system(size: 14, weight: .bold))
             }
@@ -223,6 +240,33 @@ struct MapHomeView: View {
             .shadow(color: .black.opacity(0.35), radius: 10, y: 4)
         }
         .buttonStyle(.pressable(scale: 0.92))
+    }
+
+    // MARK: - Invite sticker
+    private var inviteSticker: some View {
+        Button { showAddFriend = true } label: {
+            VStack(spacing: 3) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(colors: [Color(hex: 0x6C5CE7), Color(hex: 0xFD79A8)],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing)
+                        )
+                        .frame(width: 52, height: 52)
+                    Image(systemName: "person.badge.plus")
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .shadow(color: Theme.Palette.primary.opacity(0.5), radius: 10, y: 4)
+
+                Text("邀请")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .background(Color.black.opacity(0.55), in: Capsule())
+            }
+        }
+        .buttonStyle(.pressable(scale: 0.88))
     }
 
     // MARK: - Actions

@@ -35,29 +35,44 @@ struct MainTabView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // ── Pages ──
-            ZStack {
-                MapHomeView()
-                    .opacity(selection == 0 ? 1 : 0)
-                    .allowsHitTesting(selection == 0)
+            // ── Map is always the background ──
+            MapHomeView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                NotificationCenterView()
-                    .opacity(selection == 1 ? 1 : 0)
-                    .allowsHitTesting(selection == 1)
-
+            // ── Profile slides in (full replace) ──
+            if selection == 2 {
                 ProfileView()
-                    .opacity(selection == 2 ? 1 : 0)
-                    .allowsHitTesting(selection == 2)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: 88)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .bottom),
+                        removal: .move(edge: .bottom)
+                    ))
             }
 
-            // ── Floating dark tab bar ──
+            // ── Messages slides up as bottom sheet ──
+            if selection == 1 {
+                ConversationsView()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: UIScreen.main.bounds.height * 0.72)
+                    .background(Theme.Palette.bg, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    .overlay(alignment: .top) {
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
+                    }
+                    .shadow(color: .black.opacity(0.6), radius: 40, y: -8)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
+                    .ignoresSafeArea(edges: .bottom)
+            }
+
+            // ── Floating dark tab bar (always on top) ──
             darkTabBar
         }
         .ignoresSafeArea(edges: .bottom)
+        .animation(.spring(response: 0.40, dampingFraction: 0.82), value: selection)
         .onAppear { reporter.start() }
         .onDisappear { reporter.stop() }
     }
@@ -65,39 +80,40 @@ struct MainTabView: View {
     // MARK: - Tab bar
     private var darkTabBar: some View {
         HStack(spacing: 0) {
-            // Left: Map
+            // Left: Pulse/radar icon with red dot (map & discover)
             tabBtn(index: 0) {
-                VStack(spacing: 3) {
-                    ZStack {
-                        if selection == 0 {
-                            Circle()
-                                .fill(Theme.Palette.sky.opacity(0.18))
-                                .frame(width: 40, height: 40)
-                        }
-                        Image(systemName: selection == 0 ? "map.fill" : "map")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(selection == 0 ? Theme.Palette.sky : Theme.Palette.textSecondary)
-                    }
+                ZStack(alignment: .topTrailing) {
+                    Circle()
+                        .fill(Theme.Palette.card2)
+                        .frame(width: 46, height: 46)
+                    Image(systemName: "waveform.circle.fill")
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundStyle(selection == 0
+                                         ? Theme.Palette.sky
+                                         : Theme.Palette.textSecondary)
+                    // Red notification dot
+                    Circle()
+                        .fill(Theme.Palette.danger)
+                        .frame(width: 8, height: 8)
+                        .offset(x: 2, y: -2)
                 }
             }
 
             Spacer()
 
-            // Center: Messages count pill
+            // Center: Friend/message count pill
             tabBtn(index: 1) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(selection == 1
-                              ? Theme.Palette.primary
-                              : Theme.Palette.card2)
-                        .frame(width: 64, height: 38)
-
-                    if session.totalUnread > 0 {
-                        Text(session.totalUnread > 99 ? "99+" : "\(session.totalUnread)")
-                            .font(.system(size: 22, weight: .heavy, design: .rounded))
+                        .fill(selection == 1 ? Theme.Palette.primary : Theme.Palette.card2)
+                        .frame(width: 64, height: 42)
+                    let count = session.friends.count > 0 ? session.friends.count : session.totalUnread
+                    if count > 0 {
+                        Text("\(min(count, 99))")
+                            .font(.system(size: 24, weight: .heavy, design: .rounded))
                             .foregroundStyle(.white)
                     } else {
-                        Image(systemName: "bubble.left.and.bubble.right.fill")
+                        Image(systemName: "person.2.fill")
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(selection == 1 ? .white : Theme.Palette.textSecondary)
                     }
@@ -106,19 +122,17 @@ struct MainTabView: View {
 
             Spacer()
 
-            // Right: Profile
+            // Right: Location pin
             tabBtn(index: 2) {
-                VStack(spacing: 3) {
-                    ZStack {
-                        if selection == 2 {
-                            Circle()
-                                .fill(Theme.Palette.accent.opacity(0.18))
-                                .frame(width: 40, height: 40)
-                        }
-                        Image(systemName: selection == 2 ? "person.crop.circle.fill" : "person.crop.circle")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(selection == 2 ? Theme.Palette.accent : Theme.Palette.textSecondary)
-                    }
+                ZStack {
+                    Circle()
+                        .fill(Theme.Palette.card2)
+                        .frame(width: 46, height: 46)
+                    Image(systemName: selection == 2 ? "mappin.circle.fill" : "mappin.circle")
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundStyle(selection == 2
+                                         ? Theme.Palette.accent
+                                         : Theme.Palette.textSecondary)
                 }
             }
         }

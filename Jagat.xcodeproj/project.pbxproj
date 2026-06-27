@@ -22,6 +22,8 @@
 		AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */; };
 		BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */; };
 		CD4D6385348CB1F505F7F62D /* StatusHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */; };
+		495B545BEC804FE79A9C0392 /* WeatherDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD22F943B27846398963B03E /* WeatherDetailView.swift */; };
+		CEE76672AED549A4A3F1F5B2 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */; };
 		DA5D5BA1393E072F3CB048E3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D2C975F40BC83CEBAC7BA /* ChatView.swift */; };
 		DF5B16AA480083FBCEAB0050 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48414B089652D9C90B8F8D2D /* AddFriendView.swift */; };
 		E9B67305A3E41997FDE5B343 /* OrbitServices in Frameworks */ = {isa = PBXBuildFile; productRef = 6CF308983486947A37BA37F0 /* OrbitServices */; };
@@ -49,6 +51,8 @@
 		B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailSheet.swift; sourceTree = "<group>"; };
 		B7CDA78EA1804CD18AC7D530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusHistoryView.swift; sourceTree = "<group>"; };
+		AD22F943B27846398963B03E /* WeatherDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailView.swift; sourceTree = "<group>"; };
+		FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
 		DE384496F97606BD6D7C5641 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E26D2C975F40BC83CEBAC7BA /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServices.swift; sourceTree = "<group>"; };
@@ -83,6 +87,7 @@
 			children = (
 				22F4026167B4941975EB569E /* AvatarEditorView.swift */,
 				38BDB14218C6806634F38CD7 /* ProfileView.swift */,
+				FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */,
 				EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */,
 			);
 			path = Profile;
@@ -156,6 +161,7 @@
 			children = (
 				B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */,
 				0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */,
+				AD22F943B27846398963B03E /* WeatherDetailView.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -319,6 +325,8 @@
 				A372222470D084277614F99E /* FirebaseBackendService.swift in Sources */,
 				AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */,
 				CD4D6385348CB1F505F7F62D /* StatusHistoryView.swift in Sources */,
+				495B545BEC804FE79A9C0392 /* WeatherDetailView.swift in Sources */,
+				CEE76672AED549A4A3F1F5B2 /* MembershipView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

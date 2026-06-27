@@ -6,6 +6,7 @@ import OrbitServices
 struct ConversationsView: View {
     @EnvironmentObject private var session: SessionStore
     @State private var searchText = ""
+    @State private var pushChat: Conversation?
 
     private var sorted: [Conversation] {
         let all = session.conversations.sorted { $0.lastMessageDate > $1.lastMessageDate }
@@ -14,54 +15,54 @@ struct ConversationsView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .bottom) {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        // ── Notification sections ──
-                        notificationBanner
-                            .padding(.horizontal, 16)
-                            .padding(.top, 12)
+        ZStack(alignment: .bottom) {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    // Drag handle
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.white.opacity(0.2))
+                        .frame(width: 36, height: 5)
+                        .padding(.top, 10)
+                        .padding(.bottom, 14)
 
-                        // ── Quick categories ──
-                        categoryGrid
-                            .padding(.horizontal, 16)
-                            .padding(.top, 16)
+                    // ── Notification permission banner ──
+                    notificationBanner
+                        .padding(.horizontal, 16)
 
-                        // ── Conversations / DMs ──
-                        if !sorted.isEmpty {
-                            sectionHeader(title: "私信")
-                                .padding(.horizontal, 16)
-                                .padding(.top, 20)
+                    // ── Category rows (vertical, reference-style) ──
+                    categoryList
+                        .padding(.top, 4)
 
-                            LazyVStack(spacing: 1) {
-                                ForEach(sorted) { convo in
-                                    NavigationLink {
-                                        ChatView(conversation: convo)
-                                    } label: {
-                                        conversationRow(convo)
-                                    }
-                                    .buttonStyle(.pressable(scale: 0.97))
+                    // ── Private messages ──
+                    if !sorted.isEmpty {
+                        LazyVStack(spacing: 1) {
+                            ForEach(sorted) { convo in
+                                Button {
+                                    pushChat = convo
+                                } label: {
+                                    conversationRow(convo)
                                 }
+                                .buttonStyle(.pressable(scale: 0.97))
                             }
-                            .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            .padding(.horizontal, 16)
-                            .padding(.top, 8)
-                        } else {
-                            emptyDMs
-                                .padding(.top, 40)
                         }
-
-                        Color.clear.frame(height: 120)
+                        .padding(.top, 4)
+                    } else {
+                        emptyDMs
+                            .padding(.top, 36)
                     }
-                }
 
-                // ── Bottom search bar ──
-                bottomSearchBar
+                    Color.clear.frame(height: 100)
+                }
             }
-            .background(Theme.Palette.bg.ignoresSafeArea())
-            .navigationTitle("消息")
-            .navigationBarTitleDisplayMode(.large)
+
+            // ── Bottom search bar ──
+            bottomSearchBar
+        }
+        .background(Theme.Palette.bg)
+        .sheet(item: $pushChat) { convo in
+            NavigationStack {
+                ChatView(conversation: convo)
+            }
         }
     }
 
@@ -69,74 +70,93 @@ struct ConversationsView: View {
     private var notificationBanner: some View {
         HStack(spacing: 12) {
             Image(systemName: "bell.fill")
-                .font(.system(size: 18))
-                .foregroundStyle(Theme.Palette.sunshine)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("开启通知，不错过任何互动消息")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.white)
-            }
+                .font(.system(size: 16))
+                .foregroundStyle(Theme.Palette.textSecondary)
+            Text("点击开启通知权限，不错过任何互动消息")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Theme.Palette.textSecondary)
             Spacer()
-            Button("开启") {}
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(Theme.Palette.bg)
-                .padding(.horizontal, 12).padding(.vertical, 6)
-                .background(Theme.Palette.sunshine, in: Capsule())
+            Button {
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+            }
         }
-        .padding(.horizontal, 16).padding(.vertical, 14)
-        .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Theme.Palette.sunshine.opacity(0.25), lineWidth: 0.5)
-        )
+        .padding(.horizontal, 14).padding(.vertical, 12)
+        .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 12))
     }
 
-    // MARK: - Category grid
-    private var categoryGrid: some View {
-        HStack(spacing: 12) {
-            categoryCell(icon: "person.badge.plus", label: "好友申请",
-                         color: Theme.Palette.primary, count: 0)
-            categoryCell(icon: "flag.fill", label: "活动通知",
-                         color: Theme.Palette.mint, count: 0)
-            categoryCell(icon: "gearshape.fill", label: "系统通知",
-                         color: Theme.Palette.subtle, count: 0)
+    // MARK: - Category list (vertical rows like reference)
+    private var categoryList: some View {
+        VStack(spacing: 1) {
+            categoryRow(
+                emoji: "🤝",
+                label: "群聊",
+                sub: "你已保存0个群组",
+                badge: nil
+            )
+            categoryRow(
+                emoji: "🙋",
+                label: "好友申请",
+                sub: "在这里添加新好友",
+                badge: nil
+            )
+            categoryRow(
+                emoji: "🎉",
+                label: "活动通知",
+                sub: "恭喜挑战赛第四期的摸鱼...",
+                badge: session.totalUnread > 0 ? session.totalUnread : nil,
+                date: "06-17"
+            )
+            categoryRow(
+                emoji: "⚙️",
+                label: "系统通知",
+                sub: "再不记录帮你叫医生了！",
+                badge: session.totalUnread > 0 ? session.totalUnread : nil,
+                date: "06-17",
+                last: true
+            )
         }
+        .background(Theme.Palette.card)
     }
 
-    private func categoryCell(icon: String, label: String, color: Color, count: Int) -> some View {
-        VStack(spacing: 8) {
-            ZStack(alignment: .topTrailing) {
-                Image(systemName: icon)
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(color)
-                    .frame(width: 52, height: 52)
-                    .background(color.opacity(0.15), in: Circle())
+    private func categoryRow(emoji: String, label: String, sub: String,
+                             badge: Int?, date: String? = nil, last: Bool = false) -> some View {
+        HStack(spacing: 14) {
+            Text(emoji)
+                .font(.system(size: 28))
+                .frame(width: 48, height: 48)
+                .background(Theme.Palette.card2, in: Circle())
 
-                if count > 0 {
-                    Text("\(count)")
-                        .font(.system(size: 10, weight: .heavy))
+            VStack(alignment: .leading, spacing: 3) {
+                Text(label)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.white)
+                Text(sub)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 5) {
+                if let date { Text(date).font(.system(size: 12)).foregroundStyle(Theme.Palette.textSecondary) }
+                if let badge, badge > 0 {
+                    Text("\(min(badge, 99))")
+                        .font(.system(size: 11, weight: .heavy))
                         .foregroundStyle(.white)
-                        .padding(4)
-                        .background(Theme.Palette.accent, in: Circle())
-                        .offset(x: 4, y: -4)
+                        .padding(.horizontal, 6).padding(.vertical, 3)
+                        .background(Theme.Palette.accent, in: Capsule())
                 }
             }
-            Text(label)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(Theme.Palette.textSecondary)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-    }
-
-    // MARK: - Section header
-    private func sectionHeader(title: String) -> some View {
-        HStack {
-            Text(title)
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Theme.Palette.textSecondary)
-            Spacer()
+        .padding(.horizontal, 16).padding(.vertical, 13)
+        .overlay(alignment: .bottom) {
+            if !last {
+                Rectangle().fill(Theme.Palette.separator).frame(height: 0.5).padding(.leading, 78)
+            }
         }
     }
 
@@ -152,7 +172,6 @@ struct ConversationsView: View {
                 Text(convo.friendName)
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
-
                 Text(convo.lastMessagePreview.isEmpty ? "开始聊天吧 👋" : convo.lastMessagePreview)
                     .font(.system(size: 13))
                     .foregroundStyle(Theme.Palette.textSecondary)
@@ -165,7 +184,6 @@ struct ConversationsView: View {
                 Text(convo.lastMessageDate.relativeShort)
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(Theme.Palette.textSecondary)
-
                 if convo.unreadCount > 0 {
                     Text(convo.unreadCount > 9 ? "9+" : "\(convo.unreadCount)")
                         .font(.system(size: 11, weight: .heavy))
@@ -178,10 +196,7 @@ struct ConversationsView: View {
         .padding(.horizontal, 16).padding(.vertical, 13)
         .background(Theme.Palette.card)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Theme.Palette.separator)
-                .frame(height: 0.5)
-                .padding(.leading, 80)
+            Rectangle().fill(Theme.Palette.separator).frame(height: 0.5).padding(.leading, 80)
         }
     }
 
@@ -218,7 +233,6 @@ struct ConversationsView: View {
             .overlay(Capsule().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
 
             Button {
-                // Compose new message
             } label: {
                 Image(systemName: "square.and.pencil")
                     .font(.system(size: 17, weight: .semibold))
@@ -228,10 +242,11 @@ struct ConversationsView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.bottom, 100)
+        .padding(.bottom, 20)
         .background(
             LinearGradient(colors: [Theme.Palette.bg.opacity(0), Theme.Palette.bg],
                            startPoint: .top, endPoint: .bottom)
+                .padding(.top, -32)
                 .ignoresSafeArea()
         )
     }
