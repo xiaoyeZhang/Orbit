@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,33 +12,37 @@
 		357B45FCD5B15783AFF04E14 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4050C07E21F4EBF1834A54E6 /* FriendsView.swift */; };
 		3D2D30A0174076DD2F0DBFA3 /* OrbitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9006EC29068E2AE2A5CB73BC /* OrbitUI */; };
 		4325BCC265BADD0B90244CDE /* AvatarEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4026167B4941975EB569E /* AvatarEditorView.swift */; };
+		495B545BEC804FE79A9C0392 /* WeatherDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD22F943B27846398963B03E /* WeatherDetailView.swift */; };
 		552DA7A579B4D48E4226EDE2 /* OrbitCore in Frameworks */ = {isa = PBXBuildFile; productRef = B7CD6A791B4B17FB6173EFDE /* OrbitCore */; };
 		5A5F042553321041247B447E /* ReportingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */; };
 		5B9ABAE8B982A5C74910D661 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BDB14218C6806634F38CD7 /* ProfileView.swift */; };
+		64B6B361845D40DE8310C59C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E181889029FE4C18AD9AFD4D /* Localizable.strings */; };
 		6F27C16891ACCAF8DA512449 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B517D591155834DFE63229E /* RootView.swift */; };
 		9BE5F94F2F49E63846C9521B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE384496F97606BD6D7C5641 /* Assets.xcassets */; };
 		9E0CAE2BE0F6975A245BB273 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E8C556A3BE663970296473 /* AppDelegate.swift */; };
 		A372222470D084277614F99E /* FirebaseBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90A8B120A9AA97971E6ADC6 /* FirebaseBackendService.swift */; };
 		AD2D13476859FCE865DF0D28 /* LiveBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */; };
+		B5E4428C3010CCD700773483 /* OrbitCore in Frameworks */ = {isa = PBXBuildFile; productRef = B5E4428B3010CCD700773483 /* OrbitCore */; };
+		B5E4428F3010CCE000773483 /* OrbitServices in Frameworks */ = {isa = PBXBuildFile; productRef = B5E4428E3010CCE000773483 /* OrbitServices */; };
+		B5E442923010CCE700773483 /* OrbitUI in Frameworks */ = {isa = PBXBuildFile; productRef = B5E442913010CCE700773483 /* OrbitUI */; };
 		BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */; };
 		CD4D6385348CB1F505F7F62D /* StatusHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */; };
-		64B6B361845D40DE8310C59C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E181889029FE4C18AD9AFD4D /* Localizable.strings */; };
-		495B545BEC804FE79A9C0392 /* WeatherDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD22F943B27846398963B03E /* WeatherDetailView.swift */; };
 		CEE76672AED549A4A3F1F5B2 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */; };
 		DA5D5BA1393E072F3CB048E3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D2C975F40BC83CEBAC7BA /* ChatView.swift */; };
 		DF5B16AA480083FBCEAB0050 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48414B089652D9C90B8F8D2D /* AddFriendView.swift */; };
 		E9B67305A3E41997FDE5B343 /* OrbitServices in Frameworks */ = {isa = PBXBuildFile; productRef = 6CF308983486947A37BA37F0 /* OrbitServices */; };
 		F0097559B104D2E1D5AFEC7F /* JagatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4292FC0DA5387F8CB84084B /* JagatApp.swift */; };
+		F59ECA25DF584B7185507A00 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DC978677544AF1AB630200 /* LanguageManager.swift */; };
 		FB18DE14643D698D372B4A17 /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F977FEA5E49A603B31EF /* ConversationsView.swift */; };
 		FD9742195984F61EFF8DF51A /* FriendDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */; };
 		FF4B752F86B987838BE3A409 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */; };
-		F59ECA25DF584B7185507A00 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DC978677544AF1AB630200 /* LanguageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		07E8C556A3BE663970296473 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeView.swift; sourceTree = "<group>"; };
 		12CBB14EEB9DD90F95B369BA /* LiveBackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveBackendService.swift; sourceTree = "<group>"; };
+		1B0F00EF254645078964A239 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Jagat/zh-Hans.lproj/Localizable.strings"; sourceTree = SOURCE_ROOT; };
 		22F4026167B4941975EB569E /* AvatarEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarEditorView.swift; sourceTree = "<group>"; };
 		38BDB14218C6806634F38CD7 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		3E50F977FEA5E49A603B31EF /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
@@ -50,29 +54,18 @@
 		A4292FC0DA5387F8CB84084B /* JagatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JagatApp.swift; sourceTree = "<group>"; };
 		A90A8B120A9AA97971E6ADC6 /* FirebaseBackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseBackendService.swift; sourceTree = "<group>"; };
 		ACFBDAB4DE1CCFDAF9F419C7 /* GoogleService-Info.plist.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = "GoogleService-Info.plist.sample"; sourceTree = "<group>"; };
+		AD22F943B27846398963B03E /* WeatherDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailView.swift; sourceTree = "<group>"; };
 		B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailSheet.swift; sourceTree = "<group>"; };
+		B5DC978677544AF1AB630200 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		B7CDA78EA1804CD18AC7D530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusHistoryView.swift; sourceTree = "<group>"; };
-		ED18D1181A1D44C383490FEE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "Jagat/en.lproj/Localizable.strings"; sourceTree = SOURCE_ROOT; };
-		1B0F00EF254645078964A239 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Jagat/zh-Hans.lproj/Localizable.strings"; sourceTree = SOURCE_ROOT; };
-
-		E181889029FE4C18AD9AFD4D /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				ED18D1181A1D44C383490FEE /* en */,
-				1B0F00EF254645078964A239 /* zh-Hans */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		AD22F943B27846398963B03E /* WeatherDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailView.swift; sourceTree = "<group>"; };
-		FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
 		DE384496F97606BD6D7C5641 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E26D2C975F40BC83CEBAC7BA /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServices.swift; sourceTree = "<group>"; };
+		ED18D1181A1D44C383490FEE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Jagat/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		ED915F2E4E41281307FBDE52 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
-		B5DC978677544AF1AB630200 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportingSettingsView.swift; sourceTree = "<group>"; };
+		FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +75,9 @@
 			files = (
 				552DA7A579B4D48E4226EDE2 /* OrbitCore in Frameworks */,
 				3D2D30A0174076DD2F0DBFA3 /* OrbitUI in Frameworks */,
+				B5E4428C3010CCD700773483 /* OrbitCore in Frameworks */,
+				B5E442923010CCE700773483 /* OrbitUI in Frameworks */,
+				B5E4428F3010CCE000773483 /* OrbitServices in Frameworks */,
 				E9B67305A3E41997FDE5B343 /* OrbitServices in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -152,7 +148,6 @@
 				C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */,
 				E181889029FE4C18AD9AFD4D /* Localizable.strings */,
 			);
-			name = History;
 			path = History;
 			sourceTree = "<group>";
 		};
@@ -165,13 +160,6 @@
 			path = Friends;
 			sourceTree = "<group>";
 		};
-		55D892C4F4D77D0D0849054D /* Theme */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Theme;
-			sourceTree = "<group>";
-		};
 		68B3D185FB3B0BDE0F99B1EA /* Map */ = {
 			isa = PBXGroup;
 			children = (
@@ -180,13 +168,6 @@
 				AD22F943B27846398963B03E /* WeatherDetailView.swift */,
 			);
 			path = Map;
-			sourceTree = "<group>";
-		};
-		72AC87CF0F3349AEB5A4A448 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		82A08E86D1744AC61AAB9DE8 /* Resources */ = {
@@ -203,21 +184,11 @@
 			isa = PBXGroup;
 			children = (
 				C9BDDB53F6B1B8E1973281C5 /* App */,
-				97B76AEDA937E6EBC7154CC8 /* Components */,
 				2562ED786D1208B0FF57FF9D /* Features */,
-				72AC87CF0F3349AEB5A4A448 /* Models */,
 				82A08E86D1744AC61AAB9DE8 /* Resources */,
 				1D86C9697E60FB276D39EAD1 /* Services */,
-				55D892C4F4D77D0D0849054D /* Theme */,
 			);
 			path = Jagat;
-			sourceTree = "<group>";
-		};
-		97B76AEDA937E6EBC7154CC8 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Components;
 			sourceTree = "<group>";
 		};
 		A1E6E0C477635B981873F8A0 /* Onboarding */ = {
@@ -270,6 +241,9 @@
 				B7CD6A791B4B17FB6173EFDE /* OrbitCore */,
 				9006EC29068E2AE2A5CB73BC /* OrbitUI */,
 				6CF308983486947A37BA37F0 /* OrbitServices */,
+				B5E4428B3010CCD700773483 /* OrbitCore */,
+				B5E4428E3010CCE000773483 /* OrbitServices */,
+				B5E442913010CCE700773483 /* OrbitUI */,
 			);
 			productName = Jagat;
 			productReference = 996AD237BC284D463E664FFE /* Jagat.app */;
@@ -297,8 +271,14 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 2B731CEFC6751AAE0EC69B98;
+			packageReferences = (
+				B5E4428A3010CCD700773483 /* XCLocalSwiftPackageReference "Packages/OrbitCore" */,
+				B5E4428D3010CCE000773483 /* XCLocalSwiftPackageReference "Packages/OrbitServices" */,
+				B5E442903010CCE700773483 /* XCLocalSwiftPackageReference "Packages/OrbitUI" */,
+			);
 			productRefGroup = 0A2C978E52A76F0AA9F68BB5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -350,6 +330,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		E181889029FE4C18AD9AFD4D /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				ED18D1181A1D44C383490FEE /* en */,
+				1B0F00EF254645078964A239 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		0CF8206AA0B385A93D33097D /* Release */ = {
@@ -479,12 +471,39 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		B5E4428A3010CCD700773483 /* XCLocalSwiftPackageReference "Packages/OrbitCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/OrbitCore;
+		};
+		B5E4428D3010CCE000773483 /* XCLocalSwiftPackageReference "Packages/OrbitServices" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/OrbitServices;
+		};
+		B5E442903010CCE700773483 /* XCLocalSwiftPackageReference "Packages/OrbitUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/OrbitUI;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		6CF308983486947A37BA37F0 /* OrbitServices */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = OrbitServices;
 		};
 		9006EC29068E2AE2A5CB73BC /* OrbitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbitUI;
+		};
+		B5E4428B3010CCD700773483 /* OrbitCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbitCore;
+		};
+		B5E4428E3010CCE000773483 /* OrbitServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbitServices;
+		};
+		B5E442913010CCE700773483 /* OrbitUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = OrbitUI;
 		};
