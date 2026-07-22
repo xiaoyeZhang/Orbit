@@ -7,8 +7,8 @@ import UIKit
 public extension Animation {
     static var jelly: Animation        { .spring(response: 0.42, dampingFraction: 0.55) }
     static var smoothSpring: Animation { .spring(response: 0.45, dampingFraction: 0.86) }
-    static var snappy: Animation       { .spring(response: 0.30, dampingFraction: 0.72) }
-    static var bouncy: Animation       { .spring(response: 0.50, dampingFraction: 0.60) }
+    static var snap: Animation         { .spring(response: 0.30, dampingFraction: 0.72) }
+    static var bounce: Animation        { .spring(response: 0.50, dampingFraction: 0.60) }
 }
 
 // MARK: - Haptics

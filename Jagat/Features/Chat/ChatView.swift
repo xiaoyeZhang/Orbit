@@ -153,7 +153,7 @@ struct ChatView: View {
             }
             .buttonStyle(.pressable(scale: 0.88))
             .disabled(!canSend)
-            .animation(.snappy, value: canSend)
+            .animation(.snap, value: canSend)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
