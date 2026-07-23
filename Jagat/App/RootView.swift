@@ -32,7 +32,6 @@ struct MainTabView: View {
     @EnvironmentObject private var reporter: PresenceReporter
     @State private var selection = 0
     @State private var sheetDragOffset: CGFloat = 0
-    @Namespace private var tabNS
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -210,12 +209,5 @@ struct MainTabView: View {
                 .frame(minWidth: 44, minHeight: 44)
         }
         .buttonStyle(.pressable(scale: 0.86))
-    }
-}
-
-// MARK: - Notification Center (消息 tab)
-private struct NotificationCenterView: View {
-    var body: some View {
-        ConversationsView()
     }
 }

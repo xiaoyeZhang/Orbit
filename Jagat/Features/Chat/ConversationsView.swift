@@ -2,11 +2,16 @@ import SwiftUI
 import OrbitCore
 import OrbitUI
 import OrbitServices
+import UserNotifications
 
 struct ConversationsView: View {
     @EnvironmentObject private var session: SessionStore
     @State private var searchText = ""
     @State private var pushChat: Conversation?
+    @State private var showNotificationBanner = true
+    @State private var showNewChat = false
+    @State private var showFriends = false
+    @State private var notice: NoticeItem?
 
     private var sorted: [Conversation] {
         let all = session.conversations.sorted { $0.lastMessageDate > $1.lastMessageDate }
@@ -26,8 +31,10 @@ struct ConversationsView: View {
                         .padding(.bottom, 14)
 
                     // ── Notification permission banner ──
-                    notificationBanner
-                        .padding(.horizontal, 16)
+                    if showNotificationBanner {
+                        notificationBanner
+                            .padding(.horizontal, 16)
+                    }
 
                     // ── Category rows (vertical, reference-style) ──
                     categoryList
@@ -69,14 +76,19 @@ struct ConversationsView: View {
     // MARK: - Notification banner
     private var notificationBanner: some View {
         HStack(spacing: 12) {
-            Image(systemName: "bell.fill")
-                .font(.system(size: 16))
-                .foregroundStyle(Theme.Palette.textSecondary)
-            Text("点击开启通知权限，不错过任何互动消息")
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(Theme.Palette.textSecondary)
+            HStack(spacing: 12) {
+                Image(systemName: "bell.fill")
+                    .font(.system(size: 16))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                Text("点击开启通知权限，不错过任何互动消息")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+            }
+            .onTapGesture { requestNotificationPermission() }
+
             Spacer()
             Button {
+                withAnimation { showNotificationBanner = false }
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 12, weight: .semibold))
@@ -87,6 +99,19 @@ struct ConversationsView: View {
         .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 12))
     }
 
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            DispatchQueue.main.async {
+                if granted {
+                    Toast.show("通知已开启 🔔")
+                } else {
+                    Toast.show("通知权限未开启", icon: "bell.slash.fill")
+                }
+                withAnimation { showNotificationBanner = false }
+            }
+        }
+    }
+
     // MARK: - Category list (vertical rows like reference)
     private var categoryList: some View {
         VStack(spacing: 1) {
@@ -95,20 +120,27 @@ struct ConversationsView: View {
                 label: "群聊",
                 sub: "你已保存0个群组",
                 badge: nil
-            )
+            ) {
+                Toast.show("群组功能即将上线 🚧")
+            }
             categoryRow(
                 emoji: "🙋",
                 label: "好友申请",
                 sub: "在这里添加新好友",
                 badge: nil
-            )
+            ) {
+                showFriends = true
+            }
             categoryRow(
                 emoji: "🎉",
                 label: "活动通知",
                 sub: "恭喜挑战赛第四期的摸鱼...",
                 badge: session.totalUnread > 0 ? session.totalUnread : nil,
                 date: "06-17"
-            )
+            ) {
+                notice = NoticeItem(title: "活动通知",
+                                    body: "恭喜挑战赛第四期的摸鱼大赛圆满收官，点击查看你的专属成绩与奖品领取方式～")
+            }
             categoryRow(
                 emoji: "⚙️",
                 label: "系统通知",
@@ -116,7 +148,10 @@ struct ConversationsView: View {
                 badge: session.totalUnread > 0 ? session.totalUnread : nil,
                 date: "06-17",
                 last: true
-            )
+            ) {
+                notice = NoticeItem(title: "系统通知",
+                                    body: "再不记录位置，系统就要帮你呼叫医生啦！记得经常打开 App 留下你的足迹哦。")
+            }
         }
         .background(Theme.Palette.card)
     }
@@ -238,6 +273,7 @@ struct ConversationsView: View {
             .overlay(Capsule().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
 
             Button {
+                showNewChat = true
             } label: {
                 Image(systemName: "square.and.pencil")
                     .font(.system(size: 17, weight: .semibold))
@@ -254,5 +290,47 @@ struct ConversationsView: View {
                 .padding(.top, -32)
                 .ignoresSafeArea()
         )
+        .sheet(isPresented: $showNewChat) {
+            AddFriendView().presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showFriends) {
+            NavigationStack { FriendsView() }
+        }
+        .sheet(item: $notice) { item in
+            NoticeSheet(title: item.title, bodyText: item.body)
+        }
+    }
+}
+
+private struct NoticeItem: Identifiable {
+    let id = UUID()
+    let title: String
+    let body: String
+}
+
+private struct NoticeSheet: View {
+    let title: String
+    let bodyText: String
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                Text(bodyText)
+                    .font(.system(size: 14))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .lineSpacing(5)
+                    .padding(20)
+            }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("关闭") { dismiss() }
+                        .foregroundStyle(Theme.Palette.primary)
+                }
+            }
+            .background(Theme.Palette.bg)
+        }
     }
 }

@@ -1,17 +1,21 @@
 import SwiftUI
 import OrbitUI
+import OrbitCore
 import CoreLocation
 
 struct WeatherDetailView: View {
     let temperature: Double
     let cityName: String
+    let coordinate: Coordinate
+    let accuracy: Int
     @Environment(\.dismiss) private var dismiss
 
-    @State private var humidity: String = "***"
-    @State private var altitude: String = "***"
-    @State private var latitude: String = "***"
-    @State private var longitude: String = "***"
+    @State private var humidity: String = "—"
+    @State private var altitude: String = "—"
+    @State private var latitude: String = "—"
+    @State private var longitude: String = "—"
     @State private var gpsAccuracy: Int = 0
+    @State private var showMembership = false
 
     var body: some View {
         ZStack {
@@ -20,6 +24,12 @@ struct WeatherDetailView: View {
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()
+            .onAppear {
+                latitude  = String(format: "%.4f", coordinate.latitude)
+                longitude = String(format: "%.4f", coordinate.longitude)
+                gpsAccuracy = accuracy
+            }
+            .sheet(isPresented: $showMembership) { MembershipView() }
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 28) {
@@ -55,7 +65,7 @@ struct WeatherDetailView: View {
                         infoCard(title: "湿度", value: humidity, icon: "humidity")
                         infoCard(title: "GPS定位精度", value: gpsAccuracy > 0 ? "\(gpsAccuracy)m" : "获取中",
                                  icon: "location.circle.fill", iconColor: Theme.Palette.danger,
-                                 large: true)
+                                 large: true, warning: true)
                         altCard
                         VStack(spacing: 8) {
                             infoCard(title: "经度", value: longitude, icon: "arrow.left.arrow.right")
@@ -80,7 +90,7 @@ struct WeatherDetailView: View {
                     .padding(.horizontal, 20)
 
                     // ── Unlock button ──
-                    Button { } label: {
+                    Button { showMembership = true } label: {
                         Text("立即解锁")
                             .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(.white)
@@ -99,14 +109,15 @@ struct WeatherDetailView: View {
     }
 
     private func infoCard(title: String, value: String, icon: String,
-                          iconColor: Color = .white, large: Bool = false) -> some View {
+                          iconColor: Color = .white, large: Bool = false,
+                          warning: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Spacer()
-                if title == "GPS定位精度" {
+                if warning {
                     Image(systemName: "exclamationmark.circle.fill")
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.Palette.danger)

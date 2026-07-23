@@ -44,15 +44,25 @@ private struct QuickFeature: Identifiable {
     let icon: String
     let label: String
     let color: Color
+    let detail: String
 }
 
 // MARK: - View
 struct StatusHistoryView: View {
+    @State private var selectedFeature: QuickFeature?
+    @State private var selectedEntry: StatusEntry?
+    @State private var showSettings = false
+    @State private var collapsed = Set<String>()
+
     private let features: [QuickFeature] = [
-        .init(icon: "shield.checkered",     label: "安全守护", color: Color(hex: 0x5352ED)),
-        .init(icon: "battery.100.bolt",     label: "健康用机", color: Color(hex: 0x2BCB96)),
-        .init(icon: "bell.and.waveform",    label: "地点提醒", color: Color(hex: 0xFF6B81)),
-        .init(icon: "chart.bar.doc.horizontal", label: "每日报告", color: Color(hex: 0xFFC312)),
+        .init(icon: "shield.checkered",     label: "安全守护", color: Color(hex: 0x5352ED),
+              detail: "实时守护你与家人的安全，遇到异常停留或长时间失联时主动提醒紧急联系人。"),
+        .init(icon: "battery.100.bolt",     label: "健康用机", color: Color(hex: 0x2BCB96),
+              detail: "统计每日屏幕使用时长与活动量，帮助你养成更健康的用机习惯。"),
+        .init(icon: "bell.and.waveform",    label: "地点提醒", color: Color(hex: 0xFF6B81),
+              detail: "为常用地点设置到访/离开提醒，重要的人进出这些地点时你会第一时间收到通知。"),
+        .init(icon: "chart.bar.doc.horizontal", label: "每日报告", color: Theme.Palette.gold,
+              detail: "每日清晨生成专属行动报告，汇总昨日足迹、常去地点与互动概况。"),
     ]
 
     private let grouped: [(String, [StatusEntry])] = {
@@ -96,11 +106,11 @@ struct StatusHistoryView: View {
                             .foregroundStyle(.white)
                         Spacer()
                         HStack(spacing: 16) {
-                            Button { } label: {
+                            Button { showSettings = true } label: {
                                 Image(systemName: "gearshape").font(.system(size: 16, weight: .semibold))
                                     .foregroundStyle(Theme.Palette.textSecondary)
                             }
-                            Button { } label: {
+                            Button { Toast.show("筛选功能即将上线") } label: {
                                 Image(systemName: "line.3.horizontal.decrease").font(.system(size: 16, weight: .semibold))
                                     .foregroundStyle(Theme.Palette.textSecondary)
                             }
@@ -124,13 +134,18 @@ struct StatusHistoryView: View {
             .background(Theme.Palette.bg.ignoresSafeArea())
             .navigationTitle("现在在做什么呢?")
             .navigationBarTitleDisplayMode(.large)
+            .sheet(item: $selectedFeature) { f in QuickFeatureDetailSheet(feature: f) }
+            .sheet(item: $selectedEntry) { e in EntryDetailSheet(entry: e) }
+            .sheet(isPresented: $showSettings) {
+                ReportingSettingsView().presentationDetents([.large])
+            }
         }
     }
 
     // MARK: - Feature cell
     private func featureCell(_ f: QuickFeature) -> some View {
         Button {
-            // Feature detail (future)
+            selectedFeature = f
         } label: {
             VStack(spacing: 8) {
                 ZStack {
@@ -154,8 +169,14 @@ struct StatusHistoryView: View {
 
     // MARK: - Section block
     private func sectionBlock(dateLabel: String, entries: [StatusEntry]) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Button { } label: {
+        let isCollapsed = collapsed.contains(dateLabel)
+        return VStack(alignment: .leading, spacing: 8) {
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
+                    if isCollapsed { collapsed.remove(dateLabel) }
+                    else { collapsed.insert(dateLabel) }
+                }
+            } label: {
                 HStack(spacing: 4) {
                     Text(dateLabel)
                         .font(.system(size: 15, weight: .bold))
@@ -163,12 +184,15 @@ struct StatusHistoryView: View {
                     Image(systemName: "chevron.down")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(Theme.Palette.textSecondary)
+                        .rotationEffect(isCollapsed ? .degrees(-90) : .zero)
                 }
             }
             .padding(.top, 20)
 
-            ForEach(entries) { entry in
-                entryCard(entry)
+            if !isCollapsed {
+                ForEach(entries) { entry in
+                    entryCard(entry)
+                }
             }
         }
     }
@@ -268,11 +292,13 @@ struct StatusHistoryView: View {
                         .padding(.top, 12)
 
                     HStack(spacing: 16) {
-                        actionBtn(icon: "eye", label: "查看")
+                        actionBtn(icon: "eye", label: "查看") { selectedEntry = entry }
                         Divider()
                             .frame(height: 14)
                             .background(Theme.Palette.separator)
-                        actionBtn(icon: "arrow.clockwise", label: "重置")
+                        actionBtn(icon: "arrow.clockwise", label: "重置") {
+                            Toast.show("已重置（演示）")
+                        }
                     }
                     .padding(.horizontal, 14).padding(.vertical, 10)
                 }
@@ -286,8 +312,10 @@ struct StatusHistoryView: View {
         }
     }
 
-    private func actionBtn(icon: String, label: String) -> some View {
-        Button { } label: {
+    private func actionBtn(icon: String, label: String, action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+        } label: {
             HStack(spacing: 5) {
                 Image(systemName: icon)
                     .font(.system(size: 13, weight: .semibold))
@@ -305,5 +333,110 @@ struct StatusHistoryView: View {
         let fmt = DateFormatter()
         fmt.dateFormat = "HH:mm"
         return fmt.string(from: date)
+    }
+}
+
+// MARK: - Feature detail sheet
+private struct QuickFeatureDetailSheet: View {
+    let feature: QuickFeature
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 18) {
+                    ZStack {
+                        Circle().fill(feature.color.opacity(0.15)).frame(width: 88, height: 88)
+                        Image(systemName: feature.icon)
+                            .font(.system(size: 36, weight: .semibold))
+                            .foregroundStyle(feature.color)
+                    }
+                    Text(feature.label)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text(feature.detail)
+                        .font(.system(size: 14))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .lineSpacing(5)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(24)
+            }
+            .navigationTitle("功能详情")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("关闭") { dismiss() }
+                        .foregroundStyle(Theme.Palette.primary)
+                }
+            }
+            .background(Theme.Palette.bg)
+        }
+    }
+}
+
+// MARK: - Entry detail sheet
+private struct EntryDetailSheet: View {
+    let entry: StatusEntry
+    @Environment(\.dismiss) private var dismiss
+
+    private var dateText: String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd HH:mm"
+        return fmt.string(from: entry.date)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(spacing: 12) {
+                        Image(systemName: entry.activityIcon)
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(Theme.Palette.primary)
+                        Text(entry.activityLabel)
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(.white)
+                    }
+
+                    detailRow("时间", dateText)
+                    if !entry.locationName.isEmpty {
+                        detailRow("地点", entry.locationName)
+                    }
+                    detailRow("停留时长", entry.duration)
+                    if entry.systemTag {
+                        HStack(spacing: 6) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundStyle(Theme.Palette.danger)
+                            Text("系统识别，仅供参考")
+                                .font(.system(size: 13))
+                                .foregroundStyle(Theme.Palette.textSecondary)
+                        }
+                    }
+                }
+                .padding(20)
+            }
+            .navigationTitle("状态详情")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("关闭") { dismiss() }
+                        .foregroundStyle(Theme.Palette.primary)
+                }
+            }
+            .background(Theme.Palette.bg)
+        }
+    }
+
+    private func detailRow(_ title: String, _ value: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.Palette.textSecondary)
+            Spacer()
+            Text(value)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(.white)
+        }
     }
 }

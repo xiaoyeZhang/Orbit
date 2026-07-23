@@ -92,7 +92,11 @@ public final class MockBackendService: BackendService {
         guard let idx = friends.firstIndex(where: { $0.id == friendId }) else { throw BackendError.friendNotFound }
         friends[idx].isFavorite = isFavorite; broadcastFriends()
     }
-    public func setGhostMode(_ on: Bool) async throws {}
+    public func setGhostMode(_ on: Bool) async throws {
+        // Reflect ghost state on the local user so it stays consistent with the UI
+        // and is persisted via `user` didSet → UserDefaults.
+        if var u = user { u.isGhostMode = on; user = u }
+    }
     public func updateMyLocation(_ coordinate: Coordinate) async throws {}
 
     // MARK: - Chat

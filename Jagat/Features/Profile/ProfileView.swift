@@ -14,7 +14,7 @@ struct ProfileView: View {
     @State private var showHistory       = false
     @State private var showMembership    = false
     @State private var showLangPicker    = false
-    @State private var ghostMode         = false
+    @State private var selectedPlace: Place?
 
     var body: some View {
         NavigationStack {
@@ -52,6 +52,9 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showMembership) {
                 MembershipView()
+            }
+            .sheet(item: $selectedPlace) { place in
+                PlaceDetailSheet(place: place)
             }
             .confirmationDialog(Text("语言"), isPresented: $showLangPicker, titleVisibility: .visible) {
                 ForEach(AppLanguage.allCases) { lang in
@@ -189,28 +192,32 @@ struct ProfileView: View {
     }
 
     private func placeRow(_ place: Place) -> some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(Theme.Palette.groupedBackground)
-                    .frame(width: 40, height: 40)
-                Text(place.emoji)
-                    .font(.system(size: 20))
+        Button { selectedPlace = place } label: {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(Theme.Palette.groupedBackground)
+                        .frame(width: 40, height: 40)
+                    Text(place.emoji)
+                        .font(.system(size: 20))
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(place.name)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.ink)
+                    Text("到访 \(place.visitCount) 次 · \(place.lastVisit.relativeShort)")
+                        .font(.caption)
+                        .foregroundStyle(Theme.Palette.subtle)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.bold())
+                    .foregroundStyle(Theme.Palette.subtle.opacity(0.6))
             }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(place.name)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.ink)
-                Text("到访 \(place.visitCount) 次 · \(place.lastVisit.relativeShort)")
-                    .font(.caption)
-                    .foregroundStyle(Theme.Palette.subtle)
-            }
-            Spacer()
-            Image(systemName: "chevron.right")
-                .font(.caption.bold())
-                .foregroundStyle(Theme.Palette.subtle.opacity(0.6))
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
         }
-        .padding(.vertical, 4)
+        .buttonStyle(.pressable(scale: 0.96))
     }
 
     // MARK: - 设置区
@@ -224,16 +231,12 @@ struct ProfileView: View {
                         .font(.system(size: 15, weight: .medium))
                         .foregroundStyle(Theme.Palette.ink)
                     Spacer()
-                    Toggle("", isOn: $ghostMode)
+                    Toggle("", isOn: ghostModeBinding)
                         .labelsHidden()
                         .tint(Theme.Palette.primary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 13)
-                .onChange(of: ghostMode) { on in
-                    Haptics.light()
-                    Task { try? await session.backend.setGhostMode(on) }
-                }
 
                 divider
 
@@ -371,9 +374,9 @@ struct ProfileView: View {
         HStack(spacing: 14) {
             Image(systemName: "crown.fill")
                 .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color(hex: 0xFFC312))
+                .foregroundStyle(Theme.Palette.gold)
                 .frame(width: 36, height: 36)
-                .background(Color(hex: 0xFFC312).opacity(0.18), in: RoundedRectangle(cornerRadius: 10))
+                .background(Theme.Palette.gold.opacity(0.18), in: RoundedRectangle(cornerRadius: 10))
 
             Text("会员中心")
                 .font(.system(size: 15, weight: .medium))
@@ -381,9 +384,9 @@ struct ProfileView: View {
             Spacer()
             Text("解锁10+权益")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(Color(hex: 0xFFC312))
+                .foregroundStyle(Theme.Palette.gold)
                 .padding(.horizontal, 8).padding(.vertical, 4)
-                .background(Color(hex: 0xFFC312).opacity(0.15), in: Capsule())
+                .background(Theme.Palette.gold.opacity(0.15), in: Capsule())
             Image(systemName: "chevron.right")
                 .font(.caption.bold())
                 .foregroundStyle(Theme.Palette.subtle)
@@ -391,5 +394,71 @@ struct ProfileView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
         .contentShape(Rectangle())
+    }
+
+    // MARK: - Ghost mode (synced to the user model + backend)
+    private var ghostModeBinding: Binding<Bool> {
+        Binding(
+            get: { session.currentUser?.isGhostMode ?? false },
+            set: { newValue in
+                Haptics.light()
+                if var u = session.currentUser {
+                    u.isGhostMode = newValue
+                    session.currentUser = u
+                }
+                Task { try? await session.backend.setGhostMode(newValue) }
+            }
+        )
+    }
+}
+
+// MARK: - Place detail sheet
+private struct PlaceDetailSheet: View {
+    let place: Place
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 20) {
+                    ZStack {
+                        Circle().fill(Theme.Palette.groupedBackground).frame(width: 96, height: 96)
+                        Text(place.emoji).font(.system(size: 44))
+                    }
+                    Text(place.name)
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundStyle(Theme.Palette.ink)
+                    VStack(spacing: 12) {
+                        detailRow("到访次数", "\(place.visitCount) 次")
+                        detailRow("最近到访", place.lastVisit.relativeShort)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(16)
+                    .card()
+                }
+                .padding(20)
+            }
+            .navigationTitle("地点详情")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("关闭") { dismiss() }
+                        .foregroundStyle(Theme.Palette.primary)
+                }
+            }
+            .background(Theme.Palette.groupedBackground)
+        }
+    }
+
+    private func detailRow(_ title: String, _ value: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 14))
+                .foregroundStyle(Theme.Palette.subtle)
+            Spacer()
+            Text(value)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(Theme.Palette.ink)
+        }
     }
 }

@@ -315,7 +315,8 @@ final class FirebaseBackendService: BackendService {
                 bio: data["bio"] as? String ?? "",
                 avatar: avatar(from: data["avatar"] as? [String: Any]),
                 inviteCode: data["inviteCode"] as? String ?? "",
-                phoneNumber: data["phoneNumber"] as? String ?? phone
+                phoneNumber: data["phoneNumber"] as? String ?? phone,
+                isGhostMode: data["ghostMode"] as? Bool ?? false
             )
         }
         // 首次登录：创建资料 + 邀请码索引

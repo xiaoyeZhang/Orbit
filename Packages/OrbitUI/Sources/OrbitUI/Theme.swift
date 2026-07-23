@@ -7,6 +7,7 @@ public enum Theme {
         public static let primaryDark  = Color(hex: 0x4834D4)
         public static let accent       = Color(hex: 0xFD79A8)
         public static let sunshine     = Color(hex: 0xFDCB6E)
+        public static let gold         = Color(hex: 0xFFC312)
         public static let mint         = Color(hex: 0x00D2A8)
         public static let sky          = Color(hex: 0x54A0FF)
         public static let danger       = Color(hex: 0xFF6B6B)

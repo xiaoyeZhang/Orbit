@@ -37,6 +37,7 @@ struct MapHomeView: View {
     @State private var showAddFriend   = false
     @State private var showFriends     = false
     @State private var showWeather     = false
+    @State private var showReporting   = false
     @State private var didInitialCenter = false
 
     // Top-left info
@@ -63,7 +64,6 @@ struct MapHomeView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .padding(.leading, 16)
                 .padding(.top, 60)
-                .allowsHitTesting(false)
 
             // ── Right sidebar ──
             rightSidebar
@@ -98,9 +98,15 @@ struct MapHomeView: View {
         .sheet(isPresented: $showWeather) {
             WeatherDetailView(
                 temperature: temperature ?? 0,
-                cityName: cityName
+                cityName: cityName,
+                coordinate: location.effectiveCoordinate,
+                accuracy: location.accuracyMeters
             )
             .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showReporting) {
+            ReportingSettingsView()
+                .presentationDetents([.large])
         }
         .onAppear {
             location.requestPermission()
@@ -145,6 +151,7 @@ struct MapHomeView: View {
                 .font(.system(size: 34, weight: .heavy))
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.45), radius: 6, y: 2)
+                .allowsHitTesting(false)
 
             // Row: weather + map type
             HStack(spacing: 8) {
@@ -170,6 +177,7 @@ struct MapHomeView: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 10).padding(.vertical, 5)
                 .background(.ultraThinMaterial, in: Capsule())
+                .onTapGesture { showFriends = true }
             }
 
             // Accuracy
@@ -183,6 +191,7 @@ struct MapHomeView: View {
                 .foregroundStyle(.white.opacity(0.85))
                 .padding(.horizontal, 10).padding(.vertical, 4)
                 .background(Color.white.opacity(0.14), in: Capsule())
+                .onTapGesture { showReporting = true }
             }
         }
     }

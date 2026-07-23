@@ -12,9 +12,12 @@ public final class SupabaseRealtime: NSObject {
     private var ref = 0
     private var heartbeatTask: Task<Void, Never>?
     private var isConnected = false
+    private var reconnectScheduled = false
 
     // table → continuations
     private var listeners: [String: [UUID: (SupabaseChange) -> Void]] = [:]
+    // subscription id → (table, filter), kept so we can re-join channels on (re)connect
+    private var subscriptions: [UUID: (table: String, filter: String?)] = [:]
 
     private override init() { super.init() }
 
@@ -22,6 +25,7 @@ public final class SupabaseRealtime: NSObject {
 
     func connect() {
         guard !isConnected else { return }
+        socket?.cancel()
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: .main)
         self.session = session
         socket = session.webSocketTask(with: SupabaseConfig.realtimeURL)
@@ -32,10 +36,11 @@ public final class SupabaseRealtime: NSObject {
     }
 
     func disconnect() {
-        heartbeatTask?.cancel()
+        heartbeatTask?.cancel(); heartbeatTask = nil
         socket?.cancel()
         socket = nil
         isConnected = false
+        reconnectScheduled = false
     }
 
     // MARK: - Subscribe
@@ -44,13 +49,27 @@ public final class SupabaseRealtime: NSObject {
     func subscribe(table: String, filter: String? = nil,
                    onChange: @escaping (SupabaseChange) -> Void) -> UUID {
         let id = UUID()
-        listeners[table, default: [:]][id] = onChange
-        joinChannel(table: table, filter: filter)
+        // NOTE: dictionaries are value types — mutated copy would be discarded,
+        // so assign back explicitly.
+        var tableListeners = listeners[table] ?? [:]
+        tableListeners[id] = onChange
+        listeners[table] = tableListeners
+        subscriptions[id] = (table: table, filter: filter)
+
+        if isConnected {
+            joinChannel(table: table, filter: filter)
+        } else {
+            connect()
+        }
         return id
     }
 
     func unsubscribe(table: String, id: UUID) {
-        listeners[table]?[id] = nil
+        if subscriptions.removeValue(forKey: id) != nil {
+            var tableListeners = listeners[table] ?? [:]
+            tableListeners.removeValue(forKey: id)
+            listeners[table] = tableListeners
+        }
     }
 
     // MARK: - Private
@@ -96,11 +115,18 @@ public final class SupabaseRealtime: NSObject {
                 self.receiveLoop()
             case .failure:
                 self.isConnected = false
-                Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: 3_000_000_000)
-                    self.connect()
-                }
+                self.reconnect()
             }
+        }
+    }
+
+    private func reconnect() {
+        guard !reconnectScheduled else { return }
+        reconnectScheduled = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            reconnectScheduled = false
+            connect()
         }
     }
 
@@ -140,7 +166,11 @@ extension SupabaseRealtime: URLSessionWebSocketDelegate {
                             webSocketTask: URLSessionWebSocketTask,
                             didOpenWithProtocol protocol: String?) {
         Task { @MainActor in
-            // Re-join all channels on reconnect
+            // Re-join every previously subscribed channel after a (re)connection,
+            // otherwise realtime updates silently stop delivering.
+            for sub in self.subscriptions.values {
+                self.joinChannel(table: sub.table, filter: sub.filter)
+            }
         }
     }
 }

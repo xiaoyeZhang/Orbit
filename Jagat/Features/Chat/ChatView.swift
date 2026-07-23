@@ -1,5 +1,6 @@
 import SwiftUI
 import MapKit
+import UIKit
 import OrbitCore
 import OrbitUI
 import OrbitServices
@@ -167,6 +168,7 @@ struct ChatView: View {
 // MARK: - 消息气泡
 struct MessageBubble: View {
     let message: Message
+    @State private var mapTarget: LocationTarget?
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
@@ -174,6 +176,9 @@ struct MessageBubble: View {
             bubbleContent
                 .contentShape(Rectangle())
             if !message.isMine { Spacer(minLength: 60) }
+        }
+        .sheet(item: $mapTarget) { target in
+            LocationPreviewSheet(coordinate: target.coordinate, name: target.name)
         }
     }
 
@@ -198,27 +203,30 @@ struct MessageBubble: View {
                 }
 
         case .location(let coord, let name):
-            VStack(alignment: .leading, spacing: 0) {
-                Map(coordinateRegion: .constant(MKCoordinateRegion(
-                    center: coord.clLocationCoordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))))
-                    .frame(width: 210, height: 126)
-                    .allowsHitTesting(false)
+            Button { mapTarget = LocationTarget(coordinate: coord, name: name) } label: {
+                VStack(alignment: .leading, spacing: 0) {
+                    Map(coordinateRegion: .constant(MKCoordinateRegion(
+                        center: coord.clLocationCoordinate,
+                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))))
+                        .frame(width: 210, height: 126)
+                        .allowsHitTesting(false)
 
-                HStack(spacing: 6) {
-                    Image(systemName: "mappin.circle.fill")
-                        .foregroundStyle(Theme.Palette.accent)
-                    Text(name)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.ink)
-                        .lineLimit(1)
+                    HStack(spacing: 6) {
+                        Image(systemName: "mappin.circle.fill")
+                            .foregroundStyle(Theme.Palette.accent)
+                        Text(name)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Theme.Palette.ink)
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 12).padding(.vertical, 9)
+                    .frame(width: 210, alignment: .leading)
+                    .background(Theme.Palette.surface)
                 }
-                .padding(.horizontal, 12).padding(.vertical, 9)
-                .frame(width: 210, alignment: .leading)
-                .background(Theme.Palette.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .shadow(color: .black.opacity(0.10), radius: 8, y: 3)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .shadow(color: .black.opacity(0.10), radius: 8, y: 3)
+            .buttonStyle(.plain)
 
         case .ping:
             PingBubble()
@@ -254,5 +262,77 @@ struct PingBubble: View {
                         .strokeBorder(Theme.Palette.sunshine.opacity(0.4), lineWidth: 1.2)
                 }
         )
+    }
+}
+
+// MARK: - Location preview sheet
+private struct LocationTarget: Identifiable {
+    let id = UUID()
+    let coordinate: Coordinate
+    let name: String
+}
+
+private struct LocationPreviewSheet: View {
+    let coordinate: Coordinate
+    let name: String
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                Map(coordinateRegion: .constant(MKCoordinateRegion(
+                    center: coordinate.clLocationCoordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))))
+                .frame(maxWidth: .infinity)
+                .frame(height: 360)
+                .ignoresSafeArea(edges: .top)
+
+                HStack(spacing: 8) {
+                    Image(systemName: "mappin.circle.fill")
+                        .foregroundStyle(Theme.Palette.accent)
+                    Text(name)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.ink)
+                        .lineLimit(1)
+                    Spacer()
+                }
+                .padding(16)
+
+                Button {
+                    openInMaps()
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "map")
+                        Text("在地图中打开")
+                    }
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity).frame(height: 50)
+                    .background(Theme.brandGradient, in: RoundedRectangle(cornerRadius: 14))
+                }
+                .buttonStyle(.pressable(scale: 0.96))
+                .padding(.horizontal, 16)
+
+                Spacer()
+            }
+            .navigationTitle("位置")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("关闭") { dismiss() }
+                        .foregroundStyle(Theme.Palette.primary)
+                }
+            }
+            .background(Theme.Palette.groupedBackground)
+        }
+    }
+
+    private func openInMaps() {
+        let lat = coordinate.latitude
+        let lon = coordinate.longitude
+        let q = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "位置"
+        if let url = URL(string: "maps://?q=\(q)&ll=\(lat),\(lon)") {
+            UIApplication.shared.open(url)
+        }
     }
 }

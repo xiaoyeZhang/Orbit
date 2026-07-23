@@ -7,15 +7,18 @@ public struct UserProfile: Codable, Equatable, Identifiable, Sendable {
     public var avatar: AvatarConfig
     public var inviteCode: String
     public var phoneNumber: String?
+    public var isGhostMode: Bool
 
     public init(id: String, displayName: String, bio: String,
-                avatar: AvatarConfig, inviteCode: String, phoneNumber: String? = nil) {
+                avatar: AvatarConfig, inviteCode: String, phoneNumber: String? = nil,
+                isGhostMode: Bool = false) {
         self.id = id
         self.displayName = displayName
         self.bio = bio
         self.avatar = avatar
         self.inviteCode = inviteCode
         self.phoneNumber = phoneNumber
+        self.isGhostMode = isGhostMode
     }
 
     public static let placeholder = UserProfile(
