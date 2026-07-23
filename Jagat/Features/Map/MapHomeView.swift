@@ -112,6 +112,8 @@ struct MapHomeView: View {
             location.requestPermission()
             location.start()
             centerOnMeIfNeeded()
+            fetchCityName(for: location.effectiveCoordinate)
+            if temperature == nil { fetchWeather(for: location.effectiveCoordinate) }
         }
         .onChange(of: location.userCoordinate) { coord in
             centerOnMeIfNeeded()
@@ -147,7 +149,7 @@ struct MapHomeView: View {
     private var topLeftInfo: some View {
         VStack(alignment: .leading, spacing: 6) {
             // City name
-            Text(cityName.isEmpty ? "..." : cityName)
+            Text(cityName.isEmpty ? "定位中…" : cityName)
                 .font(.system(size: 34, weight: .heavy))
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.45), radius: 6, y: 2)
@@ -155,16 +157,18 @@ struct MapHomeView: View {
 
             // Row: weather + map type
             HStack(spacing: 8) {
-                if let t = temperature {
-                    Button { showWeather = true } label: {
+                Button { showWeather = true } label: {
+                    if let t = temperature {
                         Label(String(format: "%.1f°C", t), systemImage: "cloud.fill")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 10).padding(.vertical, 5)
-                            .background(.ultraThinMaterial, in: Capsule())
+                    } else {
+                        Label("天气", systemImage: "cloud.fill")
                     }
-                    .buttonStyle(.pressable(scale: 0.92))
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .background(.ultraThinMaterial, in: Capsule())
                 }
+                .buttonStyle(.pressable(scale: 0.92))
 
                 HStack(spacing: 4) {
                     Image(systemName: "person.2.fill")
@@ -314,8 +318,11 @@ struct MapHomeView: View {
         let loc = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
         geocoder.reverseGeocodeLocation(loc) { placemarks, _ in
             DispatchQueue.main.async {
-                if let p = placemarks?.first {
-                    cityName = p.locality ?? p.subLocality ?? p.name ?? ""
+                if let p = placemarks?.first,
+                   let name = (p.locality ?? p.subLocality ?? p.name), !name.isEmpty {
+                    cityName = name
+                } else if cityName.isEmpty {
+                    cityName = "我的附近"
                 }
             }
         }
