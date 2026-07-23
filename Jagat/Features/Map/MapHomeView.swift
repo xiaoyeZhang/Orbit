@@ -158,15 +158,16 @@ struct MapHomeView: View {
             // Row: weather + map type
             HStack(spacing: 8) {
                 Button { showWeather = true } label: {
-                    if let t = temperature {
-                        Label(String(format: "%.1f°C", t), systemImage: "cloud.fill")
-                    } else {
-                        Label("天气", systemImage: "cloud.fill")
-                    }
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10).padding(.vertical, 5)
-                        .background(.ultraThinMaterial, in: Capsule())
+                    Label(
+                        temperature != nil
+                            ? String(format: "%.1f°C", temperature!)
+                            : "天气",
+                        systemImage: "cloud.fill"
+                    )
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10).padding(.vertical, 5)
+                    .background(.ultraThinMaterial, in: Capsule())
                 }
                 .buttonStyle(.pressable(scale: 0.92))
 
