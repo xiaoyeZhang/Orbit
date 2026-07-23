@@ -3,7 +3,7 @@
 import zlib, struct, math, os
 
 W = H = 1024
-OUT = os.path.join(os.path.dirname(__file__), "..", "Jagat", "Resources",
+OUT = os.path.join(os.path.dirname(__file__), "..", "Orbit", "Resources",
                    "Assets.xcassets", "AppIcon.appiconset", "AppIcon1024.png")
 
 # 渐变端点（紫 -> 粉）

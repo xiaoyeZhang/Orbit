@@ -1,7 +1,7 @@
 # 接入 Firebase 实时后端
 
-把 Jagat 从本地 Mock 切换到 **Firebase Auth + Cloud Firestore**（实时位置 / 聊天）。
-代码已写好（`Jagat/Services/FirebaseBackendService.swift`），整份用 `#if JAGAT_FIREBASE`
+把 Orbit 从本地 Mock 切换到 **Firebase Auth + Cloud Firestore**（实时位置 / 聊天）。
+代码已写好（`Orbit/Services/FirebaseBackendService.swift`），整份用 `#if JAGAT_FIREBASE`
 守护（该编译标志由生成器在 `ENABLE_FIREBASE=1` 时注入）——未启用时不影响现有工程编译。
 按下面步骤启用即可。
 
@@ -18,7 +18,7 @@
 ## 2. 放入配置文件
 把下载的 `GoogleService-Info.plist` 放到：
 ```
-Jagat/Resources/GoogleService-Info.plist
+Orbit/Resources/GoogleService-Info.plist
 ```
 （仓库里有 `GoogleService-Info.plist.sample` 示例可对照。⚠️ 真实文件含密钥，建议加入 .gitignore。）
 
@@ -44,14 +44,14 @@ ENABLE_FIREBASE=1 python3 Scripts/generate_xcodeproj.py
 并链接 `FirebaseAuth`、`FirebaseFirestore`。首次打开 Xcode 会自动拉取依赖（较大，请耐心）。
 
 ## 6. 切换后端开关
-编辑 `Jagat/App/AppEnvironment.swift`：
+编辑 `Orbit/App/AppEnvironment.swift`：
 ```swift
 static let backendKind: BackendKind = .firebase   // 由 .mock 改为 .firebase
 ```
 
 ## 7. 运行
 ```bash
-open Jagat.xcodeproj      # 选模拟器 Cmd+R
+open Orbit.xcodeproj      # 选模拟器 Cmd+R
 ```
 用测试手机号 + 验证码登录。首次登录会自动建资料并生成邀请码。
 

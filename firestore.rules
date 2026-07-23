@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Jagat 的 Cloud Firestore 安全规则（示例，部署前请按自身需求复核）。
+// Orbit 的 Cloud Firestore 安全规则（示例，部署前请按自身需求复核）。
 // 部署：firebase deploy --only firestore:rules
 service cloud.firestore {
   match /databases/{database}/documents {

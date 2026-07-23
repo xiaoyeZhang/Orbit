@@ -1,6 +1,6 @@
 require 'xcodeproj'
 
-PROJECT_PATH = File.join(__dir__, 'Jagat.xcodeproj')
+PROJECT_PATH = File.join(__dir__, 'Orbit.xcodeproj')
 PACKAGES = [
   { name: 'OrbitCore',     path: 'Packages/OrbitCore' },
   { name: 'OrbitUI',       path: 'Packages/OrbitUI' },
@@ -8,7 +8,7 @@ PACKAGES = [
 ]
 
 project = Xcodeproj::Project.open(PROJECT_PATH)
-target  = project.targets.find { |t| t.name == 'Jagat' }
+target  = project.targets.find { |t| t.name == 'Orbit' }
 
 # 1. Remove stale PBXFileReference wrappers for the packages (added by drag-drop)
 stale_refs = project.files.select { |f| PACKAGES.any? { |p| f.path == p[:path] } }

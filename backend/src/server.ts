@@ -42,7 +42,7 @@ async function main() {
 
   const port = Number(process.env.PORT ?? 3000)
   app.listen(port, '0.0.0.0', () => {
-    console.log(`🚀 Jagat backend running on :${port}`)
+    console.log(`🚀 Orbit backend running on :${port}`)
     console.log(`   NODE_ENV=${process.env.NODE_ENV}`)
   })
 }

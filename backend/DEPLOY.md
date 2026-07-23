@@ -1,4 +1,4 @@
-# Jagat 后端部署文档
+# Orbit 后端部署文档
 
 ## 目录
 
@@ -53,14 +53,14 @@ docker compose version
 
 **方式 A — Git（推荐）**
 ```bash
-git clone https://github.com/你的用户名/Jagat.git
-cd Jagat/backend
+git clone https://github.com/你的用户名/Orbit.git
+cd Orbit/backend
 ```
 
 **方式 B — SCP 上传**
 ```bash
 # 本地执行
-scp -r /Users/zhangxiaoye/Desktop/Jagat/backend root@你的服务器IP:/opt/jagat
+scp -r /Users/zhangxiaoye/Desktop/Orbit/backend root@你的服务器IP:/opt/jagat
 ssh root@你的服务器IP
 cd /opt/jagat
 ```
@@ -110,7 +110,7 @@ docker compose logs -f app
 ```
 ✅ Redis connected
 ✅ Migration applied
-🚀 Jagat backend running on :3000
+🚀 Orbit backend running on :3000
 ```
 
 ### 3.4 验证服务正常
@@ -201,7 +201,7 @@ Certbot 会自动修改 Nginx 配置，添加 SSL 并将 HTTP 重定向到 HTTPS
 
 ## 6. iOS 客户端接入
 
-打开 [Jagat/App/AppEnvironment.swift](../Jagat/App/AppEnvironment.swift)，找到后端初始化的位置，把 Mock 替换为真实后端：
+打开 [Orbit/App/AppEnvironment.swift](../Orbit/App/AppEnvironment.swift)，找到后端初始化的位置，把 Mock 替换为真实后端：
 
 ```swift
 // 修改前（Mock）

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-为 Jagat 生成 Xcode 工程（.xcodeproj/project.pbxproj）。
+为 Orbit 生成 Xcode 工程（.xcodeproj/project.pbxproj）。
 
 - 离线、纯标准库，无需 xcodegen / tuist。
-- 自动扫描 `Jagat/` 下所有 .swift（编译）、Assets.xcassets（资源）、Info.plist（仅引用）。
+- 自动扫描 `Orbit/` 下所有 .swift（编译）、Assets.xcassets（资源）、Info.plist（仅引用）。
 - 以后新增 / 删除文件后，重新运行本脚本即可：python3 Scripts/generate_xcodeproj.py
 """
 import os, hashlib
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-APP_NAME = "Jagat"
-SRC_DIR = "Jagat"                      # 源码根目录（相对工程根）
+APP_NAME = "Orbit"
+SRC_DIR = "Orbit"                      # 源码根目录（相对工程根）
 BUNDLE_ID = "com.example.jagat"
 DEPLOYMENT_TARGET = "16.0"
-INFO_PLIST = "Jagat/Resources/Info.plist"
+INFO_PLIST = "Orbit/Resources/Info.plist"
 
 PROJ_DIR = os.path.join(ROOT, f"{APP_NAME}.xcodeproj")
 
@@ -103,7 +103,7 @@ def build_groups(node) -> str:
         else:
             child_ids.append(add_file(c))
     gid = oid("group:" + node.path)
-    # 根分组用 name=Jagat、path=Jagat；子分组 path 用相对父级的最后一段
+    # 根分组用 name=Orbit、path=Orbit；子分组 path 用相对父级的最后一段
     groups.append((gid, node.name, child_ids, node.name))
     return gid
 

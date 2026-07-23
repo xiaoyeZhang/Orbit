@@ -1,6 +1,6 @@
-# Jagat（果汁风格）位置社交 App
+# Orbit（果汁风格）位置社交 App
 
-一款用 **SwiftUI（iOS 16）** 实现的、功能参照 Jagat / Zenly 的实时位置社交 App。
+一款用 **SwiftUI（iOS 16）** 实现的、功能参照 Zenly 的实时位置社交 App。
 核心体验：在地图上实时看到好友的头像气泡、位置、移动状态与电量，并能添加好友、聊天、自定义卡通头像。
 
 > 数据层采用「**后端服务协议 + Mock 实现**」：现在用内置假数据即可离线编译运行、看到完整效果；
@@ -8,7 +8,7 @@
 
 ---
 
-## ✨ 功能清单（对应 Jagat）
+## ✨ 功能清单（对应 Orbit）
 
 | 模块 | 功能 |
 |------|------|
@@ -39,8 +39,8 @@ SwiftUI 视图  ──观察──▶  SessionStore（@MainActor 状态中枢）
 
 ### 目录结构
 ```
-Jagat/
-├── App/            JagatApp(@main)、RootView、AppEnvironment(后端开关)
+Orbit/
+├── App/            OrbitApp(@main)、RootView、AppEnvironment(后端开关)
 ├── Theme/          配色、渐变、卡片样式
 ├── Models/         Geo / User / Avatar / Friend / Chat / Place
 ├── Services/       BackendService(协议) / Mock / Live / SampleData / LocationManager / SessionStore
@@ -63,10 +63,10 @@ Scripts/
 python3 Scripts/generate_xcodeproj.py
 
 # 2a) 用 Xcode 打开（推荐）
-open Jagat.xcodeproj          # 选 iPhone 模拟器，Cmd+R 运行
+open Orbit.xcodeproj          # 选 iPhone 模拟器，Cmd+R 运行
 
 # 2b) 或命令行编译
-xcodebuild -project Jagat.xcodeproj -scheme Jagat \
+xcodebuild -project Orbit.xcodeproj -scheme Orbit \
   -sdk iphonesimulator \
   -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' \
   -configuration Debug CODE_SIGNING_ALLOWED=NO build
@@ -86,7 +86,7 @@ xcrun simctl location booted set 39.9042,116.4074
 
 ## 🔌 接入真实后端
 
-后端来源由 `Jagat/App/AppEnvironment.swift` 里的 `backendKind` 一处开关决定，
+后端来源由 `Orbit/App/AppEnvironment.swift` 里的 `backendKind` 一处开关决定，
 三选一，**UI 与业务代码无需任何改动**：
 
 ```swift
@@ -94,9 +94,9 @@ static let backendKind: BackendKind = .mock   // .mock / .firebase / .rest
 ```
 
 - **`.firebase`** —— Firebase Auth + Firestore 实时位置/聊天。实现见
-  `Jagat/Services/FirebaseBackendService.swift`，接入步骤见 **[FIREBASE_SETUP.md](FIREBASE_SETUP.md)**
+  `Orbit/Services/FirebaseBackendService.swift`，接入步骤见 **[FIREBASE_SETUP.md](FIREBASE_SETUP.md)**
   （需 `ENABLE_FIREBASE=1` 重新生成工程以注入 SwiftPM 依赖）。
-- **`.rest`** —— 自定义 REST/WebSocket 后端。在 `Jagat/Services/LiveBackendService.swift`
+- **`.rest`** —— 自定义 REST/WebSocket 后端。在 `Orbit/Services/LiveBackendService.swift`
   中按各方法上标注的接入点填好请求与实时通道即可。
 - **`.mock`** —— 本地假数据（默认，离线可跑）。
 

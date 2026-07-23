@@ -6,17 +6,17 @@
       "Bash(xcrun simctl *)",
       "Bash(time python3 Scripts/make_icon.py)",
       "Bash(python3 Scripts/generate_xcodeproj.py)",
-      "Bash(xcodebuild -list -project Jagat.xcodeproj)",
-      "Bash(xcodebuild -project Jagat.xcodeproj -scheme Jagat -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' -configuration Debug CODE_SIGNING_ALLOWED=NO build)",
+      "Bash(xcodebuild -list -project Orbit.xcodeproj)",
+      "Bash(xcodebuild -project Orbit.xcodeproj -scheme Orbit -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' -configuration Debug CODE_SIGNING_ALLOWED=NO build)",
       "Bash(echo \"EXIT=$?\")",
       "Read(//tmp/**)",
       "Bash(echo \"BUILD_EXIT=$?\")",
       "Bash(open -a Simulator)",
       "Bash(SIMCTL_CHILD_JAGAT_AUTOLOGIN=1 xcrun simctl launch booted com.example.jagat)",
       "Bash(ENABLE_FIREBASE=1 python3 Scripts/generate_xcodeproj.py)",
-      "Bash(plutil -lint Jagat.xcodeproj/project.pbxproj)",
-      "Bash(python3 Scripts/generate_xcodeproj.py 2>&1 | tail -4; echo \"=== build ===\"; xcodebuild -project Jagat.xcodeproj -scheme Jagat -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' -configuration Debug CODE_SIGNING_ALLOWED=NO build > /tmp/jagat_presence_build.log 2>&1; echo \"EXIT=$?\"; grep -E \"BUILD SUCCEEDED|BUILD FAILED\" /tmp/jagat_presence_build.log | tail -1; echo \"--- errors ---\"; grep -nE \"error:\" /tmp/jagat_presence_build.log | head -20; echo \"--- warnings in new files ---\"; grep -nE \"\\(PresenceReporter|MotionActivityTracker|LocationManager\\).swift.*warning:\" /tmp/jagat_presence_build.log | head)",
-      "Bash(xcodebuild -project Jagat.xcodeproj -scheme Jagat -destination 'platform=iOS Simulator,name=iPhone 14' build)"
+      "Bash(plutil -lint Orbit.xcodeproj/project.pbxproj)",
+      "Bash(python3 Scripts/generate_xcodeproj.py 2>&1 | tail -4; echo \"=== build ===\"; xcodebuild -project Orbit.xcodeproj -scheme Orbit -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' -configuration Debug CODE_SIGNING_ALLOWED=NO build > /tmp/jagat_presence_build.log 2>&1; echo \"EXIT=$?\"; grep -E \"BUILD SUCCEEDED|BUILD FAILED\" /tmp/jagat_presence_build.log | tail -1; echo \"--- errors ---\"; grep -nE \"error:\" /tmp/jagat_presence_build.log | head -20; echo \"--- warnings in new files ---\"; grep -nE \"\\(PresenceReporter|MotionActivityTracker|LocationManager\\).swift.*warning:\" /tmp/jagat_presence_build.log | head)",
+      "Bash(xcodebuild -project Orbit.xcodeproj -scheme Orbit -destination 'platform=iOS Simulator,name=iPhone 14' build)"
     ]
   }
 }

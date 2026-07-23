@@ -41,7 +41,7 @@ enum AppEnvironment {
 
 /// 进程内共享的后端实例持有者。
 ///
-/// 在 `JagatApp.init` 中赋值，供那些不便从环境注入处获取后端的视图
+/// 在 `OrbitApp.init` 中赋值，供那些不便从环境注入处获取后端的视图
 /// （如在初始化器里就要建 ViewModel 的 `ChatView`）使用。
 @MainActor
 enum SharedBackend {
