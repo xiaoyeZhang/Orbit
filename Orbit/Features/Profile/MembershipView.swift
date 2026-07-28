@@ -1,8 +1,10 @@
 import SwiftUI
+import OrbitServices
 import OrbitUI
 
 struct MembershipView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var session: SessionStore
     @State private var showSubscribe = false
     @State private var selectedBenefit: Benefit?
 
@@ -88,12 +90,25 @@ struct MembershipView: View {
                 }
             }
 
-            Button { showSubscribe = true } label: {
-                Text("订阅")
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(Color(hex: 0x1A1A1A))
-                    .frame(maxWidth: .infinity).frame(height: 52)
-                    .background(Theme.Palette.gold, in: RoundedRectangle(cornerRadius: 14))
+            if session.isMember {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(Theme.Palette.mint)
+                    Text("您已是会员，尊享全部权益")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .frame(maxWidth: .infinity).frame(height: 52)
+                .background(Theme.Palette.mint.opacity(0.18), in: RoundedRectangle(cornerRadius: 14))
+            } else {
+                Button { showSubscribe = true } label: {
+                    Text("订阅")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(Color(hex: 0x1A1A1A))
+                        .frame(maxWidth: .infinity).frame(height: 52)
+                        .background(Theme.Palette.gold, in: RoundedRectangle(cornerRadius: 14))
+                }
             }
         }
         .padding(18)
@@ -146,9 +161,15 @@ struct MembershipView: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.textSecondary)
+                if session.isMember {
+                    Label("已享有", systemImage: "checkmark.circle.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.mint)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
             }
             .padding(.horizontal, 16).padding(.vertical, 13)
             .contentShape(Rectangle())
@@ -214,6 +235,7 @@ private struct BenefitDetailSheet: View {
 // MARK: - Subscribe sheet
 private struct SubscribeSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var session: SessionStore
 
     var body: some View {
         NavigationStack {
@@ -235,15 +257,31 @@ private struct SubscribeSheet: View {
                 }
 
                 Button {
-                    Toast.show("已开通会员（演示）🎉")
-                    dismiss()
+                    Haptics.light()
+                    Task {
+                        let ok = await session.subscribeMembership(planId: "single")
+                        if ok {
+                            Haptics.success()
+                            Toast.show("已开通会员 🎉")
+                            dismiss()
+                        } else {
+                            Toast.show(session.errorMessage ?? "开通失败，请稍后再试")
+                        }
+                    }
                 } label: {
-                    Text("确认开通")
-                        .font(.system(size: 17, weight: .bold))
-                        .foregroundStyle(Color(hex: 0x1A1A1A))
-                        .frame(maxWidth: .infinity).frame(height: 52)
-                        .background(Theme.Palette.gold, in: RoundedRectangle(cornerRadius: 14))
+                    if session.isBusy {
+                        ProgressView()
+                            .tint(Color(hex: 0x1A1A1A))
+                            .frame(maxWidth: .infinity).frame(height: 52)
+                    } else {
+                        Text("确认开通")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundStyle(Color(hex: 0x1A1A1A))
+                            .frame(maxWidth: .infinity).frame(height: 52)
+                    }
                 }
+                .disabled(session.isBusy)
+                .background(Theme.Palette.gold, in: RoundedRectangle(cornerRadius: 14))
                 .padding(.horizontal, 24)
 
                 Text("开通即代表同意《自动续订服务协议》")

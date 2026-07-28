@@ -1,6 +1,7 @@
 import SwiftUI
 import OrbitUI
 import OrbitCore
+import OrbitServices
 import CoreLocation
 
 struct WeatherDetailView: View {
@@ -9,6 +10,7 @@ struct WeatherDetailView: View {
     let coordinate: Coordinate
     let accuracy: Int
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var session: SessionStore
 
     @State private var humidity: String = "—"
     @State private var altitude: String = "—"
@@ -29,7 +31,7 @@ struct WeatherDetailView: View {
                 longitude = String(format: "%.4f", coordinate.longitude)
                 gpsAccuracy = accuracy
             }
-            .sheet(isPresented: $showMembership) { MembershipView() }
+            .sheet(isPresented: $showMembership) { MembershipView().environmentObject(session) }
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 28) {

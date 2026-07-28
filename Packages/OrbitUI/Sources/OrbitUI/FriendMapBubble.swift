@@ -19,6 +19,10 @@ public struct FriendMapBubble: View {
     public let friend: Friend
     public var isSelected: Bool = false
     public var userCoordinate: Coordinate? = nil
+    // 异地氛围：好友所在地的当地时间（图标/文案/色调），由调用方算好后传入
+    public var localTimeIcon: String? = nil
+    public var localTimeLabel: String? = nil
+    public var localTimeTint: Color? = nil
 
     private var moving: Bool { friend.presence.movement != .stationary && !friend.isGhostMode }
     private var bubbleSize: CGFloat { isSelected ? 58 : 48 }
@@ -45,14 +49,33 @@ public struct FriendMapBubble: View {
         Double(friend.presence.batteryLevel) / 100.0
     }
 
-    public init(friend: Friend, isSelected: Bool = false, userCoordinate: Coordinate? = nil) {
+    public init(friend: Friend, isSelected: Bool = false, userCoordinate: Coordinate? = nil,
+                localTimeIcon: String? = nil, localTimeLabel: String? = nil, localTimeTint: Color? = nil) {
         self.friend = friend
         self.isSelected = isSelected
         self.userCoordinate = userCoordinate
+        self.localTimeIcon = localTimeIcon
+        self.localTimeLabel = localTimeLabel
+        self.localTimeTint = localTimeTint
     }
 
     public var body: some View {
         VStack(spacing: 0) {
+            // ── 异地氛围：好友所在地当地时间 ──
+            if let icon = localTimeIcon, let label = localTimeLabel, let tint = localTimeTint {
+                HStack(spacing: 3) {
+                    Image(systemName: icon)
+                        .font(.system(size: 9))
+                    Text(label)
+                        .font(.system(size: 9, weight: .bold))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 7).padding(.vertical, 3)
+                .background(tint.opacity(0.9), in: Capsule())
+                .shadow(color: tint.opacity(0.5), radius: 4, y: 2)
+                .padding(.bottom, 4)
+            }
+
             // ── "在线" badge ──
             if !friend.isGhostMode {
                 Text("在线")
@@ -183,27 +206,43 @@ public struct FriendMapBubble: View {
 // MARK: - Self bubble
 public struct SelfMapBubble: View {
     public let avatar: AvatarConfig
+    public var isGhostMode: Bool = false
 
     @State private var glow = false
 
-    public init(avatar: AvatarConfig) { self.avatar = avatar }
+    public init(avatar: AvatarConfig, isGhostMode: Bool = false) {
+        self.avatar = avatar
+        self.isGhostMode = isGhostMode
+    }
+
+    private var accent: Color { isGhostMode ? Color(hex: 0x8E8E93) : Theme.Palette.sky }
 
     public var body: some View {
         ZStack {
             Circle()
-                .fill(Theme.Palette.sky.opacity(glow ? 0.0 : 0.30))
+                .fill(accent.opacity(glow ? 0.0 : 0.30))
                 .frame(width: 64, height: 64)
                 .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true), value: glow)
 
             Circle()
-                .strokeBorder(.white, lineWidth: 3)
+                .strokeBorder(isGhostMode ? Color(hex: 0x8E8E93) : .white, lineWidth: 3)
                 .frame(width: 54, height: 54)
 
             AvatarView(config: avatar, size: 42, showsRing: false)
                 .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
 
+            // 隐身遮罩
+            if isGhostMode {
+                Circle()
+                    .fill(Color(hex: 0x1C1C1E).opacity(0.55))
+                    .frame(width: 54, height: 54)
+                Image(systemName: "moon.zzz.fill")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.85))
+            }
+
             Circle()
-                .strokeBorder(Theme.Palette.sky, lineWidth: 2)
+                .strokeBorder(accent, lineWidth: 2)
                 .frame(width: 42, height: 42)
         }
         .frame(width: 64, height: 64)

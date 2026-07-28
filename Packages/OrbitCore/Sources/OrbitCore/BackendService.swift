@@ -28,6 +28,30 @@ public protocol BackendService: AnyObject {
     func sendMessage(_ kind: Message.Kind, to conversationId: String) async throws -> Message
     func markRead(conversationId: String) async throws
 
+    // MARK: Safety
+    /// 一键求助：把带当前坐标的 SOS 消息广播给所有好友。
+    func sendSOS(_ coordinate: Coordinate, note: String) async throws
+
+    // MARK: Diary
+    /// AI 轨迹日记：把一段时间内的轨迹摘要成一段可分享的「故事」。
+    func generateTrajectoryDiary() async throws -> TrajectoryDiary
+
+    // MARK: City Pulse
+    /// 城市脉搏：附近的人 + 同城活动（泛社交发现流）。
+    func generateCityPulse() async throws -> CityPulse
+    /// 设置城市脉搏的可见性（隐私总开关）。
+    func setCityPulseVisibility(_ visibility: CityPulseVisibility) async throws
+
+    // MARK: Intimate
+    /// 亲密关系：返回当前用户绑定的密友 / 情侣关系；未绑定返回 nil。
+    func fetchIntimateRelation() async throws -> IntimateRelation?
+
+    // MARK: Membership
+    /// 会员：查询当前用户的订阅状态（是否会员）。
+    func fetchMembershipStatus() async throws -> Bool
+    /// 会员：开通订阅（planId 例如 "single"）。
+    func subscribeMembership(planId: String) async throws
+
     // MARK: Places
     func fetchPlaces() async throws -> [Place]
 }
@@ -35,6 +59,13 @@ public protocol BackendService: AnyObject {
 extension BackendService {
     public func requestVerificationCode(phone: String) async throws {}
     public func updatePresence(_ presence: PresenceState) async throws {}
+    public func sendSOS(_ coordinate: Coordinate, note: String) async throws {}
+    public func generateTrajectoryDiary() async throws -> TrajectoryDiary { TrajectoryDiary.sample }
+    public func generateCityPulse() async throws -> CityPulse { CityPulse.sample }
+    public func setCityPulseVisibility(_ visibility: CityPulseVisibility) async throws {}
+    public func fetchIntimateRelation() async throws -> IntimateRelation? { nil }
+    public func fetchMembershipStatus() async throws -> Bool { false }
+    public func subscribeMembership(planId: String) async throws {}
 }
 
 public enum BackendError: LocalizedError, Sendable {

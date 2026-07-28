@@ -10,6 +10,10 @@ struct FriendsView: View {
     @State private var selection: String?
     @State private var showAdd     = false
 
+    // 城市脉搏（泛社交发现流）
+    @State private var pulse: CityPulse?
+    @State private var pulseLoading = false
+
     private var filtered: [Friend] {
         guard !query.isEmpty else { return session.friends }
         return session.friends.filter { $0.displayName.localizedCaseInsensitiveContains(query) }
@@ -26,6 +30,9 @@ struct FriendsView: View {
                         .padding(.top, 10)
                         .padding(.bottom, 14)
                         .popIn(delay: 0)
+
+                    cityPulseSection
+                        .padding(.bottom, 14)
 
                     if !favorites.isEmpty {
                         sectionBlock(title: "关注", friends: favorites, offset: 0)
@@ -214,6 +221,199 @@ struct FriendsView: View {
                 .foregroundStyle(Theme.Palette.subtle)
         }
         .popIn()
+    }
+
+    // MARK: - 城市脉搏（泛社交发现流）
+    private var cityPulseSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 10) {
+                Image(systemName: "waveform")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(Theme.Palette.accent)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("城市脉搏")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(Theme.Palette.ink)
+                    Text("附近的人与同城活动")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Theme.Palette.subtle)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+
+            // 隐私总开关
+            Picker("可见性", selection: $session.cityPulseVisibility) {
+                ForEach(CityPulseVisibility.allCases) { v in
+                    Text(v.label).tag(v)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+            .onChange(of: session.cityPulseVisibility) { _ in
+                Task { await session.setCityPulseVisibility(session.cityPulseVisibility); await refreshPulse() }
+            }
+
+            if session.cityPulseVisibility == .off {
+                offState
+            } else if pulseLoading {
+                loadingRow
+            } else if let pulse {
+                if !pulse.nearby.isEmpty { nearbyRow(pulse) }
+                if !pulse.events.isEmpty { eventsRow(pulse) }
+            }
+        }
+        .padding(.vertical, 16)
+        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: .black.opacity(0.04), radius: 10, y: 3)
+        .padding(.horizontal, 16)
+        .task { await refreshPulse() }
+    }
+
+    private func nearbyRow(_ pulse: CityPulse) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(pulse.nearby) { person in
+                    nearbyCard(person)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+
+    private func nearbyCard(_ p: NearbyPerson) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                AvatarView(config: p.avatar, size: 44, showsRing: false, ringColor: .clear)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(p.displayName)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.ink)
+                    Text(String(format: "%.1f km", p.distanceKm))
+                        .font(.system(size: 12))
+                        .foregroundStyle(Theme.Palette.subtle)
+                }
+            }
+            if !p.mutualFriends.isEmpty {
+                Text("共同好友 · " + p.mutualFriends.joined(separator: "、"))
+                    .font(.system(size: 11))
+                    .foregroundStyle(Theme.Palette.subtle)
+                    .lineLimit(1)
+            }
+            Text(p.lastSeenText)
+                .font(.system(size: 11))
+                .foregroundStyle(Theme.Palette.subtle)
+            Button {
+                Haptics.medium()
+                Toast.show("已向 \(p.displayName) 发出招呼（演示）")
+            } label: {
+                Text("打招呼")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 7)
+                    .background(Theme.Palette.accent, in: Capsule())
+            }
+            .buttonStyle(.pressable(scale: 0.94))
+        }
+        .padding(12)
+        .frame(width: 168)
+        .background(Theme.Palette.groupedBackground, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func eventsRow(_ pulse: CityPulse) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("同城活动")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Theme.Palette.subtle)
+                .padding(.horizontal, 16)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(pulse.events) { ev in
+                        eventCard(ev)
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+    }
+
+    private func eventCard(_ ev: CityEvent) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Text(ev.emoji).font(.system(size: 26))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(ev.title)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.ink)
+                    Text(ev.category)
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.Palette.subtle)
+                }
+            }
+            Text(ev.placeName)
+                .font(.system(size: 12))
+                .foregroundStyle(Theme.Palette.subtle)
+            Text(ev.startsIn)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Theme.Palette.accent)
+            HStack(spacing: 4) {
+                Image(systemName: "person.2").font(.system(size: 11))
+                Text("\(ev.attendees) 人感兴趣")
+                    .font(.system(size: 11))
+                    .foregroundStyle(Theme.Palette.subtle)
+            }
+            Button {
+                Haptics.medium()
+                Toast.show("已标记感兴趣：\(ev.title)（演示）")
+            } label: {
+                Text("感兴趣")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 7)
+                    .background(Theme.Palette.groupedBackground, in: Capsule())
+                    .overlay(Capsule().strokeBorder(Theme.Palette.accent, lineWidth: 1))
+            }
+            .buttonStyle(.pressable(scale: 0.94))
+        }
+        .padding(12)
+        .frame(width: 168)
+        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var offState: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "eye.slash")
+                .font(.system(size: 18))
+                .foregroundStyle(Theme.Palette.subtle)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("城市脉搏已关闭")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.ink)
+                Text("打开后，可在不暴露给陌生人的前提下发现附近的人与活动")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Theme.Palette.subtle)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private var loadingRow: some View {
+        HStack(spacing: 10) {
+            ProgressView().controlSize(.small).tint(Theme.Palette.accent)
+            Text("正在感知附近的城市脉搏…")
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.Palette.subtle)
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private func refreshPulse() async {
+        pulseLoading = true
+        if let p = await session.generateCityPulse() { pulse = p }
+        pulseLoading = false
     }
 }
 

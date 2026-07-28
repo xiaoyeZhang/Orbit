@@ -26,6 +26,9 @@ struct ProfileView: View {
                     statsRow
                         .popIn(delay: 0.06)
 
+                    intimateSection
+                        .popIn(delay: 0.09)
+
                     placesSection
                         .popIn(delay: 0.12)
 
@@ -52,6 +55,7 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showMembership) {
                 MembershipView()
+                    .environmentObject(session)
             }
             .sheet(item: $selectedPlace) { place in
                 PlaceDetailSheet(place: place)
@@ -69,6 +73,10 @@ struct ProfileView: View {
             .onAppear {
                 if ProcessInfo.processInfo.environment["JAGAT_OPEN"] == "reporting" {
                     showReporting = true
+                }
+                Task {
+                    await session.loadIntimateRelation()
+                    await session.loadMembershipStatus()
                 }
             }
         }
@@ -166,6 +174,137 @@ struct ProfileView: View {
         .card()
     }
 
+    // MARK: - 亲密关系
+    private var intimateSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Theme.Palette.danger)
+                Text("亲密关系")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Theme.Palette.ink)
+                Spacer()
+                if let rel = session.intimateRelation {
+                    Text(rel.status.emoji + " " + rel.status.rawValue)
+                        .font(.caption.bold())
+                        .foregroundStyle(Theme.Palette.danger)
+                        .padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(Theme.Palette.danger.opacity(0.12), in: Capsule())
+                }
+            }
+
+            if let rel = session.intimateRelation {
+                intimateCard(rel)
+            } else {
+                emptyIntimateCard
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card()
+    }
+
+    private func intimateCard(_ rel: IntimateRelation) -> some View {
+        VStack(spacing: 14) {
+            // 双人头像（自己 + 对方）
+            HStack(spacing: 0) {
+                AvatarView(config: session.currentUser?.avatar ?? .default,
+                           size: 56, showsRing: true, ringColor: Theme.Palette.primary)
+                ZStack {
+                    Circle().fill(Theme.Palette.surface).frame(width: 22, height: 22)
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Theme.Palette.danger)
+                }
+                .offset(x: -10)
+                AvatarView(config: rel.partnerAvatar, size: 56, showsRing: true, ringColor: Theme.Palette.danger)
+                    .offset(x: -20)
+            }
+            .padding(.top, 4)
+
+            Text("你和 \(rel.partnerName) 已经在一起")
+                .font(.caption)
+                .foregroundStyle(Theme.Palette.subtle)
+
+            HStack(alignment: .lastTextBaseline, spacing: 4) {
+                Text("\(rel.daysTogether)")
+                    .font(.system(size: 38, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Theme.Palette.danger)
+                Text("天")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(Theme.Palette.subtle)
+            }
+            .padding(.top, -6)
+
+            if let next = rel.nextAnniversary {
+                HStack(spacing: 12) {
+                    Text(next.emoji).font(.system(size: 26))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(next.title)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Theme.Palette.ink)
+                        Text("还有 \(rel.nextAnniversaryCountdown) 天")
+                            .font(.caption)
+                            .foregroundStyle(Theme.Palette.subtle)
+                    }
+                    Spacer()
+                    Text(next.date.relativeShort)
+                        .font(.caption)
+                        .foregroundStyle(Theme.Palette.subtle)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.Palette.danger.opacity(0.08),
+                            in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+
+            VStack(spacing: 0) {
+                ForEach(Array(rel.anniversaries.enumerated()), id: \.element.id) { idx, a in
+                    HStack(spacing: 12) {
+                        Text(a.emoji).font(.system(size: 18))
+                        Text(a.title)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(Theme.Palette.ink)
+                        Spacer()
+                        Text(a.date.relativeShort)
+                            .font(.caption)
+                            .foregroundStyle(Theme.Palette.subtle)
+                    }
+                    .padding(.vertical, 8)
+                    if idx < rel.anniversaries.count - 1 {
+                        Divider().padding(.leading, 30)
+                    }
+                }
+            }
+        }
+    }
+
+    private var emptyIntimateCard: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "heart.circle")
+                .font(.system(size: 40))
+                .foregroundStyle(Theme.Palette.subtle)
+            Text("和最重要的人建立专属空间")
+                .font(.subheadline)
+                .foregroundStyle(Theme.Palette.subtle)
+                .multilineTextAlignment(.center)
+            Button {
+                Haptics.light()
+                Toast.show("演示版：亲密关系需在真实后端绑定密友 / 情侣")
+            } label: {
+                Text("建立亲密关系")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20).padding(.vertical, 9)
+                    .background(Theme.Palette.danger, in: Capsule())
+            }
+            .buttonStyle(.pressable(scale: 0.94))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+    }
+
     // MARK: - 足迹
     private var placesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -227,9 +366,14 @@ struct ProfileView: View {
                 // 隐身模式
                 HStack(spacing: 14) {
                     settingIcon(systemName: "moon.zzz.fill", gradient: Theme.brandGradient)
-                    Text("隐身模式")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Theme.Palette.ink)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("隐身模式")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(Theme.Palette.ink)
+                        Text("开启后好友看不到你的实时位置")
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundStyle(Theme.Palette.subtle)
+                    }
                     Spacer()
                     Toggle("", isOn: ghostModeBinding)
                         .labelsHidden()
@@ -382,11 +526,19 @@ struct ProfileView: View {
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(Theme.Palette.ink)
             Spacer()
-            Text("解锁10+权益")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(Theme.Palette.gold)
-                .padding(.horizontal, 8).padding(.vertical, 4)
-                .background(Theme.Palette.gold.opacity(0.15), in: Capsule())
+            if session.isMember {
+                Text("已开通")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.mint)
+                    .padding(.horizontal, 8).padding(.vertical, 4)
+                    .background(Theme.Palette.mint.opacity(0.15), in: Capsule())
+            } else {
+                Text("解锁10+权益")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.gold)
+                    .padding(.horizontal, 8).padding(.vertical, 4)
+                    .background(Theme.Palette.gold.opacity(0.15), in: Capsule())
+            }
             Image(systemName: "chevron.right")
                 .font(.caption.bold())
                 .foregroundStyle(Theme.Palette.subtle)

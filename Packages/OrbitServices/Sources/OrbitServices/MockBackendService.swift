@@ -13,6 +13,7 @@ public final class MockBackendService: BackendService {
     private var conversations: [Conversation] = SampleData.conversations
     private var messagesByConversation: [String: [Message]] = SampleData.messages
     private let places: [Place] = SampleData.places
+    private var cityPulseVisibility: CityPulseVisibility = .friendsOnly
 
     private var friendsContinuations: [UUID: AsyncStream<[Friend]>.Continuation] = [:]
     private var messageContinuations: [String: AsyncStream<[Message]>.Continuation] = [:]
@@ -117,16 +118,181 @@ public final class MockBackendService: BackendService {
         let message = Message(id: UUID().uuidString, conversationId: conversationId,
                               senderId: "me", kind: kind, date: Date(), isRead: true)
         appendMessage(message, to: conversationId)
-        scheduleAutoReply(to: conversationId)
+        scheduleAutoReply(to: conversationId, inResponseTo: kind)
         return message
     }
     public func markRead(conversationId: String) async throws {
         guard let idx = conversations.firstIndex(where: { $0.id == conversationId }) else { return }
         conversations[idx].unreadCount = 0
     }
+
+    // MARK: - Safety
+    public func sendSOS(_ coordinate: Coordinate, note: String) async throws {
+        guard user != nil else { throw BackendError.notAuthenticated }
+        // 广播给所有好友：已有会话直接发，没有会话的好友自动建会话
+        for friend in friends {
+            let conversationId: String
+            if let convo = conversations.first(where: { $0.friendId == friend.id }) {
+                conversationId = convo.id
+            } else {
+                let convo = Conversation(id: "c-\(friend.id)", friendId: friend.id,
+                                         friendName: friend.displayName, friendAvatar: friend.avatar,
+                                         lastMessagePreview: "", lastMessageDate: Date(), unreadCount: 0)
+                conversations.append(convo)
+                conversationId = convo.id
+            }
+            let message = Message(id: UUID().uuidString, conversationId: conversationId,
+                                  senderId: "me",
+                                  kind: .sos(coordinate, note: note),
+                                  date: Date(), isRead: true)
+            appendMessage(message, to: conversationId)
+        }
+        // 模拟一位好友第一时间回应，让演示更真实
+        if let first = conversations.first {
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                guard let self else { return }
+                let reply = Message(id: UUID().uuidString, conversationId: first.id,
+                                    senderId: first.friendId,
+                                    kind: .text("收到！我马上过来，保持手机畅通 ❤️"),
+                                    date: Date(), isRead: false)
+                self.appendMessage(reply, to: first.id)
+            }
+        }
+    }
     public func fetchPlaces() async throws -> [Place] {
         try await Task.sleep(nanoseconds: 200_000_000)
         return places.sorted { $0.lastVisit > $1.lastVisit }
+    }
+
+    // MARK: - Diary
+    public func generateTrajectoryDiary() async throws -> TrajectoryDiary {
+        guard user != nil else { throw BackendError.notAuthenticated }
+        try await Task.sleep(nanoseconds: 900_000_000)   // 模拟 AI 撰写耗时
+
+        let cal = Calendar.current
+        let weekday = cal.component(.weekday, from: Date())
+        let weekdayName = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][weekday - 1]
+        let me = SampleData.cityCenter
+
+        // 选 2~3 个最常去的地标作为今日途经点
+        let picks = Array(places.shuffled().prefix(Int.random(in: 2...3)))
+        var distance = Double.random(in: 2...5)
+        var highlights: [DiaryHighlight] = []
+        var placeNames: [String] = []
+        for (i, p) in picks.enumerated() {
+            let dToPrev = (i == 0 ? p.coordinate.distance(to: me) : picks[i - 1].coordinate.distance(to: p.coordinate)) / 1000
+            distance += dToPrev
+            let hour = Int.random(in: 9...21)
+            let time = String(format: "%02d:%02d", hour, Int.random(in: 0...59))
+            let note = Self.placeNotes.randomElement()!
+            highlights.append(.init(id: "hl-\(p.id)-\(i)", placeName: p.name, emoji: p.emoji, note: note, time: time))
+            placeNames.append(p.name)
+        }
+
+        let moods = ["惬意", "充实", "松弛", "自在", "温柔", "有点忙"]
+        let mood = moods.randomElement()!
+        let cover = ["🌇", "🌿", "☀️", "🌙", "🍃", "✨"].randomElement()!
+
+        return TrajectoryDiary(
+            id: UUID().uuidString,
+            title: "\(weekdayName)的城市漫游",
+            date: Date(),
+            coverEmoji: cover,
+            story: Self.composeStory(weekdayName: weekdayName, places: placeNames, mood: mood),
+            highlights: highlights,
+            distanceKm: (distance * 10).rounded() / 10,
+            durationLabel: "活跃 \(Int.random(in: 6...11)) 小时",
+            mood: mood,
+            placesVisited: highlights.count
+        )
+    }
+
+    private static let placeNotes = [
+        "待了一会儿，喝了点东西",
+        "忙完了一桩正事",
+        "顺路拐进来歇了歇脚",
+        "见了个朋友，聊得挺开心",
+        "在这儿发了会儿呆",
+        "傍晚的光线特别好看",
+    ]
+
+    private static func composeStory(weekdayName: String, places: [String], mood: String) -> String {
+        guard !places.isEmpty else {
+            return "\(weekdayName)你大多待在一个地方，安静地过了一天——这种专注本身就很珍贵。"
+        }
+        let rest = places.dropFirst()
+        var s = "\(weekdayName)，你从「\(places[0])」开始了一天"
+        if !rest.isEmpty {
+            s += "，又路过" + rest.map { "「\($0)」" }.joined(separator: "、")
+        }
+        s += "。一整天的心情是\(mood)的——轨迹里藏着你自己的生活节奏，平凡却真实。"
+        return s
+    }
+
+    // MARK: - City Pulse
+    public func setCityPulseVisibility(_ visibility: CityPulseVisibility) async throws {
+        cityPulseVisibility = visibility
+    }
+
+    public func generateCityPulse() async throws -> CityPulse {
+        guard user != nil else { throw BackendError.notAuthenticated }
+        try await Task.sleep(nanoseconds: 500_000_000)
+
+        // 关闭时返回空内容：既不暴露自己，也看不到别人（隐私端到端生效）
+        guard cityPulseVisibility != .off else {
+            return CityPulse(id: UUID().uuidString, generatedAt: Date(),
+                             visibility: .off, nearby: [], events: [])
+        }
+
+        let friendNames = friends.map { $0.displayName }
+        let nearbyCount = cityPulseVisibility == .everyone ? Int.random(in: 5...8) : Int.random(in: 3...5)
+        let nearby = (0..<nearbyCount).map { i in
+            let name = SampleData.randomName()
+            let mutual = friendNames.shuffled().prefix(Int.random(in: 1...2)).map { $0 }
+            return NearbyPerson(
+                id: "np-\(i)-\(UUID().uuidString.prefix(4))",
+                displayName: name,
+                avatar: SampleData.randomAvatar(),
+                distanceKm: round((Double.random(in: 0.3...6)) * 10) / 10,
+                mutualFriends: mutual,
+                lastSeenText: ["刚刚", "5 分钟前在线", "20 分钟前在线", "1 小时前在线"].randomElement()!
+            )
+        }
+
+        let templates: [(String, String, String)] = [
+            ("鼓楼夜骑", "🚲", "鼓楼大街"),
+            ("天台电影夜", "🎬", "国贸某天台"),
+            ("周末市集", "🛍️", "798 艺术区"),
+            ("江边夜跑", "🌃", "亮马河"),
+            ("读书分享会", "📚", "三联书店"),
+            ("咖啡品鉴", "☕️", "某独立咖啡馆"),
+        ]
+        let events = Array(templates.shuffled().prefix(Int.random(in: 2...3))).enumerated().map { (i, t) in
+            CityEvent(id: "ev-\(i)", title: t.0, emoji: t.1, placeName: t.2,
+                      startsIn: ["今晚 19:30", "今晚 20:00", "明天 14:00", "周六 15:00"].randomElement()!,
+                      attendees: Int.random(in: 5...60),
+                      category: ["运动", "休闲", "文化", "美食"].randomElement()!)
+        }
+
+        return CityPulse(id: UUID().uuidString, generatedAt: Date(),
+                         visibility: cityPulseVisibility, nearby: nearby, events: events)
+    }
+
+    // MARK: - Intimate
+    public func fetchIntimateRelation() async throws -> IntimateRelation? {
+        try await Task.sleep(nanoseconds: 300_000_000)
+        return IntimateRelation.sample
+    }
+
+    // MARK: - Membership
+    public func fetchMembershipStatus() async throws -> Bool {
+        try await Task.sleep(nanoseconds: 150_000_000)
+        return false
+    }
+
+    public func subscribeMembership(planId: String) async throws {
+        try await Task.sleep(nanoseconds: 800_000_000)
     }
 
     // MARK: - Private
@@ -142,14 +308,26 @@ public final class MockBackendService: BackendService {
             if !message.isMine { conversations[idx].unreadCount += 1 }
         }
     }
-    private func scheduleAutoReply(to conversationId: String) {
+    private func scheduleAutoReply(to conversationId: String, inResponseTo kind: Message.Kind? = nil) {
         guard let convo = conversations.first(where: { $0.id == conversationId }) else { return }
         Task { @MainActor [weak self] in
             try? await Task.sleep(nanoseconds: 1_400_000_000)
             guard let self else { return }
-            let replies = ["收到～", "哈哈哈", "我在路上，马上到", "你那边天气怎么样？", "晚点约个饭？", "📍 我刚到这边"]
+            let replyKind: Message.Kind
+            switch kind {
+            case .burst(let emoji):
+                // 收到轰炸：一半几率同款 emoji 轰炸回去，否则文字吐槽
+                replyKind = Bool.random()
+                    ? .burst(emoji)
+                    : .text(["哈哈哈被你炸到了", "接招！", "别闹 😂"].randomElement()!)
+            case .ping:
+                replyKind = .text(["戳我干嘛 😆", "在的在的", "👀"].randomElement()!)
+            default:
+                let replies = ["收到～", "哈哈哈", "我在路上，马上到", "你那边天气怎么样？", "晚点约个饭？", "📍 我刚到这边"]
+                replyKind = .text(replies.randomElement() ?? "在的")
+            }
             let reply = Message(id: UUID().uuidString, conversationId: conversationId,
-                                senderId: convo.friendId, kind: .text(replies.randomElement() ?? "在的"),
+                                senderId: convo.friendId, kind: replyKind,
                                 date: Date(), isRead: false)
             self.appendMessage(reply, to: conversationId)
         }

@@ -14,6 +14,9 @@ struct FriendDetailSheet: View {
 
     private var friend: Friend? { session.friend(by: friendId) }
 
+    @State private var friendWeatherCode: Int? = nil
+    private var friendWeather: WeatherCondition { WeatherCondition(wmoCode: friendWeatherCode ?? -1) }
+
     var body: some View {
         NavigationStack {
             Group {
@@ -56,6 +59,7 @@ struct FriendDetailSheet: View {
             }
         }
         .background(Theme.Palette.groupedBackground.ignoresSafeArea())
+        .onAppear { loadFriendWeather() }
     }
 
     // MARK: - 渐变英雄头部
@@ -102,6 +106,17 @@ struct FriendDetailSheet: View {
                     }
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(.white.opacity(0.85))
+
+                    if !friend.isGhostMode {
+                        HStack(spacing: 5) {
+                            Image(systemName: friend.coordinate.localTimeOfDay.systemImage)
+                                .font(.system(size: 12))
+                            Text("对方 \(friend.coordinate.localTimeOfDay.title) · \(friendWeather.title) · \(friend.coordinate.localHour)时")
+                                .lineLimit(1)
+                        }
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.70))
+                    }
 
                     Text("更新于 \(friend.lastUpdated.relativeShort)")
                         .font(.caption)
@@ -272,6 +287,14 @@ struct FriendDetailSheet: View {
         Haptics.medium()
         let convo = session.ensureConversation(for: friend)
         _ = try? await session.backend.sendMessage(.ping, to: convo.id)
+    }
+
+    private func loadFriendWeather() {
+        guard let friend else { return }
+        Task {
+            let code = await fetchWeatherCode(for: friend.coordinate)
+            await MainActor.run { friendWeatherCode = code }
+        }
     }
 
     // MARK: - 占位

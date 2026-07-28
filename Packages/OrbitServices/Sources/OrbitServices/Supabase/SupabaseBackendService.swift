@@ -365,6 +365,12 @@ public final class SupabaseBackendService: BackendService {
             kind = .location(Coordinate(latitude: lat, longitude: lng), name: content["name"] as? String ?? "")
         case "ping":
             kind = .ping
+        case "sos":
+            let lat = content["lat"] as? Double ?? 0
+            let lng = content["lng"] as? Double ?? 0
+            kind = .sos(Coordinate(latitude: lat, longitude: lng), note: content["note"] as? String ?? "")
+        case "burst":
+            kind = .burst(content["emoji"] as? String ?? "🎉")
         default:
             kind = .text(content["text"] as? String ?? "")
         }
@@ -404,6 +410,8 @@ public final class SupabaseBackendService: BackendService {
         case .text(let t):              return ("text",     ["text": t])
         case .location(let c, let n):   return ("location", ["lat": c.latitude, "lng": c.longitude, "name": n])
         case .ping:                     return ("ping",     [:])
+        case .sos(let c, let note):     return ("sos",      ["lat": c.latitude, "lng": c.longitude, "note": note])
+        case .burst(let emoji):         return ("burst",    ["emoji": emoji])
         }
     }
 
@@ -412,6 +420,8 @@ public final class SupabaseBackendService: BackendService {
         case .text(let t):        return t
         case .location(_, let n): return "📍 \(n.isEmpty ? "位置" : n)"
         case .ping:               return "👋 Ping"
+        case .sos(_, let note):   return "🆘 \(note)"
+        case .burst(let emoji):   return "\(emoji) 轰炸"
         }
     }
 }

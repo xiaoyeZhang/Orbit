@@ -1,4 +1,6 @@
 import SwiftUI
+import OrbitCore
+import OrbitServices
 import OrbitUI
 
 // MARK: - Model
@@ -49,10 +51,16 @@ private struct QuickFeature: Identifiable {
 
 // MARK: - View
 struct StatusHistoryView: View {
+    @EnvironmentObject private var session: SessionStore
     @State private var selectedFeature: QuickFeature?
     @State private var selectedEntry: StatusEntry?
     @State private var showSettings = false
     @State private var collapsed = Set<String>()
+
+    // AI 轨迹日记
+    @State private var diaries: [TrajectoryDiary] = [.sample]
+    @State private var generating = false
+    @State private var selectedDiary: TrajectoryDiary?
 
     private let features: [QuickFeature] = [
         .init(icon: "shield.checkered",     label: "安全守护", color: Color(hex: 0x5352ED),
@@ -84,6 +92,10 @@ struct StatusHistoryView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
+                    // ── AI 轨迹日记 hero ──
+                    diaryHero
+                        .padding(.top, 8)
+
                     // ── Quick features row ──
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4), spacing: 12) {
                         ForEach(features) { f in
@@ -136,6 +148,7 @@ struct StatusHistoryView: View {
             .navigationBarTitleDisplayMode(.large)
             .sheet(item: $selectedFeature) { f in QuickFeatureDetailSheet(feature: f) }
             .sheet(item: $selectedEntry) { e in EntryDetailSheet(entry: e) }
+            .sheet(item: $selectedDiary) { d in DiaryDetailSheet(diary: d) }
             .sheet(isPresented: $showSettings) {
                 ReportingSettingsView().presentationDetents([.large])
             }
@@ -334,6 +347,182 @@ struct StatusHistoryView: View {
         fmt.dateFormat = "HH:mm"
         return fmt.string(from: date)
     }
+
+    // MARK: - AI 轨迹日记
+    private var diaryHero: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(Theme.Palette.primary)
+                Text("AI 轨迹日记")
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundStyle(.white)
+                Spacer()
+                Button {
+                    generateDiary()
+                } label: {
+                    HStack(spacing: 5) {
+                        if generating {
+                            ProgressView().controlSize(.small)
+                                .tint(Theme.Palette.primary)
+                        } else {
+                            Image(systemName: "pencil.and.outline").font(.system(size: 13, weight: .semibold))
+                        }
+                        Text(generating ? "撰写中" : "写今天")
+                            .font(.system(size: 13, weight: .semibold))
+                    }
+                    .foregroundStyle(Theme.Palette.primary)
+                    .padding(.horizontal, 12).padding(.vertical, 7)
+                    .background(Theme.Palette.primary.opacity(0.14), in: Capsule())
+                }
+                .buttonStyle(.pressable(scale: 0.92))
+                .disabled(generating)
+            }
+            .padding(.horizontal, 16)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    if generating {
+                        diaryLoadingCard
+                    }
+                    ForEach(diaries) { diary in
+                        diaryCard(diary)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 4)
+            }
+        }
+        .padding(.bottom, 16)
+    }
+
+    private func diaryCard(_ diary: TrajectoryDiary) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top, spacing: 10) {
+                Text(diary.coverEmoji).font(.system(size: 34))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(diary.title)
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text(dateText(diary.date))
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+                Spacer(minLength: 0)
+            }
+
+            Text(diary.story)
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .lineLimit(4)
+                .lineSpacing(4)
+
+            // 统计胶囊
+            HStack(spacing: 8) {
+                statPill("📍", "\(diary.placesVisited) 个地方")
+                statPill("🚶", String(format: "%.1f km", diary.distanceKm))
+                statPill("💡", diary.mood)
+            }
+
+            HStack(spacing: 10) {
+                Button {
+                    selectedDiary = diary
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "doc.text.magnifyingglass")
+                        Text("查看")
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.pressable(scale: 0.94))
+
+                ShareLink(item: diary.shareText) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "square.and.arrow.up")
+                        Text("分享")
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Theme.Palette.primary)
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.pressable(scale: 0.94))
+            }
+        }
+        .padding(14)
+        .frame(width: 280, alignment: .leading)
+        .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
+        )
+    }
+
+    private var diaryLoadingCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                RoundedRectangle(cornerRadius: 8).fill(Theme.Palette.card2)
+                    .frame(width: 34, height: 34)
+                VStack(alignment: .leading, spacing: 6) {
+                    RoundedRectangle(cornerRadius: 4).fill(Theme.Palette.card2).frame(width: 120, height: 12)
+                    RoundedRectangle(cornerRadius: 4).fill(Theme.Palette.card2).frame(width: 70, height: 9)
+                }
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                RoundedRectangle(cornerRadius: 4).fill(Theme.Palette.card2).frame(height: 9)
+                RoundedRectangle(cornerRadius: 4).fill(Theme.Palette.card2).frame(height: 9)
+                RoundedRectangle(cornerRadius: 4).fill(Theme.Palette.card2).frame(width: 180, height: 9)
+            }
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 8).fill(Theme.Palette.card2).frame(width: 64, height: 22)
+                RoundedRectangle(cornerRadius: 8).fill(Theme.Palette.card2).frame(width: 64, height: 22)
+            }
+        }
+        .padding(14)
+        .frame(width: 280, height: 168, alignment: .leading)
+        .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
+        )
+    }
+
+    private func statPill(_ icon: String, _ text: String) -> some View {
+        HStack(spacing: 4) {
+            Text(icon).font(.system(size: 11))
+            Text(text).font(.system(size: 11, weight: .medium))
+        }
+        .foregroundStyle(Theme.Palette.textSecondary)
+        .padding(.horizontal, 9).padding(.vertical, 5)
+        .background(Theme.Palette.card2, in: Capsule())
+    }
+
+    private func dateText(_ date: Date) -> String {
+        let fmt = DateFormatter()
+        fmt.locale = Locale(identifier: "zh_CN")
+        fmt.dateFormat = "M月d日"
+        return fmt.string(from: date)
+    }
+
+    private func generateDiary() {
+        guard !generating else { return }
+        generating = true
+        Haptics.light()
+        Task { @MainActor in
+            if let diary = await session.generateTrajectoryDiary() {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                    diaries.insert(diary, at: 0)
+                }
+                Haptics.success()
+                Toast.show("AI 已为你写下一段日记 ✨")
+            } else if let err = session.errorMessage {
+                Toast.show(err)
+            }
+            generating = false
+        }
+    }
 }
 
 // MARK: - Feature detail sheet
@@ -438,5 +627,124 @@ private struct EntryDetailSheet: View {
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(.white)
         }
+    }
+}
+
+// MARK: - 轨迹日记详情 sheet
+private struct DiaryDetailSheet: View {
+    let diary: TrajectoryDiary
+    @Environment(\.dismiss) private var dismiss
+
+    private var dateText: String {
+        let fmt = DateFormatter()
+        fmt.locale = Locale(identifier: "zh_CN")
+        fmt.dateFormat = "yyyy 年 M 月 d 日"
+        return fmt.string(from: diary.date)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 18) {
+                    // 封面
+                    HStack(spacing: 14) {
+                        ZStack {
+                            Circle().fill(Theme.Palette.primary.opacity(0.14))
+                                .frame(width: 72, height: 72)
+                            Text(diary.coverEmoji).font(.system(size: 38))
+                        }
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(diary.title)
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(.white)
+                            Text(dateText)
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Theme.Palette.textSecondary)
+                            HStack(spacing: 6) {
+                                Image(systemName: "face.smiling").font(.system(size: 12))
+                                Text("今日心情 · \(diary.mood)")
+                                    .font(.system(size: 12, weight: .medium))
+                            }
+                            .foregroundStyle(Theme.Palette.primary)
+                        }
+                    }
+
+                    // 故事正文
+                    Text(diary.story)
+                        .font(.system(size: 15))
+                        .foregroundStyle(.white)
+                        .lineSpacing(6)
+
+                    // 统计
+                    HStack(spacing: 12) {
+                        statBlock("📍", "\(diary.placesVisited)", "途经地方")
+                        statBlock("🚶", String(format: "%.1f", diary.distanceKm), "漫游 km")
+                        statBlock("⏱️", diary.durationLabel.replacingOccurrences(of: "活跃 ", with: ""), "活跃")
+                    }
+
+                    // 途经点
+                    Text("途经的点")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(.white)
+                    VStack(spacing: 10) {
+                        ForEach(diary.highlights) { h in
+                            HStack(alignment: .top, spacing: 12) {
+                                Text(h.emoji).font(.system(size: 26))
+                                VStack(alignment: .leading, spacing: 3) {
+                                    HStack(spacing: 6) {
+                                        Text(h.placeName)
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundStyle(.white)
+                                        Spacer()
+                                        Text(h.time)
+                                            .font(.system(size: 12))
+                                            .foregroundStyle(Theme.Palette.textSecondary)
+                                    }
+                                    Text(h.note)
+                                        .font(.system(size: 13))
+                                        .foregroundStyle(Theme.Palette.textSecondary)
+                                }
+                            }
+                            .padding(12)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        }
+                    }
+
+                    ShareLink(item: diary.shareText) {
+                        Label("分享这段日记", systemImage: "square.and.arrow.up")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 13)
+                            .background(Theme.Palette.primary, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(.pressable(scale: 0.96))
+                }
+                .padding(20)
+            }
+            .navigationTitle("轨迹日记")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("关闭") { dismiss() }
+                        .foregroundStyle(Theme.Palette.primary)
+                }
+            }
+            .background(Theme.Palette.bg)
+        }
+    }
+
+    private func statBlock(_ icon: String, _ value: String, _ label: String) -> some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 4) {
+                Text(icon).font(.system(size: 13))
+                Text(value).font(.system(size: 16, weight: .bold)).foregroundStyle(.white)
+            }
+            Text(label).font(.system(size: 11)).foregroundStyle(Theme.Palette.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }

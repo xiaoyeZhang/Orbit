@@ -405,6 +405,10 @@ final class FirebaseBackendService: BackendService {
         case .location(let c, let name):
             d["type"] = "location"; d["lat"] = c.latitude; d["lng"] = c.longitude; d["locationName"] = name
         case .ping: d["type"] = "ping"
+        case .sos(let c, let note):
+            d["type"] = "sos"; d["lat"] = c.latitude; d["lng"] = c.longitude; d["note"] = note
+        case .burst(let emoji):
+            d["type"] = "burst"; d["emoji"] = emoji
         }
         return d
     }
@@ -414,6 +418,8 @@ final class FirebaseBackendService: BackendService {
         case .text(let t): return t
         case .location(_, let name): return "📍 \(name)"
         case .ping: return "👋 戳了一下"
+        case .sos(_, let note): return "🆘 \(note)"
+        case .burst(let emoji): return "\(emoji) 轰炸"
         }
     }
 
@@ -427,6 +433,12 @@ final class FirebaseBackendService: BackendService {
                              name: data["locationName"] as? String ?? "")
         case "ping":
             kind = .ping
+        case "sos":
+            kind = .sos(Coordinate(latitude: data["lat"] as? Double ?? 0,
+                                   longitude: data["lng"] as? Double ?? 0),
+                        note: data["note"] as? String ?? "")
+        case "burst":
+            kind = .burst(data["emoji"] as? String ?? "🎉")
         default:
             kind = .text(data["text"] as? String ?? "")
         }

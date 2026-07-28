@@ -35,6 +35,8 @@ public struct Message: Codable, Equatable, Identifiable, Sendable {
         case text(String)
         case location(Coordinate, name: String)
         case ping
+        case sos(Coordinate, note: String)
+        case burst(String)   // emoji 轰炸：关联值为 emoji 字符
     }
 
     public var isMine: Bool { senderId == "me" }
@@ -44,6 +46,8 @@ public struct Message: Codable, Equatable, Identifiable, Sendable {
         case .text(let t):          return t
         case .location(_, let n):   return "📍 \(n)"
         case .ping:                 return "👋 戳了你一下"
+        case .sos(_, let note):     return "🆘 \(note)"
+        case .burst(let emoji):     return "\(emoji) 轰炸了你"
         }
     }
 }

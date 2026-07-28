@@ -45,6 +45,16 @@ final class ChatViewModel: ObservableObject {
         Haptics.medium()
         Task { _ = try? await backend.sendMessage(.location(coordinate, name: name), to: conversation.id) }
     }
+
+    func sendBurst(_ emoji: String) {
+        Haptics.medium()
+        Task { _ = try? await backend.sendMessage(.burst(emoji), to: conversation.id) }
+    }
+
+    func sendPing() {
+        Haptics.medium()
+        Task { _ = try? await backend.sendMessage(.ping, to: conversation.id) }
+    }
 }
 
 // MARK: - 聊天主视图
@@ -52,6 +62,13 @@ struct ChatView: View {
     @StateObject private var vm: ChatViewModel
     @EnvironmentObject private var location: LocationManager
     @State private var showLocationShare = false
+
+    // emoji 轰炸
+    @State private var showBurstBar = false
+    @State private var burstEffect: BurstEffect?     // 当前播放的全屏轰炸动效
+    @State private var lastSeenMessageId: String?    // 用于识别新到的消息
+    @State private var didLoadInitial = false        // 首次加载历史消息不播动效
+    private let burstEmojis = ["❤️", "😂", "🎉", "🔥", "😭", "💣"]
 
     init(conversation: Conversation) {
         _vm = StateObject(wrappedValue: ChatViewModel(
@@ -71,7 +88,17 @@ struct ChatView: View {
 
             VStack(spacing: 0) {
                 messageList
+                if showBurstBar { burstBar }
                 inputBar
+            }
+
+            // ── 全屏 emoji 轰炸动效（最顶层，不挡交互）──
+            if let effect = burstEffect {
+                EmojiBurstOverlay(effect: effect) {
+                    burstEffect = nil
+                }
+                .allowsHitTesting(false)
+                .ignoresSafeArea()
             }
         }
         .navigationTitle(vm.conversation.friendName)
@@ -79,6 +106,17 @@ struct ChatView: View {
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .onAppear { vm.start() }
         .onDisappear { vm.stop() }
+        .onChange(of: vm.messages.count) { _ in
+            // 新到消息若是轰炸，播放全屏动效（自己发的和对方发的都播）
+            guard let last = vm.messages.last, last.id != lastSeenMessageId else { return }
+            lastSeenMessageId = last.id
+            // 首次加载的是历史消息，不播动效
+            guard didLoadInitial else { didLoadInitial = true; return }
+            if case .burst(let emoji) = last.kind {
+                Haptics.medium()
+                burstEffect = BurstEffect(emoji: emoji)
+            }
+        }
     }
 
     // MARK: - 消息列表
@@ -106,6 +144,42 @@ struct ChatView: View {
         }
     }
 
+    // MARK: - emoji 轰炸快捷条
+    private var burstBar: some View {
+        HStack(spacing: 8) {
+            ForEach(burstEmojis, id: \.self) { emoji in
+                Button {
+                    vm.sendBurst(emoji)
+                    withAnimation(.snap) { showBurstBar = false }
+                } label: {
+                    Text(emoji)
+                        .font(.system(size: 26))
+                        .frame(width: 44, height: 44)
+                        .background(Theme.Palette.surface, in: Circle())
+                        .shadow(color: .black.opacity(0.08), radius: 5, y: 2)
+                }
+                .buttonStyle(.pressable(scale: 0.82))
+            }
+
+            // 戳一下
+            Button {
+                vm.sendPing()
+                withAnimation(.snap) { showBurstBar = false }
+            } label: {
+                Text("👋")
+                    .font(.system(size: 26))
+                    .frame(width: 44, height: 44)
+                    .background(Theme.Palette.sunshine.opacity(0.18), in: Circle())
+                    .overlay(Circle().strokeBorder(Theme.Palette.sunshine.opacity(0.5), lineWidth: 1))
+            }
+            .buttonStyle(.pressable(scale: 0.82))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+
     // MARK: - 输入栏
     private var inputBar: some View {
         HStack(alignment: .bottom, spacing: 10) {
@@ -120,6 +194,25 @@ struct ChatView: View {
                     Image(systemName: "location.fill")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(.white)
+                }
+            }
+            .buttonStyle(.pressable(scale: 0.88))
+
+            // emoji 轰炸开关
+            Button {
+                Haptics.light()
+                withAnimation(.snap) { showBurstBar.toggle() }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(showBurstBar
+                              ? AnyShapeStyle(Theme.brandGradient)
+                              : AnyShapeStyle(Theme.Palette.surface))
+                        .frame(width: 36, height: 36)
+                        .shadow(color: .black.opacity(0.08), radius: 5, y: 2)
+                    Image(systemName: "face.smiling.inverse")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(showBurstBar ? .white : Theme.Palette.subtle)
                 }
             }
             .buttonStyle(.pressable(scale: 0.88))
@@ -169,6 +262,39 @@ struct ChatView: View {
 struct MessageBubble: View {
     let message: Message
     @State private var mapTarget: LocationTarget?
+
+    private func sosBubble(coord: Coordinate, note: String) -> some View {
+        Button { mapTarget = LocationTarget(coordinate: coord, name: note) } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 16, weight: .bold))
+                    Text("紧急求助")
+                        .font(.system(size: 14, weight: .bold))
+                }
+                .foregroundStyle(.white)
+                Text(note)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.92))
+                HStack(spacing: 6) {
+                    Image(systemName: "mappin.circle.fill")
+                    Text("查看实时位置")
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 10).padding(.vertical, 5)
+                .background(.white.opacity(0.2), in: Capsule())
+            }
+            .padding(.horizontal, 14).padding(.vertical, 12)
+            .frame(width: 230, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Theme.Palette.danger)
+                    .shadow(color: Theme.Palette.danger.opacity(0.4), radius: 8, y: 3)
+            )
+        }
+        .buttonStyle(.plain)
+    }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
@@ -230,6 +356,93 @@ struct MessageBubble: View {
 
         case .ping:
             PingBubble()
+
+        case .sos(let coord, let note):
+            sosBubble(coord: coord, note: note)
+
+        case .burst(let emoji):
+            BurstBubble(emoji: emoji, isMine: message.isMine)
+        }
+    }
+}
+
+// MARK: - emoji 轰炸气泡
+struct BurstBubble: View {
+    let emoji: String
+    let isMine: Bool
+    @State private var pop = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(emoji)
+                .font(.system(size: 30))
+                .scaleEffect(pop ? 1.25 : 0.8)
+                .onAppear {
+                    withAnimation(.jelly.repeatCount(2, autoreverses: true)) { pop = true }
+                }
+            Text(isMine ? "发起了轰炸" : "轰炸了你")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(Theme.Palette.primary)
+        }
+        .padding(.horizontal, 16).padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Theme.Palette.primary.opacity(0.12))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(Theme.Palette.primary.opacity(0.35), lineWidth: 1.2)
+                }
+        )
+    }
+}
+
+// MARK: - 全屏 emoji 轰炸动效
+struct BurstEffect: Identifiable, Equatable {
+    let id = UUID()
+    let emoji: String
+}
+
+struct EmojiBurstOverlay: View {
+    let effect: BurstEffect
+    var onFinished: () -> Void
+
+    private struct Particle: Identifiable {
+        let id = UUID()
+        let x: CGFloat          // 水平位置（0~1 相对宽度）
+        let size: CGFloat
+        let delay: Double
+        let duration: Double
+        let rotation: Double
+    }
+
+    @State private var particles: [Particle] = []
+    @State private var falling = false
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                ForEach(particles) { p in
+                    Text(effect.emoji)
+                        .font(.system(size: p.size))
+                        .rotationEffect(.degrees(falling ? p.rotation : 0))
+                        .position(x: p.x * geo.size.width,
+                                  y: falling ? geo.size.height + 60 : -60)
+                        .animation(.easeIn(duration: p.duration).delay(p.delay), value: falling)
+                }
+            }
+        }
+        .onAppear {
+            particles = (0..<24).map { _ in
+                Particle(x: .random(in: 0.05...0.95),
+                         size: .random(in: 26...44),
+                         delay: .random(in: 0...0.5),
+                         duration: .random(in: 1.2...2.0),
+                         rotation: .random(in: -180...180))
+            }
+            // 下一帧开始下落，确保初始位置先布局
+            DispatchQueue.main.async { falling = true }
+            // 最长 delay+duration ≈ 2.5s 后收尾
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.8) { onFinished() }
         }
     }
 }

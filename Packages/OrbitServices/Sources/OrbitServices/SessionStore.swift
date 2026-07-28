@@ -9,6 +9,9 @@ public final class SessionStore: ObservableObject {
     @Published public var friends: [Friend] = []
     @Published public var conversations: [Conversation] = []
     @Published public var places: [Place] = []
+    @Published public var cityPulseVisibility: CityPulseVisibility = .friendsOnly
+    @Published public var intimateRelation: IntimateRelation?
+    @Published public var isMember: Bool = false
     @Published public var isAuthenticated = false
     @Published public var isBusy = false
     @Published public var errorMessage: String?
@@ -90,10 +93,76 @@ public final class SessionStore: ObservableObject {
         catch { errorMessage = error.localizedDescription }
     }
 
+    // MARK: - Safety
+    /// 一键求助：把带坐标的 SOS 广播给所有好友。成功返回 true。
+    public func sendSOS(at coordinate: Coordinate, note: String = "我需要帮助，请尽快联系我！") async -> Bool {
+        do {
+            try await backend.sendSOS(coordinate, note: note)
+            // 刷新会话列表，让消息 Tab 立即反映 SOS 记录
+            if let updated = try? await backend.fetchConversations() { conversations = updated }
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
+    }
+
     // MARK: - Profile
     public func updateProfile(_ profile: UserProfile) async {
         do { try await backend.updateProfile(profile); currentUser = profile }
         catch { errorMessage = error.localizedDescription }
+    }
+
+    // MARK: - Diary
+    /// AI 轨迹日记：让后端把近期轨迹摘要成一段可分享的故事。
+    public func generateTrajectoryDiary() async -> TrajectoryDiary? {
+        do { return try await backend.generateTrajectoryDiary() }
+        catch { errorMessage = error.localizedDescription; return nil }
+    }
+
+    // MARK: - City Pulse
+    /// 城市脉搏：附近的人 + 同城活动（泛社交发现流）。
+    public func generateCityPulse() async -> CityPulse? {
+        do { return try await backend.generateCityPulse() }
+        catch { errorMessage = error.localizedDescription; return nil }
+    }
+
+    /// 设置城市脉搏可见性（隐私总开关），并同步到本地状态。
+    public func setCityPulseVisibility(_ visibility: CityPulseVisibility) async {
+        do {
+            try await backend.setCityPulseVisibility(visibility)
+            cityPulseVisibility = visibility
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    // MARK: - Intimate
+    /// 亲密关系：加载当前绑定的密友 / 情侣关系（已加载则跳过）。
+    @discardableResult
+    public func loadIntimateRelation() async -> IntimateRelation? {
+        if let existing = intimateRelation { return existing }
+        do { intimateRelation = try await backend.fetchIntimateRelation() }
+        catch { errorMessage = error.localizedDescription }
+        return intimateRelation
+    }
+
+    // MARK: - Membership
+    /// 会员：加载当前用户的订阅状态（是否会员）。
+    public func loadMembershipStatus() async {
+        do { isMember = try await backend.fetchMembershipStatus() }
+        catch { errorMessage = error.localizedDescription }
+    }
+
+    /// 会员：开通订阅。成功返回 true 并把本地状态置为已开通。
+    public func subscribeMembership(planId: String) async -> Bool {
+        isBusy = true; errorMessage = nil; defer { isBusy = false }
+        do {
+            try await backend.subscribeMembership(planId: planId)
+            isMember = true
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
     }
 
     // MARK: - Helpers
