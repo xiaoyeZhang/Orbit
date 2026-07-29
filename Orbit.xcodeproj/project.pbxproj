@@ -28,6 +28,7 @@
 		B5EB229630198CCA001E0B65 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229430198CCA001E0B65 /* ChatViewModel.swift */; };
 		B5EB229730198CCA001E0B65 /* EmojiBurstOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229530198CCA001E0B65 /* EmojiBurstOverlay.swift */; };
 		B5EB229930198CDA001E0B65 /* AmbientPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229830198CDA001E0B65 /* AmbientPanelView.swift */; };
+		33851D1BB0618A33001E0B65 /* GhostInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F976E7880CC44EA001E0B65 /* GhostInfoView.swift */; };
 		B5EB229B30198CE7001E0B65 /* PlaceDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229A30198CE7001E0B65 /* PlaceDetailSheet.swift */; };
 		B5EB229F30198CF0001E0B65 /* EntryDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229D30198CF0001E0B65 /* EntryDetailSheet.swift */; };
 		B5EB22A030198CF0001E0B65 /* QuickFeatureDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229E30198CF0001E0B65 /* QuickFeatureDetailSheet.swift */; };
@@ -67,6 +68,7 @@
 		B5EB229430198CCA001E0B65 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		B5EB229530198CCA001E0B65 /* EmojiBurstOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiBurstOverlay.swift; sourceTree = "<group>"; };
 		B5EB229830198CDA001E0B65 /* AmbientPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientPanelView.swift; sourceTree = "<group>"; };
+		3F976E7880CC44EA001E0B65 /* GhostInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GhostInfoView.swift; sourceTree = "<group>"; };
 		B5EB229A30198CE7001E0B65 /* PlaceDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailSheet.swift; sourceTree = "<group>"; };
 		B5EB229C30198CF0001E0B65 /* DiaryDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryDetailSheet.swift; sourceTree = "<group>"; };
 		B5EB229D30198CF0001E0B65 /* EntryDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryDetailSheet.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */,
 				AD22F943B27846398963B03E /* WeatherDetailView.swift */,
 				B5EB229830198CDA001E0B65 /* AmbientPanelView.swift */,
+				3F976E7880CC44EA001E0B65 /* GhostInfoView.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -323,6 +326,7 @@
 				B5EB229630198CCA001E0B65 /* ChatViewModel.swift in Sources */,
 				B5EB229730198CCA001E0B65 /* EmojiBurstOverlay.swift in Sources */,
 				B5EB229930198CDA001E0B65 /* AmbientPanelView.swift in Sources */,
+				33851D1BB0618A33001E0B65 /* GhostInfoView.swift in Sources */,
 				F59ECA25DF584B7185507A00 /* LanguageManager.swift in Sources */,
 				B5EB229F30198CF0001E0B65 /* EntryDetailSheet.swift in Sources */,
 				B5EB22A030198CF0001E0B65 /* QuickFeatureDetailSheet.swift in Sources */,
