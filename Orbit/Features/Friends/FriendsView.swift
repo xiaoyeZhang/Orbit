@@ -9,6 +9,7 @@ struct FriendsView: View {
     @State private var query       = ""
     @State private var selection: String?
     @State private var showAdd     = false
+    @State private var showGhostInfo = false
 
     // 城市脉搏（泛社交发现流）
     @State private var pulse: CityPulse?
@@ -21,6 +22,37 @@ struct FriendsView: View {
     private var favorites: [Friend] { filtered.filter { $0.isFavorite } }
     private var others:    [Friend] { filtered.filter { !$0.isFavorite } }
 
+    // MARK: - 隐身提示（与地图侧栏共用 GhostInfoView 说明）
+
+    @ViewBuilder
+    private var ghostHint: some View {
+        let hidden = session.friends.filter { $0.isGhostMode }
+        if !hidden.isEmpty {
+            Button {
+                Haptics.light()
+                showGhostInfo = true
+            } label: {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: "moon.zzz.fill")
+                        .font(Theme.Typography.symbol(13))
+                        .foregroundStyle(Theme.Palette.subtle)
+                    Text("有 \(hidden.count) 位好友隐身中，点击了解")
+                        .font(Theme.Typography.caption(.medium))
+                        .foregroundStyle(Theme.Palette.subtle)
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right")
+                        .font(Theme.Typography.symbol(11))
+                        .foregroundStyle(Theme.Palette.subtle.opacity(0.6))
+                }
+                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.sm)
+                .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(.pressable(scale: 0.97))
+            .accessibilityLabel("\(hidden.count) 位好友隐身中，点击了解")
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
@@ -32,6 +64,10 @@ struct FriendsView: View {
                         .popIn(delay: 0)
 
                     cityPulseSection
+                        .padding(.bottom, Theme.Spacing.md)
+
+                    ghostHint
+                        .padding(.horizontal, Theme.Spacing.lg)
                         .padding(.bottom, Theme.Spacing.md)
 
                     if !favorites.isEmpty {
@@ -66,6 +102,11 @@ struct FriendsView: View {
             }
             .sheet(isPresented: $showAdd) {
                 AddFriendView().presentationDetents([.medium])
+            }
+            .sheet(isPresented: $showGhostInfo) {
+                GhostInfoView()
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
             }
             .overlay {
                 if session.friends.isEmpty { emptyState }
@@ -129,9 +170,9 @@ struct FriendsView: View {
                     }
 
                     HStack(spacing: Theme.Spacing.xs) {
-                        Image(systemName: "mappin.and.ellipse")
+                        Image(systemName: friend.isGhostMode ? "moon.zzz.fill" : "mappin.and.ellipse")
                             .font(Theme.Typography.symbol(10))
-                        Text(friend.isGhostMode ? "隐身中" : friend.locationName)
+                        Text(friend.isGhostMode ? "对方选择隐身" : friend.locationName)
                             .lineLimit(1)
                     }
                     .font(Theme.Typography.caption(.medium))
@@ -149,7 +190,7 @@ struct FriendsView: View {
             .padding(.vertical, Theme.Spacing.md)
         }
         .buttonStyle(.pressable(scale: 0.94))
-        .accessibilityLabel("好友: \(friend.displayName), \(friend.isGhostMode ? "隐身中" : friend.locationName)")
+        .accessibilityLabel("好友: \(friend.displayName), \(friend.isGhostMode ? "对方选择隐身" : friend.locationName)")
         .swipeActions(edge: .leading) {
             Button {
                 Task { await session.toggleFavorite(friend) }
