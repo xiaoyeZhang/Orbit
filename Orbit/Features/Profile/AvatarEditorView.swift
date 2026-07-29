@@ -75,8 +75,8 @@ struct AvatarEditorView: View {
                                     swatch: { _ in AnyView(Image(systemName: "sparkles").font(.title3).foregroundStyle(Theme.Palette.primary)) },
                                     title: { $0.title })
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 20)
+                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.bottom, Theme.Spacing.xl)
             }
             .background(Theme.Palette.groupedBackground.ignoresSafeArea())
             .navigationTitle("编辑形象")
@@ -101,14 +101,14 @@ struct AvatarEditorView: View {
                     .fill(Theme.brandGradient.opacity(0.12))
                     .frame(width: 32, height: 32)
                 Image(systemName: systemIcon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(Theme.Typography.callout(.semibold))
                     .foregroundStyle(Theme.Palette.primary)
             }
             TextField(label, text: text)
-                .font(.system(size: 15, weight: .medium))
+                .font(Theme.Typography.body())
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.vertical, Theme.Spacing.md)
         .card()
     }
 
@@ -123,7 +123,7 @@ struct AvatarEditorView: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(size: 14, weight: .bold))
+                .font(Theme.Typography.callout(.bold))
                 .foregroundStyle(Theme.Palette.ink)
                 .padding(.horizontal, 2)
 
@@ -147,15 +147,15 @@ struct AvatarEditorView: View {
                                             .fill(Theme.brandGradient)
                                             .frame(width: 18, height: 18)
                                         Image(systemName: "checkmark")
-                                            .font(.system(size: 9, weight: .heavy))
-                                            .foregroundStyle(.white)
+                                            .font(Theme.Typography.micro())
+                                            .foregroundStyle(Theme.Palette.textPrimary)
                                     }
                                     .offset(x: 18, y: -18)
                                     .popIn()
                                 }
                             }
                             Text(titleFor(item))
-                                .font(.system(size: 11, weight: item == selected ? .bold : .medium))
+                                .font(Theme.Typography.caption2(item == selected ? .bold : .medium))
                                 .foregroundStyle(item == selected ? Theme.Palette.primary : Theme.Palette.subtle)
                         }
                         .scaleEffect(item == selected ? 1.06 : 1.0)

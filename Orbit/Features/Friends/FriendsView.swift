@@ -26,13 +26,13 @@ struct FriendsView: View {
             ScrollView(showsIndicators: false) {
                 LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
                     inviteCard
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, Theme.Spacing.lg)
                         .padding(.top, 10)
-                        .padding(.bottom, 14)
+                        .padding(.bottom, Theme.Spacing.md)
                         .popIn(delay: 0)
 
                     cityPulseSection
-                        .padding(.bottom, 14)
+                        .padding(.bottom, Theme.Spacing.md)
 
                     if !favorites.isEmpty {
                         sectionBlock(title: "关注", friends: favorites, offset: 0)
@@ -51,10 +51,11 @@ struct FriendsView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showAdd = true } label: {
                         Image(systemName: "person.badge.plus")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(Theme.Typography.symbol(17, .semibold))
                             .foregroundStyle(Theme.Palette.primary)
                     }
                     .buttonStyle(.pressable(scale: 0.88))
+                    .accessibilityLabel("添加好友")
                 }
             }
             .sheet(item: Binding(get: { selection.map(IDWrap.init) },
@@ -73,14 +74,15 @@ struct FriendsView: View {
     }
 
     // MARK: - 分区块
+
     private func sectionBlock(title: String, friends: [Friend], offset: Int) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(Theme.Typography.subheadline(.semibold))
                 .foregroundStyle(Theme.Palette.subtle)
-                .padding(.horizontal, 20)
-                .padding(.top, 4)
-                .padding(.bottom, 8)
+                .padding(.horizontal, Theme.Spacing.xl)
+                .padding(.top, Theme.Spacing.xs)
+                .padding(.bottom, Theme.Spacing.sm)
 
             VStack(spacing: 1) {
                 ForEach(Array(friends.enumerated()), id: \.element.id) { idx, friend in
@@ -88,22 +90,22 @@ struct FriendsView: View {
                         .staggeredAppear(index: offset + idx)
 
                     if idx < friends.count - 1 {
-                        Divider().padding(.leading, 78)
+                        ListDivider(leadingPadding: 78)
                     }
                 }
             }
             .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .shadow(color: .black.opacity(0.04), radius: 10, y: 3)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
+            .shadowCard()
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.bottom, Theme.Spacing.md)
         }
     }
 
     // MARK: - 好友行
+
     private func friendRow(_ friend: Friend) -> some View {
         Button { selection = friend.id } label: {
-            HStack(spacing: 14) {
-                // 头像 + 在线点
+            HStack(spacing: Theme.Spacing.md) {
                 ZStack(alignment: .bottomTrailing) {
                     AvatarView(config: friend.avatar, size: 52,
                                showsRing: true,
@@ -114,41 +116,40 @@ struct FriendsView: View {
                     }
                 }
 
-                // 名字 + 位置
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(spacing: 6) {
                         Text(friend.displayName)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(Theme.Typography.body(.semibold))
                             .foregroundStyle(Theme.Palette.ink)
                         if friend.isFavorite {
                             Image(systemName: "star.fill")
-                                .font(.system(size: 10))
+                                .font(Theme.Typography.symbol(10))
                                 .foregroundStyle(Theme.Palette.accent)
                         }
                     }
 
-                    HStack(spacing: 4) {
+                    HStack(spacing: Theme.Spacing.xs) {
                         Image(systemName: "mappin.and.ellipse")
-                            .font(.system(size: 10))
+                            .font(Theme.Typography.symbol(10))
                         Text(friend.isGhostMode ? "隐身中" : friend.locationName)
                             .lineLimit(1)
                     }
-                    .font(.system(size: 12, weight: .medium))
+                    .font(Theme.Typography.caption(.medium))
                     .foregroundStyle(Theme.Palette.subtle)
                 }
 
                 Spacer(minLength: 0)
 
-                // 状态徽章
                 VStack(alignment: .trailing, spacing: 5) {
                     BatteryBadge(presence: friend.presence, compact: true)
                     MovementChip(presence: friend.presence)
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.vertical, Theme.Spacing.md)
         }
         .buttonStyle(.pressable(scale: 0.94))
+        .accessibilityLabel("好友: \(friend.displayName), \(friend.isGhostMode ? "隐身中" : friend.locationName)")
         .swipeActions(edge: .leading) {
             Button {
                 Task { await session.toggleFavorite(friend) }
@@ -167,25 +168,25 @@ struct FriendsView: View {
     }
 
     // MARK: - 邀请卡
+
     private var inviteCard: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: Theme.Spacing.lg) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous)
                     .fill(.white.opacity(0.22))
                     .frame(width: 50, height: 50)
                 Image(systemName: "qrcode")
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.symbol(26, .bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
             }
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("我的邀请码")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .font(Theme.Typography.caption(.semibold))
+                    .foregroundStyle(Theme.Palette.textPrimary.opacity(0.85))
                 Text(session.currentUser?.inviteCode ?? "—")
-                    .font(.system(size: 18, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white)
-                    .tracking(2)
+                    .font(Theme.Typography.headline(.heavy, design: .rounded))
+                    .foregroundStyle(Theme.Palette.textPrimary)
             }
 
             Spacer()
@@ -195,61 +196,57 @@ struct FriendsView: View {
                 Haptics.medium()
             } label: {
                 Text("添加好友")
-                    .font(.system(size: 13, weight: .bold))
+                    .font(Theme.Typography.subheadline(.bold))
                     .foregroundStyle(Theme.Palette.primary)
-                    .padding(.horizontal, 14).padding(.vertical, 8)
+                    .padding(.horizontal, Theme.Spacing.md)
+                    .padding(.vertical, Theme.Spacing.sm)
                     .background(Capsule().fill(.white))
             }
             .buttonStyle(.pressable(scale: 0.92))
         }
-        .padding(16)
-        .gradientCard(Theme.brandGradient, cornerRadius: 20)
+        .padding(Theme.Spacing.lg)
+        .gradientCard(Theme.brandGradient, cornerRadius: Theme.Radius.xl)
     }
 
     // MARK: - 空状态
+
     private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "person.2.slash")
-                .font(.system(size: 52, weight: .light))
-                .foregroundStyle(Theme.Palette.subtle.opacity(0.6))
-                .floating(amount: 8, duration: 3.5)
-            Text("还没有好友")
-                .font(.title3.bold())
-                .foregroundStyle(Theme.Palette.ink)
-            Text("点右上角发出邀请吧")
-                .font(.subheadline)
-                .foregroundStyle(Theme.Palette.subtle)
-        }
+        EmptyStateView(
+            icon: "person.2.slash",
+            title: "还没有好友",
+            subtitle: "点右上角发出邀请吧"
+        )
         .popIn()
+        .accessibilityLabel("好友列表为空")
     }
 
-    // MARK: - 城市脉搏（泛社交发现流）
+    // MARK: - 城市脉搏
+
     private var cityPulseSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             HStack(spacing: 10) {
                 Image(systemName: "waveform")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(Theme.Typography.symbol(18, .bold))
                     .foregroundStyle(Theme.Palette.accent)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("城市脉搏")
-                        .font(.system(size: 17, weight: .bold))
+                        .font(Theme.Typography.headline(.bold))
                         .foregroundStyle(Theme.Palette.ink)
                     Text("附近的人与同城活动")
-                        .font(.system(size: 12))
+                        .font(Theme.Typography.caption())
                         .foregroundStyle(Theme.Palette.subtle)
                 }
                 Spacer()
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Theme.Spacing.lg)
 
-            // 隐私总开关
             Picker("可见性", selection: $session.cityPulseVisibility) {
                 ForEach(CityPulseVisibility.allCases) { v in
                     Text(v.label).tag(v)
                 }
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Theme.Spacing.lg)
             .onChange(of: session.cityPulseVisibility) { _ in
                 Task { await session.setCityPulseVisibility(session.cityPulseVisibility); await refreshPulse() }
             }
@@ -263,104 +260,104 @@ struct FriendsView: View {
                 if !pulse.events.isEmpty { eventsRow(pulse) }
             }
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, Theme.Spacing.lg)
         .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .shadow(color: .black.opacity(0.04), radius: 10, y: 3)
-        .padding(.horizontal, 16)
+        .shadowCard()
+        .padding(.horizontal, Theme.Spacing.lg)
         .task { await refreshPulse() }
     }
 
     private func nearbyRow(_ pulse: CityPulse) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: Theme.Spacing.md) {
                 ForEach(pulse.nearby) { person in
                     nearbyCard(person)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Theme.Spacing.lg)
         }
     }
 
     private func nearbyCard(_ p: NearbyPerson) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             HStack(spacing: 10) {
                 AvatarView(config: p.avatar, size: 44, showsRing: false, ringColor: .clear)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(p.displayName)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(Theme.Typography.callout(.semibold))
                         .foregroundStyle(Theme.Palette.ink)
                     Text(String(format: "%.1f km", p.distanceKm))
-                        .font(.system(size: 12))
+                        .font(Theme.Typography.caption())
                         .foregroundStyle(Theme.Palette.subtle)
                 }
             }
             if !p.mutualFriends.isEmpty {
                 Text("共同好友 · " + p.mutualFriends.joined(separator: "、"))
-                    .font(.system(size: 11))
+                    .font(Theme.Typography.caption2())
                     .foregroundStyle(Theme.Palette.subtle)
                     .lineLimit(1)
             }
             Text(p.lastSeenText)
-                .font(.system(size: 11))
+                .font(Theme.Typography.caption2())
                 .foregroundStyle(Theme.Palette.subtle)
             Button {
                 Haptics.medium()
                 Toast.show("已向 \(p.displayName) 发出招呼（演示）")
             } label: {
                 Text("打招呼")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.caption(.semibold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 7)
                     .background(Theme.Palette.accent, in: Capsule())
             }
             .buttonStyle(.pressable(scale: 0.94))
         }
-        .padding(12)
+        .padding(Theme.Spacing.md)
         .frame(width: 168)
-        .background(Theme.Palette.groupedBackground, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Theme.Palette.groupedBackground, in: RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous))
     }
 
     private func eventsRow(_ pulse: CityPulse) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("同城活动")
-                .font(.system(size: 13, weight: .semibold))
+                .font(Theme.Typography.subheadline(.semibold))
                 .foregroundStyle(Theme.Palette.subtle)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Theme.Spacing.lg)
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
+                HStack(spacing: Theme.Spacing.md) {
                     ForEach(pulse.events) { ev in
                         eventCard(ev)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Theme.Spacing.lg)
             }
         }
     }
 
     private func eventCard(_ ev: CityEvent) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Text(ev.emoji).font(.system(size: 26))
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            HStack(spacing: Theme.Spacing.sm) {
+                Text(ev.emoji).font(Theme.Typography.title2(.heavy))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(ev.title)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(Theme.Typography.callout(.semibold))
                         .foregroundStyle(Theme.Palette.ink)
                     Text(ev.category)
-                        .font(.system(size: 11))
+                        .font(Theme.Typography.caption2())
                         .foregroundStyle(Theme.Palette.subtle)
                 }
             }
             Text(ev.placeName)
-                .font(.system(size: 12))
+                .font(Theme.Typography.caption())
                 .foregroundStyle(Theme.Palette.subtle)
             Text(ev.startsIn)
-                .font(.system(size: 12, weight: .medium))
+                .font(Theme.Typography.caption(.medium))
                 .foregroundStyle(Theme.Palette.accent)
-            HStack(spacing: 4) {
-                Image(systemName: "person.2").font(.system(size: 11))
+            HStack(spacing: Theme.Spacing.xs) {
+                Image(systemName: "person.2").font(Theme.Typography.symbol(11))
                 Text("\(ev.attendees) 人感兴趣")
-                    .font(.system(size: 11))
+                    .font(Theme.Typography.caption2())
                     .foregroundStyle(Theme.Palette.subtle)
             }
             Button {
@@ -368,7 +365,7 @@ struct FriendsView: View {
                 Toast.show("已标记感兴趣：\(ev.title)（演示）")
             } label: {
                 Text("感兴趣")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(Theme.Typography.caption(.semibold))
                     .foregroundStyle(Theme.Palette.ink)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 7)
@@ -377,37 +374,37 @@ struct FriendsView: View {
             }
             .buttonStyle(.pressable(scale: 0.94))
         }
-        .padding(12)
+        .padding(Theme.Spacing.md)
         .frame(width: 168)
-        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Theme.Palette.surface, in: RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous))
     }
 
     private var offState: some View {
         HStack(spacing: 10) {
             Image(systemName: "eye.slash")
-                .font(.system(size: 18))
+                .font(Theme.Typography.symbol(18))
                 .foregroundStyle(Theme.Palette.subtle)
             VStack(alignment: .leading, spacing: 2) {
                 Text("城市脉搏已关闭")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(Theme.Typography.callout(.semibold))
                     .foregroundStyle(Theme.Palette.ink)
                 Text("打开后，可在不暴露给陌生人的前提下发现附近的人与活动")
-                    .font(.system(size: 12))
+                    .font(Theme.Typography.caption())
                     .foregroundStyle(Theme.Palette.subtle)
             }
             Spacer()
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, Theme.Spacing.lg)
     }
 
     private var loadingRow: some View {
         HStack(spacing: 10) {
             ProgressView().controlSize(.small).tint(Theme.Palette.accent)
             Text("正在感知附近的城市脉搏…")
-                .font(.system(size: 13))
+                .font(Theme.Typography.subheadline())
                 .foregroundStyle(Theme.Palette.subtle)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, Theme.Spacing.lg)
     }
 
     private func refreshPulse() async {

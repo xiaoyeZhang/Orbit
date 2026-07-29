@@ -59,9 +59,9 @@ struct LoginView: View {
                         Circle().strokeBorder(.white.opacity(0.38), lineWidth: 1)
                     )
 
-                Image(systemName: "location.north.circle.fill")
-                    .font(.system(size: 52, weight: .bold))
-                    .foregroundStyle(.white)
+                    Image(systemName: "location.north.circle.fill")
+                    .font(Theme.Typography.display(.bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
             }
             .scaleEffect(logoShown ? 1 : 0.55)
             .opacity(logoShown ? 1 : 0)
@@ -69,12 +69,12 @@ struct LoginView: View {
 
             VStack(spacing: 10) {
                 Text("Orbit")
-                    .font(.system(size: 46, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.display(.heavy, design: .rounded))
+                    .foregroundStyle(Theme.Palette.textPrimary)
 
                 Text("实时分享，随时同在")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.82))
+                    .font(Theme.Typography.body())
+                    .foregroundStyle(Theme.Palette.textPrimary.opacity(0.82))
                     .multilineTextAlignment(.center)
             }
             .opacity(logoShown ? 1 : 0)
@@ -91,25 +91,25 @@ struct LoginView: View {
             HStack(spacing: 10) {
                 HStack(spacing: 6) {
                     Text("🇨🇳")
-                        .font(.system(size: 18))
+                        .font(Theme.Typography.headline())
                     Text("+86")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.85))
+                        .font(Theme.Typography.body(.semibold))
+                        .foregroundStyle(Theme.Palette.textPrimary.opacity(0.85))
                 }
                 Rectangle()
                     .fill(.white.opacity(0.35))
                     .frame(width: 1, height: 20)
                 TextField("", text: $phone, prompt:
-                    Text("手机号码").foregroundColor(.white.opacity(0.45)))
+                    Text("手机号码").foregroundColor(Theme.Palette.textPrimary.opacity(0.45)))
                     .keyboardType(.numberPad)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.white)
-                    .tint(.white)
+                    .font(Theme.Typography.headline(.medium))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .tint(Theme.Palette.textPrimary)
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
                             Spacer()
                             Button("完成") { hideKeyboard() }
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(Theme.Typography.body(.semibold))
                                 .foregroundStyle(Theme.Palette.primary)
                         }
                     }
@@ -128,11 +128,11 @@ struct LoginView: View {
             // 验证码栏
             if codeSent {
                 TextField("", text: $code, prompt:
-                    Text("输入 6 位验证码").foregroundColor(.white.opacity(0.45)))
+                    Text("输入 6 位验证码").foregroundColor(Theme.Palette.textPrimary.opacity(0.45)))
                     .keyboardType(.numberPad)
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .tint(.white)
+                    .font(Theme.Typography.title3(.semibold, design: .rounded))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .tint(Theme.Palette.textPrimary)
                     .multilineTextAlignment(.center)
                     .tracking(6)
                     .padding(.horizontal, 18)
@@ -158,7 +158,7 @@ struct LoginView: View {
                     Text(err)
                 }
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.88))
+                .foregroundStyle(Theme.Palette.textPrimary.opacity(0.88))
                 .padding(.horizontal, 4)
                 .transition(.opacity)
             }
@@ -171,9 +171,9 @@ struct LoginView: View {
                     } else {
                         HStack(spacing: 8) {
                             Text(codeSent ? "进入 Orbit" : "获取验证码")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(Theme.Typography.headline(.bold))
                             Image(systemName: codeSent ? "arrow.right.circle.fill" : "envelope.fill")
-                                .font(.system(size: 15))
+                                .font(Theme.Typography.body())
                         }
                         .foregroundStyle(Theme.Palette.primary)
                     }
@@ -193,7 +193,7 @@ struct LoginView: View {
             // Mock 提示
             Text("演示模式：任意手机号 + 4 位以上验证码即可登录")
                 .font(.caption2)
-                .foregroundStyle(.white.opacity(0.48))
+                .foregroundStyle(Theme.Palette.textPrimary.opacity(0.48))
                 .multilineTextAlignment(.center)
                 .padding(.top, 4)
         }

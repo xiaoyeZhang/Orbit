@@ -5,6 +5,16 @@ import OrbitCore
 import OrbitUI
 import OrbitServices
 
+// MARK: - Layout Constants (经验偏移：自定义浮动 TabBar 高度 + 底部安全区)
+private enum MapLayout {
+    /// 幽灵模式横幅底部偏移
+    static let ghostBannerBottom: CGFloat = 72
+    /// 底部功能胶囊偏移
+    static let bottomPillBottom: CGFloat = 120
+    /// 邀请贴纸底部偏移
+    static let inviteStickerBottom: CGFloat = 136
+}
+
 private enum MapEntity: Identifiable {
     case me(Coordinate, AvatarConfig, Bool)   // Bool = 自己是否隐身
     case friend(Friend)
@@ -40,14 +50,12 @@ struct MapHomeView: View {
     @State private var showReporting   = false
     @State private var didInitialCenter = false
 
-    // Top-left info
     @State private var cityName    = ""
     @State private var temperature: Double? = nil
     @State private var weatherCode: Int? = nil
     @State private var ambientLayers = AmbientLayers()
     @State private var showAmbient   = false
 
-    // SOS 一键求助
     @State private var showSOSConfirm = false
     @State private var sosSending     = false
     @State private var sosSentBanner  = false
@@ -55,15 +63,12 @@ struct MapHomeView: View {
     private var entities: [MapEntity] {
         var list: [MapEntity] = []
         if let avatar = session.currentUser?.avatar {
-            // 自己始终在地图中心；隐身状态传给气泡仅用于视觉反馈
             list.append(.me(location.effectiveCoordinate, avatar, session.currentUser?.isGhostMode ?? false))
         }
-        // 隐身好友不进入地图：不暴露其真实位置（对齐“隐身 = 对方看不到我”的语义）
         list.append(contentsOf: session.friends.filter { !$0.isGhostMode }.map { .friend($0) })
         return list
     }
 
-    // 当前氛围快照（天气 / 昼夜 / 季节）
     private var ambient: AmbientState {
         AmbientState(
             timeOfDay: location.effectiveCoordinate.localTimeOfDay,
@@ -73,7 +78,6 @@ struct MapHomeView: View {
         )
     }
 
-    // 地图氛围叠层（按开启的图层分别叠加，位于地图之上、UI 之下）
     private var ambientOverlay: some View {
         ZStack {
             if ambientLayers.dayNight {
@@ -92,35 +96,28 @@ struct MapHomeView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // ── Map ──
             map
                 .ignoresSafeArea()
 
-            // ── Ambient overlay (weather / day-night / season) ──
             ambientOverlay
 
-            // ── Top-left: city + weather + accuracy ──
             topLeftInfo
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .padding(.leading, 16)
+                .padding(.leading, Theme.Spacing.lg)
                 .padding(.top, 60)
 
-            // ── Right sidebar ──
             rightSidebar
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .padding(.trailing, 12)
+                .padding(.trailing, Theme.Spacing.md)
                 .padding(.top, 60)
 
-            // ── Bottom "好友" pill ──
             bottomPill
-                .padding(.bottom, 120)
+                .padding(.bottom, MapLayout.bottomPillBottom)
 
-            // ── 隐身状态提示（自己隐身时显示）──
             ghostBanner
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                .padding(.bottom, 72)
+                .padding(.bottom, MapLayout.ghostBannerBottom)
 
-            // ── SOS 已发送提示 ──
             if sosSentBanner {
                 sosSentToast
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -128,11 +125,10 @@ struct MapHomeView: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
 
-            // ── Invite sticker (bottom-left) ──
             inviteSticker
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                .padding(.leading, 16)
-                .padding(.bottom, 136)
+                .padding(.leading, Theme.Spacing.lg)
+                .padding(.bottom, MapLayout.inviteStickerBottom)
         }
         .ignoresSafeArea(edges: .bottom)
         .sheet(item: $selection) { sel in
@@ -144,9 +140,7 @@ struct MapHomeView: View {
             AddFriendView().presentationDetents([.medium])
         }
         .sheet(isPresented: $showFriends) {
-            NavigationStack {
-                FriendsView()
-            }
+            NavigationStack { FriendsView() }
         }
         .sheet(isPresented: $showWeather) {
             WeatherDetailView(
@@ -158,8 +152,7 @@ struct MapHomeView: View {
             .presentationDetents([.large])
         }
         .sheet(isPresented: $showReporting) {
-            ReportingSettingsView()
-                .presentationDetents([.large])
+            ReportingSettingsView().presentationDetents([.large])
         }
         .sheet(isPresented: $showAmbient) {
             AmbientPanelView(layers: $ambientLayers, ambient: ambient)
@@ -183,6 +176,7 @@ struct MapHomeView: View {
     }
 
     // MARK: - Map
+
     private var map: some View {
         Map(coordinateRegion: $region,
             showsUserLocation: false,
@@ -207,18 +201,17 @@ struct MapHomeView: View {
         }
     }
 
-    // MARK: - Top-left info block
+    // MARK: - Top-left info
+
     private var topLeftInfo: some View {
         VStack(alignment: .leading, spacing: 6) {
-            // City name
             Text(cityName.isEmpty ? "定位中…" : cityName)
-                .font(.system(size: 34, weight: .heavy))
-                .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.45), radius: 6, y: 2)
+                .font(Theme.Typography.titleLarge())
+                .foregroundStyle(Theme.Palette.textPrimary)
+                .themedShadow(.floating)
                 .allowsHitTesting(false)
 
-            // Row: weather + map type
-            HStack(spacing: 8) {
+            HStack(spacing: Theme.Spacing.sm) {
                 Button { showWeather = true } label: {
                     Label(
                         temperature != nil
@@ -226,47 +219,48 @@ struct MapHomeView: View {
                             : "天气",
                         systemImage: "cloud.fill"
                     )
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.caption(.semibold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
                     .padding(.horizontal, 10).padding(.vertical, 5)
                     .background(.ultraThinMaterial, in: Capsule())
                 }
                 .buttonStyle(.pressable(scale: 0.92))
+                .accessibilityLabel(temperature != nil ? "温度 \(String(format: "%.1f", temperature!)) 度" : "天气")
 
-                HStack(spacing: 4) {
+                HStack(spacing: Theme.Spacing.xs) {
                     Image(systemName: "person.2.fill")
-                        .font(.system(size: 11))
+                        .font(Theme.Typography.symbol(11))
                     Text("好友地图")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(Theme.Typography.caption(.semibold))
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 9, weight: .bold))
+                        .font(Theme.Typography.symbol(9, .bold))
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Palette.textPrimary)
                 .padding(.horizontal, 10).padding(.vertical, 5)
                 .background(.ultraThinMaterial, in: Capsule())
                 .onTapGesture { showFriends = true }
+                .accessibilityLabel("好友地图")
             }
 
-            // 氛围图层入口
             Button { showAmbient = true } label: {
                 Label(ambient.timeOfDay.title, systemImage: ambient.timeOfDay.systemImage)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.caption(.semibold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
                     .padding(.horizontal, 10).padding(.vertical, 5)
                     .background(.ultraThinMaterial, in: Capsule())
             }
             .buttonStyle(.pressable(scale: 0.92))
+            .accessibilityLabel("氛围地图: \(ambient.timeOfDay.title)")
 
-            // Accuracy
             if location.accuracyMeters > 0 {
-                HStack(spacing: 4) {
-                    Image(systemName: "scope").font(.system(size: 10))
+                HStack(spacing: Theme.Spacing.xs) {
+                    Image(systemName: "scope").font(Theme.Typography.symbol(10))
                     Text("定位精度: \(location.accuracyMeters)m")
-                        .font(.system(size: 11, weight: .medium))
-                    Image(systemName: "chevron.right").font(.system(size: 8, weight: .bold))
+                        .font(Theme.Typography.caption2(.medium))
+                    Image(systemName: "chevron.right").font(Theme.Typography.symbol(8, .bold))
                 }
-                .foregroundStyle(.white.opacity(0.85))
-                .padding(.horizontal, 10).padding(.vertical, 4)
+                .foregroundStyle(Theme.Palette.textPrimary.opacity(0.85))
+                .padding(.horizontal, 10).padding(.vertical, Theme.Spacing.xs)
                 .background(Color.white.opacity(0.14), in: Capsule())
                 .onTapGesture { showReporting = true }
             }
@@ -274,45 +268,45 @@ struct MapHomeView: View {
     }
 
     // MARK: - Right sidebar
+
     private var rightSidebar: some View {
         VStack(spacing: 10) {
-            // Add friend
             Button { showAddFriend = true } label: {
                 sidebarButton(icon: "plus", color: .white)
             }
             .buttonStyle(.pressable(scale: 0.88))
+            .accessibilityLabel("添加好友")
 
-            // Friend avatars（前 4 位可见好友；隐身好友不在地图，避免定位到其真实坐标）
             ForEach(session.friends.filter { !$0.isGhostMode }.prefix(4)) { friend in
                 Button { focus(on: friend) } label: {
                     AvatarView(config: friend.avatar, size: 44, showsRing: true,
                                ringColor: selection?.id == friend.id ? Theme.Palette.sky : .white)
-                        .shadow(color: .black.opacity(0.35), radius: 6, y: 3)
+                        .shadowFloating()
                 }
                 .buttonStyle(.pressable(scale: 0.88))
+                .accessibilityLabel("好友: \(friend.displayName)")
             }
 
-            // 隐身好友提示（让“好友没丢”有解释）
             let hiddenFriends = session.friends.filter { $0.isGhostMode }
             if !hiddenFriends.isEmpty {
-                HStack(spacing: 4) {
+                HStack(spacing: Theme.Spacing.xs) {
                     Image(systemName: "moon.zzz.fill")
-                        .font(.system(size: 11))
+                        .font(Theme.Typography.symbol(11))
                     Text("\(hiddenFriends.count) 隐身")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(Theme.Typography.caption2(.semibold))
                 }
                 .foregroundStyle(Theme.Palette.subtle)
-                .padding(.horizontal, 8).padding(.vertical, 5)
+                .padding(.horizontal, Theme.Spacing.sm)
+                .padding(.vertical, 5)
                 .background(Theme.Palette.card.opacity(0.9), in: Capsule())
             }
 
-            // Locate me
             Button(action: centerOnMe) {
                 sidebarButton(icon: "location.fill", color: Theme.Palette.sky)
             }
             .buttonStyle(.pressable(scale: 0.88))
+            .accessibilityLabel("定位到我的位置")
 
-            // SOS 一键求助
             Button {
                 Haptics.light()
                 showSOSConfirm = true
@@ -322,17 +316,18 @@ struct MapHomeView: View {
                         .fill(Theme.Palette.danger)
                         .frame(width: 44, height: 44)
                     if sosSending {
-                        ProgressView().tint(.white)
+                        ProgressView().tint(Theme.Palette.textPrimary)
                     } else {
                         Text("SOS")
-                            .font(.system(size: 13, weight: .heavy))
-                            .foregroundStyle(.white)
+                            .font(Theme.Typography.subheadline(.heavy))
+                            .foregroundStyle(Theme.Palette.textPrimary)
                     }
                 }
-                .shadow(color: Theme.Palette.danger.opacity(0.5), radius: 8, y: 3)
+                .themedShadow(.glow(Theme.Palette.danger))
             }
             .buttonStyle(.pressable(scale: 0.88))
             .disabled(sosSending)
+            .accessibilityLabel("紧急求助 SOS")
         }
         .confirmationDialog("发出紧急求助？", isPresented: $showSOSConfirm, titleVisibility: .visible) {
             Button("立即向所有好友求助", role: .destructive) { sendSOS() }
@@ -344,89 +339,96 @@ struct MapHomeView: View {
 
     private func sidebarButton(icon: String, color: Color) -> some View {
         Image(systemName: icon)
-            .font(.system(size: 17, weight: .semibold))
+            .font(Theme.Typography.symbol(17, .semibold))
             .foregroundStyle(color)
             .frame(width: 44, height: 44)
             .background(Theme.Palette.card, in: Circle())
             .overlay(Circle().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
-            .shadow(color: .black.opacity(0.35), radius: 6, y: 3)
+            .shadowFloating()
     }
 
     // MARK: - Bottom pill
+
     private var bottomPill: some View {
         Button { showFriends = true } label: {
             HStack(spacing: 6) {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(Theme.Typography.caption(.semibold))
                 Text("好友")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(Theme.Typography.callout(.bold))
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.Palette.textPrimary)
             .padding(.horizontal, 22).padding(.vertical, 11)
             .background(Theme.Palette.card.opacity(0.92), in: Capsule())
             .overlay(Capsule().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
-            .shadow(color: .black.opacity(0.35), radius: 10, y: 4)
+            .shadowFloating()
         }
         .buttonStyle(.pressable(scale: 0.92))
+        .accessibilityLabel("好友列表")
     }
 
-    // MARK: - 隐身提示（仅自己隐身时显示）
+    // MARK: - 隐身提示
+
     private var ghostBanner: some View {
         Group {
             if session.currentUser?.isGhostMode == true {
-                HStack(spacing: 8) {
+                HStack(spacing: Theme.Spacing.sm) {
                     Image(systemName: "moon.zzz.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(Theme.Typography.callout(.semibold))
                     Text("你已隐身 · 好友看不到你的实时位置")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.Typography.subheadline(.semibold))
                 }
-                .foregroundStyle(.white)
-                .padding(.horizontal, 14).padding(.vertical, 9)
+                .foregroundStyle(Theme.Palette.textPrimary)
+                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.vertical, 9)
                 .background(Color.black.opacity(0.62), in: Capsule())
-                .shadow(color: .black.opacity(0.3), radius: 8, y: 3)
+                .shadowFloating()
+                .accessibilityLabel("你已隐身")
             }
         }
     }
 
     // MARK: - Invite sticker
+
     private var inviteSticker: some View {
         Button { showAddFriend = true } label: {
             VStack(spacing: 3) {
                 ZStack {
                     Circle()
-                        .fill(
-                            LinearGradient(colors: [Color(hex: 0x6C5CE7), Color(hex: 0xFD79A8)],
-                                           startPoint: .topLeading, endPoint: .bottomTrailing)
-                        )
+                        .fill(Theme.brandGradient)
                         .frame(width: 52, height: 52)
                     Image(systemName: "person.badge.plus")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundStyle(.white)
+                        .font(Theme.Typography.symbol(22, .bold))
+                        .foregroundStyle(Theme.Palette.textPrimary)
                 }
-                .shadow(color: Theme.Palette.primary.opacity(0.5), radius: 10, y: 4)
+                .themedShadow(.glow(Theme.Palette.primary))
 
                 Text("邀请")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .font(Theme.Typography.caption2(.bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .padding(.horizontal, Theme.Spacing.sm)
+                    .padding(.vertical, 3)
                     .background(Color.black.opacity(0.55), in: Capsule())
             }
         }
         .buttonStyle(.pressable(scale: 0.88))
+        .accessibilityLabel("邀请好友")
     }
 
-    // MARK: - SOS 已发送提示条
+    // MARK: - SOS sent toast
+
     private var sosSentToast: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Theme.Spacing.sm) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 15, weight: .semibold))
+                .font(Theme.Typography.body(.semibold))
             Text("求助已发出 · 好友会在聊天中看到你的位置")
-                .font(.system(size: 13, weight: .semibold))
+                .font(Theme.Typography.subheadline(.semibold))
         }
-        .foregroundStyle(.white)
-        .padding(.horizontal, 14).padding(.vertical, 9)
+        .foregroundStyle(Theme.Palette.textPrimary)
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.vertical, 9)
         .background(Theme.Palette.danger.opacity(0.92), in: Capsule())
-        .shadow(color: .black.opacity(0.3), radius: 8, y: 3)
+        .shadowFloating()
     }
 
     private func sendSOS() {
@@ -445,6 +447,7 @@ struct MapHomeView: View {
     }
 
     // MARK: - Actions
+
     private func focus(on friend: Friend) {
         Haptics.light()
         withAnimation(.spring(response: 0.40, dampingFraction: 0.82)) {
@@ -475,6 +478,7 @@ struct MapHomeView: View {
     }
 
     // MARK: - Data fetching
+
     private func fetchCityName(for coord: Coordinate) {
         let geocoder = CLGeocoder()
         let loc = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
@@ -507,103 +511,5 @@ struct MapHomeView: View {
             let code = await fetchWeatherCode(for: coord)
             await MainActor.run { weatherCode = code }
         }
-    }
-}
-
-// MARK: - 氛围地图设置面板（天气 / 昼夜 / 季节 图层开关）
-private struct AmbientPanelView: View {
-    @Binding var layers: AmbientLayers
-    let ambient: AmbientState
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 18) {
-                    currentCard
-                    layerToggle(title: "昼夜", subtitle: ambient.timeOfDay.title,
-                                icon: ambient.timeOfDay.systemImage, color: ambient.timeOfDay.tint,
-                                isOn: $layers.dayNight)
-                    layerToggle(title: "天气", subtitle: ambient.weather.title,
-                                icon: ambient.weather.systemImage, color: ambient.weather.tint,
-                                isOn: $layers.weather)
-                    layerToggle(title: "季节", subtitle: ambient.season.title,
-                                icon: ambient.season.systemImage, color: ambient.season.tint,
-                                isOn: $layers.season)
-                    tipCard
-                }
-                .padding(16)
-            }
-            .background(Theme.Palette.groupedBackground.ignoresSafeArea())
-            .navigationTitle("氛围地图")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button {
-                        Haptics.light()
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Theme.Palette.subtle)
-                    }
-                }
-            }
-        }
-    }
-
-    private var currentCard: some View {
-        HStack(spacing: 12) {
-            Image(systemName: ambient.timeOfDay.systemImage)
-                .font(.system(size: 26))
-                .foregroundStyle(ambient.timeOfDay.tint)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(ambient.summary)
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Theme.Palette.ink)
-                Text("天气、昼夜与季节会作为淡色图层叠加在地图上")
-                    .font(.caption)
-                    .foregroundStyle(Theme.Palette.subtle)
-            }
-            Spacer()
-        }
-        .padding(16)
-        .card()
-    }
-
-    private func layerToggle(title: String, subtitle: String, icon: String,
-                             color: Color, isOn: Binding<Bool>) -> some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle().fill(color.opacity(0.20)).frame(width: 40, height: 40)
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(color)
-            }
-            Text(title)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Theme.Palette.ink)
-            Text(subtitle)
-                .font(.caption)
-                .foregroundStyle(Theme.Palette.subtle)
-            Spacer()
-            Toggle("", isOn: isOn).labelsHidden()
-        }
-        .padding(.horizontal, 16).padding(.vertical, 12)
-        .card()
-    }
-
-    private var tipCard: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "mappin.and.ellipse")
-                .font(.system(size: 14))
-                .foregroundStyle(Theme.Palette.subtle)
-            Text("地图上的好友点位会按各自所在地的当地时间显示昼夜，异地好友此刻是白天还是夜晚一目了然。")
-                .font(.caption)
-                .foregroundStyle(Theme.Palette.subtle)
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.Palette.card.opacity(0.6), in: RoundedRectangle(cornerRadius: 14))
     }
 }

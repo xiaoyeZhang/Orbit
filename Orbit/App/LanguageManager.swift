@@ -39,7 +39,7 @@ final class LanguageManager: ObservableObject {
         if let saved, let lang = AppLanguage(rawValue: saved) {
             current = lang
         } else {
-            let systemLang = Locale.current.languageCode ?? "zh"
+            let systemLang = Locale.current.language.languageCode?.identifier ?? "zh"
             current = systemLang.hasPrefix("en") ? .en : .zh
         }
     }

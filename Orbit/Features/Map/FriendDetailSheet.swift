@@ -33,7 +33,7 @@ struct FriendDetailSheet: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(Theme.Typography.body(.semibold))
                             .foregroundStyle(Theme.Palette.subtle)
                     }
                 }
@@ -53,9 +53,9 @@ struct FriendDetailSheet: View {
                     mapPreview(friend)
                     actionRow(friend)
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.top, 18)
-                .padding(.bottom, 32)
+                .padding(.bottom, Theme.Spacing.xxl)
             }
         }
         .background(Theme.Palette.groupedBackground.ignoresSafeArea())
@@ -95,32 +95,32 @@ struct FriendDetailSheet: View {
 
                 VStack(spacing: 5) {
                     Text(friend.displayName)
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundStyle(.white)
+                        .font(Theme.Typography.title())
+                        .foregroundStyle(Theme.Palette.textPrimary)
 
                     HStack(spacing: 5) {
                         Image(systemName: "mappin.circle.fill")
-                            .font(.system(size: 13))
+                            .font(Theme.Typography.subheadline())
                         Text(friend.isGhostMode ? "对方已开启隐身" : friend.locationName)
                             .lineLimit(1)
                     }
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .font(Theme.Typography.subheadline(.medium))
+                    .foregroundStyle(Theme.Palette.textPrimary.opacity(0.85))
 
                     if !friend.isGhostMode {
                         HStack(spacing: 5) {
                             Image(systemName: friend.coordinate.localTimeOfDay.systemImage)
-                                .font(.system(size: 12))
+                                .font(Theme.Typography.caption())
                             Text("对方 \(friend.coordinate.localTimeOfDay.title) · \(friendWeather.title) · \(friend.coordinate.localHour)时")
                                 .lineLimit(1)
                         }
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.70))
+                        .font(Theme.Typography.caption(.medium))
+                        .foregroundStyle(Theme.Palette.textPrimary.opacity(0.70))
                     }
 
                     Text("更新于 \(friend.lastUpdated.relativeShort)")
                         .font(.caption)
-                        .foregroundStyle(.white.opacity(0.60))
+                        .foregroundStyle(Theme.Palette.textPrimary.opacity(0.60))
                 }
             }
             .padding(.bottom, 24)
@@ -157,14 +157,14 @@ struct FriendDetailSheet: View {
                     .fill(AnyShapeStyle(gradient))
                     .frame(width: 40, height: 40)
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.headline(.bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
             }
-            Text(value).font(.system(size: 15, weight: .bold)).foregroundStyle(Theme.Palette.ink)
+            Text(value).font(Theme.Typography.body(.bold)).foregroundStyle(Theme.Palette.ink)
             Text(label).font(.caption2).foregroundStyle(Theme.Palette.subtle)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .padding(.vertical, Theme.Spacing.lg)
         .card()
     }
 
@@ -186,10 +186,10 @@ struct FriendDetailSheet: View {
             if !friend.isGhostMode {
                 HStack(spacing: 4) {
                     Image(systemName: "mappin.circle.fill")
-                        .font(.system(size: 12))
+                        .font(Theme.Typography.caption())
                         .foregroundStyle(heroColor(friend))
                     Text(friend.locationName)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(Theme.Typography.caption(.semibold))
                         .foregroundStyle(Theme.Palette.ink)
                         .lineLimit(1)
                 }
@@ -199,7 +199,7 @@ struct FriendDetailSheet: View {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
+        .themedShadow(.card)
     }
 
     // MARK: - 操作按钮
@@ -235,11 +235,11 @@ struct FriendDetailSheet: View {
     private func actionChip<G: ShapeStyle>(icon: String, label: String, gradient: G) -> some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 18, weight: .bold))
+                .font(Theme.Typography.headline(.bold))
             Text(label)
-                .font(.system(size: 12, weight: .bold))
+                .font(Theme.Typography.caption(.bold))
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(Theme.Palette.textPrimary)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14)
         .background(
@@ -301,7 +301,7 @@ struct FriendDetailSheet: View {
     private var notFoundPlaceholder: some View {
         VStack(spacing: 14) {
             Image(systemName: "person.slash")
-                .font(.system(size: 44, weight: .light))
+                .font(Theme.Typography.display())
                 .foregroundStyle(Theme.Palette.subtle)
             Text("好友不存在或已被移除")
                 .font(.subheadline)

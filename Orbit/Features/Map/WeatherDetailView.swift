@@ -22,7 +22,7 @@ struct WeatherDetailView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color(hex: 0x1A1A2E), Color(hex: 0x0D0D0D)],
+                colors: [Theme.Palette.memberGradientEnd, Theme.Palette.bg],
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()
@@ -40,26 +40,26 @@ struct WeatherDetailView: View {
                         Spacer()
                         Button { dismiss() } label: {
                             Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(Theme.Typography.callout(.bold))
                                 .foregroundStyle(Theme.Palette.textSecondary)
                                 .frame(width: 32, height: 32)
                                 .background(Theme.Palette.card2, in: Circle())
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 20)
+                    .padding(.horizontal, Theme.Spacing.xl)
+                    .padding(.top, Theme.Spacing.xl)
 
                     // ── Big weather display ──
                     VStack(spacing: 10) {
                         Image(systemName: "cloud.fill")
-                            .font(.system(size: 72))
-                            .foregroundStyle(.white.opacity(0.85))
+                            .font(Theme.Typography.displayLarge())
+                            .foregroundStyle(Theme.Palette.textPrimary.opacity(0.85))
 
                         Text(String(format: "%.1f°C", temperature))
-                            .font(.system(size: 60, weight: .thin, design: .rounded))
-                            .foregroundStyle(.white)
+                            .font(Theme.Typography.displayLarge(.thin, design: .rounded))
+                            .foregroundStyle(Theme.Palette.textPrimary)
                     }
-                    .padding(.top, 8)
+                    .padding(.top, Theme.Spacing.sm)
 
                     // ── Info grid ──
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
@@ -74,28 +74,28 @@ struct WeatherDetailView: View {
                             infoCard(title: "纬度", value: latitude, icon: "arrow.up.arrow.down")
                         }
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, Theme.Spacing.xl)
 
                     // ── Tips ──
                     VStack(alignment: .leading, spacing: 10) {
                         Text("温馨提示:")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(.white)
+                            .font(Theme.Typography.subheadline(.bold))
+                            .foregroundStyle(Theme.Palette.textPrimary)
                         Text("App 获取的定位依赖于手机系统提供，主要会根据卫星信号来定位，在建筑物、地下室、地铁内等地区，GPS 信号会很弱，容易受到干扰。\n\n应用会使用基站定位、WiFi定位等方式进行辅助定位，帮助位置更准确，但仍受限于手机性能影响，可能导致位置数据不准。\n\n一般情况下，当你处于空旷环境中，GPS 信号会更好一些。")
-                            .font(.system(size: 12))
+                            .font(Theme.Typography.caption())
                             .foregroundStyle(Theme.Palette.textSecondary)
                             .lineSpacing(4)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
+                    .padding(.horizontal, Theme.Spacing.xl)
+                    .padding(.vertical, Theme.Spacing.lg)
                     .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 16))
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, Theme.Spacing.xl)
 
                     // ── Unlock button ──
                     Button { showMembership = true } label: {
                         Text("立即解锁")
-                            .font(.system(size: 17, weight: .bold))
-                            .foregroundStyle(.white)
+                            .font(Theme.Typography.headline(.bold))
+                            .foregroundStyle(Theme.Palette.textPrimary)
                             .frame(maxWidth: .infinity).frame(height: 56)
                             .background(
                                 LinearGradient(colors: [Theme.Palette.sky, Theme.Palette.primary],
@@ -103,7 +103,7 @@ struct WeatherDetailView: View {
                                 in: RoundedRectangle(cornerRadius: 16)
                             )
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, Theme.Spacing.xl)
                     .padding(.bottom, 40)
                 }
             }
@@ -116,22 +116,22 @@ struct WeatherDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(Theme.Typography.caption(.medium))
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Spacer()
                 if warning {
                     Image(systemName: "exclamationmark.circle.fill")
-                        .font(.system(size: 12))
+                        .font(Theme.Typography.caption())
                         .foregroundStyle(Theme.Palette.danger)
                 }
             }
             HStack(spacing: 8) {
                 Text(value)
-                    .font(.system(size: large ? 36 : 20, weight: large ? .bold : .semibold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .font(large ? Theme.Typography.titleLarge(.bold, design: .rounded) : Theme.Typography.title3(.semibold, design: .rounded))
+                    .foregroundStyle(Theme.Palette.textPrimary)
                 Spacer()
                 Image(systemName: icon)
-                    .font(.system(size: large ? 28 : 20))
+                    .font(large ? Theme.Typography.title2() : Theme.Typography.title3())
                     .foregroundStyle(iconColor.opacity(0.6))
             }
         }
@@ -143,11 +143,11 @@ struct WeatherDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("海拔")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(Theme.Typography.caption(.medium))
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Spacer()
                 Image(systemName: "exclamationmark.circle.fill")
-                    .font(.system(size: 12))
+                    .font(Theme.Typography.caption())
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
             // Simplified altitude graph
@@ -179,8 +179,8 @@ struct WeatherDetailView: View {
                     .offset(x: 12, y: -28)
             }
             Text(altitude)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(.white)
+                .font(Theme.Typography.headline(.semibold))
+                .foregroundStyle(Theme.Palette.textPrimary)
         }
         .padding(14)
         .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 14))

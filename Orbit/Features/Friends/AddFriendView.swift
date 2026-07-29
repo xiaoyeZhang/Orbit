@@ -33,8 +33,8 @@ struct AddFriendView: View {
 
                     Color.clear.frame(height: 20)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
+                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.top, Theme.Spacing.md)
             }
             .background(Theme.Palette.bg.ignoresSafeArea())
             .navigationTitle("添加好友")
@@ -56,11 +56,11 @@ struct AddFriendView: View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(Theme.Palette.textSecondary)
-                .font(.system(size: 15))
+                .font(Theme.Typography.body())
             TextField("通过用户ID搜索", text: $code)
                 .textInputAutocapitalization(.characters)
                 .autocorrectionDisabled()
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Palette.textPrimary)
                 .tint(Theme.Palette.primary)
             if !code.isEmpty {
                 Button { code = "" } label: {
@@ -69,7 +69,7 @@ struct AddFriendView: View {
                 }
             }
         }
-        .padding(.horizontal, 16).padding(.vertical, 14)
+        .padding(.horizontal, Theme.Spacing.lg).padding(.vertical, 14)
         .background(Theme.Palette.card2, in: RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(
             code.isEmpty ? Theme.Palette.separator : Theme.Palette.primary.opacity(0.5),
@@ -87,12 +87,12 @@ struct AddFriendView: View {
             }
         } label: {
             Group {
-                if session.isBusy { ProgressView().tint(.white) }
+                if session.isBusy { ProgressView().tint(Theme.Palette.textPrimary) }
                 else { Text("添加好友").fontWeight(.bold) }
             }
             .frame(maxWidth: .infinity).frame(height: 50)
             .background(Theme.Palette.primary, in: RoundedRectangle(cornerRadius: 14))
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.Palette.textPrimary)
         }
         .disabled(code.count < 4 || session.isBusy)
         .opacity(code.count < 4 ? 0.55 : 1)
@@ -122,34 +122,34 @@ struct AddFriendView: View {
         Button(action: action) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(Theme.Typography.title3(.semibold))
                     .foregroundStyle(iconColor)
                     .frame(width: 44, height: 44)
                     .background(iconColor.opacity(0.15), in: Circle())
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(label)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .font(Theme.Typography.body(.semibold))
+                        .foregroundStyle(Theme.Palette.textPrimary)
                     Text(sub)
-                        .font(.system(size: 12))
+                        .font(Theme.Typography.caption())
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(Theme.Typography.caption(.semibold))
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
-            .padding(.horizontal, 16).padding(.vertical, 13)
+            .padding(.horizontal, Theme.Spacing.lg).padding(.vertical, Theme.Spacing.listRowV)
             .contentShape(Rectangle())
             .overlay(alignment: .bottom) {
                 if !last {
                     Rectangle()
                         .fill(Theme.Palette.separator)
                         .frame(height: 0.5)
-                        .padding(.leading, 74)
+                        .padding(.leading, Theme.Spacing.listDividerLeading)
                 }
             }
         }
@@ -161,14 +161,14 @@ struct AddFriendView: View {
         VStack(spacing: 12) {
             HStack {
                 Text("我的邀请码")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(Theme.Typography.subheadline(.semibold))
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Spacer()
             }
 
             Text(session.currentUser?.inviteCode ?? "—")
-                .font(.system(size: 28, weight: .heavy, design: .monospaced))
-                .foregroundStyle(.white)
+                .font(Theme.Typography.title2(.heavy, design: .monospaced))
+                .foregroundStyle(Theme.Palette.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Button {
@@ -176,7 +176,7 @@ struct AddFriendView: View {
                 Toast.show("已复制邀请码")
             } label: {
                 Label("复制", systemImage: "doc.on.doc")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(Theme.Typography.callout(.bold))
                     .foregroundStyle(Theme.Palette.primary)
                     .frame(maxWidth: .infinity).frame(height: 44)
                     .background(Theme.Palette.primary.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
@@ -184,7 +184,7 @@ struct AddFriendView: View {
             }
             .buttonStyle(.pressable(scale: 0.94))
         }
-        .padding(16)
+        .padding(Theme.Spacing.lg)
         .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 16))
     }
 
@@ -192,17 +192,17 @@ struct AddFriendView: View {
     private var syncCard: some View {
         VStack(spacing: 10) {
             Text("同步你的联系人")
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(.white)
+                .font(Theme.Typography.body(.bold))
+                .foregroundStyle(Theme.Palette.textPrimary)
             Text("给应用开启通讯录权限，我们可以帮助你找到已在应用上的朋友")
-                .font(.system(size: 13))
+                .font(Theme.Typography.subheadline())
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .multilineTextAlignment(.center)
 
             Button { requestContacts() } label: {
                 Text(contactsStatus == .authorized ? "已开启 ✓" : "去同步")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(Theme.Typography.body(.bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
                     .frame(maxWidth: .infinity).frame(height: 48)
                     .background(
                         contactsStatus == .authorized ? Theme.Palette.mint : Theme.Palette.primary,
@@ -212,7 +212,7 @@ struct AddFriendView: View {
             .buttonStyle(.pressable(scale: 0.94))
             .disabled(contactsStatus == .authorized)
         }
-        .padding(16)
+        .padding(Theme.Spacing.lg)
         .background(Theme.Palette.card, in: RoundedRectangle(cornerRadius: 16))
     }
 
@@ -227,7 +227,7 @@ struct AddFriendView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 220, height: 220)
-                        .padding(20)
+                        .padding(Theme.Spacing.xl)
                         .background(.white, in: RoundedRectangle(cornerRadius: 20))
                         .shadow(color: .black.opacity(0.15), radius: 20, y: 8)
                 }
@@ -235,9 +235,9 @@ struct AddFriendView: View {
                 VStack(spacing: 6) {
                     Text(session.currentUser?.displayName ?? "")
                         .font(.title2.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.Palette.textPrimary)
                     Text(session.currentUser?.inviteCode ?? "")
-                        .font(.system(size: 18, weight: .semibold, design: .monospaced))
+                        .font(Theme.Typography.headline(.semibold, design: .monospaced))
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
 
@@ -276,7 +276,7 @@ struct AddFriendView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("关闭") { showScanner = false }
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.Palette.textPrimary)
                 }
             }
         }
@@ -431,7 +431,7 @@ class ScannerVC: UIViewController {
         DispatchQueue.main.async {
             let label = UILabel()
             label.text = "相机不可用\n(模拟器不支持)"
-            label.textColor = .white
+            label.textColor = UIColor(Theme.Palette.textPrimary)
             label.textAlignment = .center
             label.numberOfLines = 0
             label.frame = self.view.bounds
@@ -452,7 +452,7 @@ class ScannerVC: UIViewController {
             path.move(to: a); path.addLine(to: b); path.addLine(to: c)
             let layer = CAShapeLayer()
             layer.path = path.cgPath
-            layer.strokeColor = UIColor.white.cgColor
+            layer.strokeColor = UIColor(Theme.Palette.textPrimary).cgColor
             layer.lineWidth = lw
             layer.fillColor = UIColor.clear.cgColor
             layer.lineCap = .round

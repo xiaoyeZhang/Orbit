@@ -25,6 +25,13 @@
 		B5E4428C3010CCD700773483 /* OrbitCore in Frameworks */ = {isa = PBXBuildFile; productRef = B5E4428B3010CCD700773483 /* OrbitCore */; };
 		B5E4428F3010CCE000773483 /* OrbitServices in Frameworks */ = {isa = PBXBuildFile; productRef = B5E4428E3010CCE000773483 /* OrbitServices */; };
 		B5E442923010CCE700773483 /* OrbitUI in Frameworks */ = {isa = PBXBuildFile; productRef = B5E442913010CCE700773483 /* OrbitUI */; };
+		B5EB229630198CCA001E0B65 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229430198CCA001E0B65 /* ChatViewModel.swift */; };
+		B5EB229730198CCA001E0B65 /* EmojiBurstOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229530198CCA001E0B65 /* EmojiBurstOverlay.swift */; };
+		B5EB229930198CDA001E0B65 /* AmbientPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229830198CDA001E0B65 /* AmbientPanelView.swift */; };
+		B5EB229B30198CE7001E0B65 /* PlaceDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229A30198CE7001E0B65 /* PlaceDetailSheet.swift */; };
+		B5EB229F30198CF0001E0B65 /* EntryDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229D30198CF0001E0B65 /* EntryDetailSheet.swift */; };
+		B5EB22A030198CF0001E0B65 /* QuickFeatureDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229E30198CF0001E0B65 /* QuickFeatureDetailSheet.swift */; };
+		B5EB22A130198CF0001E0B65 /* DiaryDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EB229C30198CF0001E0B65 /* DiaryDetailSheet.swift */; };
 		BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */; };
 		CD4D6385348CB1F505F7F62D /* StatusHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */; };
 		CEE76672AED549A4A3F1F5B2 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */; };
@@ -57,6 +64,13 @@
 		AD22F943B27846398963B03E /* WeatherDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailView.swift; sourceTree = "<group>"; };
 		B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailSheet.swift; sourceTree = "<group>"; };
 		B5DC978677544AF1AB630200 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
+		B5EB229430198CCA001E0B65 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		B5EB229530198CCA001E0B65 /* EmojiBurstOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiBurstOverlay.swift; sourceTree = "<group>"; };
+		B5EB229830198CDA001E0B65 /* AmbientPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientPanelView.swift; sourceTree = "<group>"; };
+		B5EB229A30198CE7001E0B65 /* PlaceDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailSheet.swift; sourceTree = "<group>"; };
+		B5EB229C30198CF0001E0B65 /* DiaryDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryDetailSheet.swift; sourceTree = "<group>"; };
+		B5EB229D30198CF0001E0B65 /* EntryDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryDetailSheet.swift; sourceTree = "<group>"; };
+		B5EB229E30198CF0001E0B65 /* QuickFeatureDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickFeatureDetailSheet.swift; sourceTree = "<group>"; };
 		B7CDA78EA1804CD18AC7D530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusHistoryView.swift; sourceTree = "<group>"; };
 		DE384496F97606BD6D7C5641 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -100,6 +114,7 @@
 				38BDB14218C6806634F38CD7 /* ProfileView.swift */,
 				FA65C3A12AE6474C8907D2D2 /* MembershipView.swift */,
 				EDBF7ACF96F60530C2D4DAAC /* ReportingSettingsView.swift */,
+				B5EB229A30198CE7001E0B65 /* PlaceDetailSheet.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -129,23 +144,18 @@
 		2B731CEFC6751AAE0EC69B98 = {
 			isa = PBXGroup;
 			children = (
-				2ED1556B2FE97529001ADD7F /* Packages */,
 				951A8348117A3E83C2CDAB15 /* Orbit */,
 				0A2C978E52A76F0AA9F68BB5 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		2ED1556B2FE97529001ADD7F /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Packages;
 			sourceTree = "<group>";
 		};
 		45782AD4D7A31215202EA2F3 /* History */ = {
 			isa = PBXGroup;
 			children = (
 				C69B045CB622B4F5B881C365 /* StatusHistoryView.swift */,
+				B5EB229C30198CF0001E0B65 /* DiaryDetailSheet.swift */,
+				B5EB229D30198CF0001E0B65 /* EntryDetailSheet.swift */,
+				B5EB229E30198CF0001E0B65 /* QuickFeatureDetailSheet.swift */,
 				E181889029FE4C18AD9AFD4D /* Localizable.strings */,
 			);
 			path = History;
@@ -166,6 +176,7 @@
 				B158E2904C303DB3D06D2931 /* FriendDetailSheet.swift */,
 				0A34A8D71FA3D56ACB389DE1 /* MapHomeView.swift */,
 				AD22F943B27846398963B03E /* WeatherDetailView.swift */,
+				B5EB229830198CDA001E0B65 /* AmbientPanelView.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -203,6 +214,8 @@
 			isa = PBXGroup;
 			children = (
 				E26D2C975F40BC83CEBAC7BA /* ChatView.swift */,
+				B5EB229430198CCA001E0B65 /* ChatViewModel.swift */,
+				B5EB229530198CCA001E0B65 /* EmojiBurstOverlay.swift */,
 				3E50F977FEA5E49A603B31EF /* ConversationsView.swift */,
 			);
 			path = Chat;
@@ -257,7 +270,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					42AEFBAE01D2DFD981F7DA7D = {
 						CreatedOnToolsVersion = 14.2;
@@ -307,7 +320,13 @@
 			files = (
 				9E0CAE2BE0F6975A245BB273 /* AppDelegate.swift in Sources */,
 				FF4B752F86B987838BE3A409 /* AppEnvironment.swift in Sources */,
+				B5EB229630198CCA001E0B65 /* ChatViewModel.swift in Sources */,
+				B5EB229730198CCA001E0B65 /* EmojiBurstOverlay.swift in Sources */,
+				B5EB229930198CDA001E0B65 /* AmbientPanelView.swift in Sources */,
 				F59ECA25DF584B7185507A00 /* LanguageManager.swift in Sources */,
+				B5EB229F30198CF0001E0B65 /* EntryDetailSheet.swift in Sources */,
+				B5EB22A030198CF0001E0B65 /* QuickFeatureDetailSheet.swift in Sources */,
+				B5EB22A130198CF0001E0B65 /* DiaryDetailSheet.swift in Sources */,
 				0CB79563C68C21CAF36BC759 /* AppServices.swift in Sources */,
 				F0097559B104D2E1D5AFEC7F /* OrbitApp.swift in Sources */,
 				6F27C16891ACCAF8DA512449 /* RootView.swift in Sources */,
@@ -318,6 +337,7 @@
 				FD9742195984F61EFF8DF51A /* FriendDetailSheet.swift in Sources */,
 				BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */,
 				0E81C6F6B4308B354B8A4877 /* LoginView.swift in Sources */,
+				B5EB229B30198CE7001E0B65 /* PlaceDetailSheet.swift in Sources */,
 				4325BCC265BADD0B90244CDE /* AvatarEditorView.swift in Sources */,
 				5B9ABAE8B982A5C74910D661 /* ProfileView.swift in Sources */,
 				5A5F042553321041247B447E /* ReportingSettingsView.swift in Sources */,
@@ -348,20 +368,47 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -397,14 +444,34 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -413,11 +480,18 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};

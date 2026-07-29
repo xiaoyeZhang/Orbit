@@ -15,11 +15,12 @@ struct ProfileView: View {
     @State private var showMembership    = false
     @State private var showLangPicker    = false
     @State private var selectedPlace: Place?
+    @State private var loadingProfile = true
 
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 16) {
+                VStack(spacing: Theme.Spacing.lg) {
                     heroHeader
                         .popIn(delay: 0)
 
@@ -35,12 +36,13 @@ struct ProfileView: View {
                     settingsSection
                         .popIn(delay: 0.18)
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.top, 10)
                 .padding(.bottom, 110)
             }
             .background(Theme.Palette.groupedBackground.ignoresSafeArea())
             .navigationTitle("我的")
+            .accessibilityLabel("个人中心")
             .sheet(isPresented: $showAvatarEditor) {
                 if let user = session.currentUser {
                     AvatarEditorView(initial: user)
@@ -77,26 +79,25 @@ struct ProfileView: View {
                 Task {
                     await session.loadIntimateRelation()
                     await session.loadMembershipStatus()
+                    loadingProfile = false
                 }
             }
         }
     }
 
-    // MARK: - 英雄头部（渐变条 + 头像骑缝 + 名字区）
+    // MARK: - 英雄头部
+
     private var heroHeader: some View {
         ZStack(alignment: .top) {
-            // 白色卡片整体（含顶部渐变区 + 底部文字区）
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Theme.Palette.surface)
-                .shadow(color: .black.opacity(0.07), radius: 16, y: 6)
+                .shadowElevated()
 
             VStack(spacing: 0) {
-                // 渐变顶部带
                 ZStack {
                     RoundedRectangle(cornerRadius: 24, style: .continuous)
                         .fill(Theme.brandGradient)
                         .frame(height: 116)
-                    // 装饰圆
                     Circle().fill(.white.opacity(0.08)).frame(width: 140)
                         .frame(maxWidth: .infinity, alignment: .trailing).offset(x: 40, y: -30)
                     Circle().fill(.white.opacity(0.05)).frame(width: 80)
@@ -104,7 +105,6 @@ struct ProfileView: View {
                 }
                 .clipped()
 
-                // 文字区
                 VStack(spacing: 6) {
                     Text(session.currentUser?.displayName ?? "—")
                         .font(.title2.bold())
@@ -117,41 +117,42 @@ struct ProfileView: View {
                             .multilineTextAlignment(.center)
                     }
 
-                    HStack(spacing: 8) {
+                    HStack(spacing: Theme.Spacing.sm) {
                         BatteryBadge(presence: reporter.currentPresence)
                         MovementChip(presence: reporter.currentPresence)
                     }
                     .padding(.top, 2)
                 }
-                .padding(.top, 54)   // 为头像悬浮留空
+                .padding(.top, 54)
                 .padding(.bottom, 22)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Theme.Spacing.lg)
                 .frame(maxWidth: .infinity)
             }
 
-            // 头像骑在渐变条和文字区的接缝上
             Button { showAvatarEditor = true } label: {
                 ZStack(alignment: .bottomTrailing) {
                     AvatarView(config: session.currentUser?.avatar ?? .default,
                                size: 88, showsRing: true, ringColor: .white)
-                        .shadow(color: Theme.Palette.primary.opacity(0.35), radius: 14, y: 6)
+                        .themedShadow(.glow(Theme.Palette.primary))
                         .breathing(scale: 1.028, duration: 3.5)
 
                     ZStack {
                         Circle().fill(Theme.Palette.primary).frame(width: 26, height: 26)
                         Image(systemName: "camera.fill")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(.white)
+                            .font(Theme.Typography.symbol(11, .bold))
+                            .foregroundStyle(Theme.Palette.textPrimary)
                     }
-                    .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                    .themedShadow(.floating)
                 }
             }
             .buttonStyle(.pressable(scale: 0.92))
-            .offset(y: 116 - 44)   // 接缝处：渐变高度 - 头像半径
+            .accessibilityLabel("编辑头像")
+            .offset(y: 116 - 44)
         }
     }
 
     // MARK: - 统计行
+
     private var statsRow: some View {
         HStack(spacing: 10) {
             statPill(value: "\(session.friends.count)",       label: "好友",  gradient: Theme.brandGradient)
@@ -163,86 +164,112 @@ struct ProfileView: View {
     private func statPill<G: ShapeStyle>(value: String, label: String, gradient: G) -> some View {
         VStack(spacing: 5) {
             Text(value)
-                .font(.system(size: 22, weight: .heavy, design: .rounded))
+                .font(Theme.Typography.title(.heavy, design: .rounded))
                 .foregroundStyle(AnyShapeStyle(gradient))
             Text(label)
                 .font(.caption)
                 .foregroundStyle(Theme.Palette.subtle)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
+        .padding(.vertical, Theme.Spacing.md)
         .card()
     }
 
     // MARK: - 亲密关系
+
     private var intimateSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.sm) {
                 Image(systemName: "heart.fill")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(Theme.Typography.callout(.bold))
                     .foregroundStyle(Theme.Palette.danger)
                 Text("亲密关系")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(Theme.Typography.body(.bold))
                     .foregroundStyle(Theme.Palette.ink)
                 Spacer()
                 if let rel = session.intimateRelation {
-                    Text(rel.status.emoji + " " + rel.status.rawValue)
-                        .font(.caption.bold())
-                        .foregroundStyle(Theme.Palette.danger)
-                        .padding(.horizontal, 8).padding(.vertical, 4)
-                        .background(Theme.Palette.danger.opacity(0.12), in: Capsule())
+                    BadgeChip(text: "\(rel.status.emoji) \(rel.status.rawValue)",
+                              textColor: Theme.Palette.danger,
+                              bgColor: Theme.Palette.danger.opacity(0.12))
                 }
             }
+            .accessibilityLabel("亲密关系板块")
 
             if let rel = session.intimateRelation {
                 intimateCard(rel)
+            } else if loadingProfile {
+                intimateSkeletonCard
             } else {
-                emptyIntimateCard
+                EmptyStateView(
+                    icon: "heart.circle",
+                    title: "和最重要的人建立专属空间",
+                    subtitle: "绑定密友或情侣，记录在一起的每一天",
+                    actionLabel: "建立亲密关系",
+                    action: {
+                        Haptics.light()
+                        Toast.show("演示版：亲密关系需在真实后端绑定密友 / 情侣")
+                    }
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Theme.Spacing.sm)
             }
         }
-        .padding(16)
+        .padding(Theme.Spacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()
     }
 
+    private var intimateSkeletonCard: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: 0) {
+                SkeletonBlock(height: 56, shape: .circle)
+                SkeletonBlock(height: 56, shape: .circle)
+                    .offset(x: -30)
+            }
+            SkeletonBlock(width: 140, height: 10, shape: .line(height: 10))
+            SkeletonBlock(width: 80, height: 28, shape: .line(height: 28))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.sm)
+    }
+
     private func intimateCard(_ rel: IntimateRelation) -> some View {
-        VStack(spacing: 14) {
-            // 双人头像（自己 + 对方）
+        VStack(spacing: Theme.Spacing.md) {
             HStack(spacing: 0) {
                 AvatarView(config: session.currentUser?.avatar ?? .default,
                            size: 56, showsRing: true, ringColor: Theme.Palette.primary)
                 ZStack {
                     Circle().fill(Theme.Palette.surface).frame(width: 22, height: 22)
                     Image(systemName: "heart.fill")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(Theme.Typography.symbol(11, .bold))
                         .foregroundStyle(Theme.Palette.danger)
                 }
                 .offset(x: -10)
                 AvatarView(config: rel.partnerAvatar, size: 56, showsRing: true, ringColor: Theme.Palette.danger)
                     .offset(x: -20)
             }
-            .padding(.top, 4)
+            .padding(.top, Theme.Spacing.xs)
 
             Text("你和 \(rel.partnerName) 已经在一起")
                 .font(.caption)
                 .foregroundStyle(Theme.Palette.subtle)
 
-            HStack(alignment: .lastTextBaseline, spacing: 4) {
+            HStack(alignment: .lastTextBaseline, spacing: Theme.Spacing.xs) {
                 Text("\(rel.daysTogether)")
-                    .font(.system(size: 38, weight: .heavy, design: .rounded))
+                    .font(Theme.Typography.title(.heavy, design: .rounded))
                     .foregroundStyle(Theme.Palette.danger)
                 Text("天")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(Theme.Typography.body(.bold))
                     .foregroundStyle(Theme.Palette.subtle)
             }
             .padding(.top, -6)
 
             if let next = rel.nextAnniversary {
-                HStack(spacing: 12) {
-                    Text(next.emoji).font(.system(size: 26))
+                HStack(spacing: Theme.Spacing.md) {
+                    Text(next.emoji).font(Theme.Typography.title2(.heavy))
                     VStack(alignment: .leading, spacing: 2) {
                         Text(next.title)
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(Theme.Typography.callout(.semibold))
                             .foregroundStyle(Theme.Palette.ink)
                         Text("还有 \(rel.nextAnniversaryCountdown) 天")
                             .font(.caption)
@@ -253,71 +280,50 @@ struct ProfileView: View {
                         .font(.caption)
                         .foregroundStyle(Theme.Palette.subtle)
                 }
-                .padding(12)
+                .padding(Theme.Spacing.md)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Theme.Palette.danger.opacity(0.08),
-                            in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            in: RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous))
             }
 
             VStack(spacing: 0) {
                 ForEach(Array(rel.anniversaries.enumerated()), id: \.element.id) { idx, a in
-                    HStack(spacing: 12) {
-                        Text(a.emoji).font(.system(size: 18))
+                    HStack(spacing: Theme.Spacing.md) {
+                        Text(a.emoji).font(Theme.Typography.headline())
                         Text(a.title)
-                            .font(.system(size: 14, weight: .medium))
+                            .font(Theme.Typography.callout(.medium))
                             .foregroundStyle(Theme.Palette.ink)
                         Spacer()
                         Text(a.date.relativeShort)
                             .font(.caption)
                             .foregroundStyle(Theme.Palette.subtle)
                     }
-                    .padding(.vertical, 8)
+                    .padding(.vertical, Theme.Spacing.sm)
                     if idx < rel.anniversaries.count - 1 {
-                        Divider().padding(.leading, 30)
+                        ListDivider(leadingPadding: 30)
                     }
                 }
             }
         }
     }
 
-    private var emptyIntimateCard: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "heart.circle")
-                .font(.system(size: 40))
-                .foregroundStyle(Theme.Palette.subtle)
-            Text("和最重要的人建立专属空间")
-                .font(.subheadline)
-                .foregroundStyle(Theme.Palette.subtle)
-                .multilineTextAlignment(.center)
-            Button {
-                Haptics.light()
-                Toast.show("演示版：亲密关系需在真实后端绑定密友 / 情侣")
-            } label: {
-                Text("建立亲密关系")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20).padding(.vertical, 9)
-                    .background(Theme.Palette.danger, in: Capsule())
-            }
-            .buttonStyle(.pressable(scale: 0.94))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-    }
-
     // MARK: - 足迹
+
     private var placesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             Label("我的足迹", systemImage: "mappin.and.ellipse")
-                .font(.system(size: 15, weight: .bold))
+                .font(Theme.Typography.body(.bold))
                 .foregroundStyle(Theme.Palette.ink)
+                .accessibilityLabel("我的足迹板块")
 
             if session.places.isEmpty {
-                Text("还没有足迹，出去走走吧 🗺")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.Palette.subtle)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 10)
+                EmptyStateView(
+                    icon: "mappin.slash",
+                    title: "还没有足迹，出去走走吧",
+                    subtitle: "你到访过的地点会出现在这里"
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
             } else {
                 ForEach(Array(session.places.enumerated()), id: \.element.id) { idx, place in
                     placeRow(place)
@@ -325,24 +331,24 @@ struct ProfileView: View {
                 }
             }
         }
-        .padding(16)
+        .padding(Theme.Spacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()
     }
 
     private func placeRow(_ place: Place) -> some View {
         Button { selectedPlace = place } label: {
-            HStack(spacing: 12) {
+            HStack(spacing: Theme.Spacing.md) {
                 ZStack {
                     Circle()
                         .fill(Theme.Palette.groupedBackground)
                         .frame(width: 40, height: 40)
                     Text(place.emoji)
-                        .font(.system(size: 20))
+                        .font(Theme.Typography.title3())
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(place.name)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(Theme.Typography.callout(.semibold))
                         .foregroundStyle(Theme.Palette.ink)
                     Text("到访 \(place.visitCount) 次 · \(place.lastVisit.relativeShort)")
                         .font(.caption)
@@ -353,125 +359,106 @@ struct ProfileView: View {
                     .font(.caption.bold())
                     .foregroundStyle(Theme.Palette.subtle.opacity(0.6))
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, Theme.Spacing.xs)
             .contentShape(Rectangle())
         }
         .buttonStyle(.pressable(scale: 0.96))
+        .accessibilityLabel("地点: \(place.name), 到访\(place.visitCount)次")
     }
 
     // MARK: - 设置区
+
     private var settingsSection: some View {
         VStack(spacing: 0) {
             Group {
                 // 隐身模式
-                HStack(spacing: 14) {
-                    settingIcon(systemName: "moon.zzz.fill", gradient: Theme.brandGradient)
+                HStack(spacing: Theme.Spacing.md) {
+                    SettingsIcon(systemName: "moon.zzz.fill", gradient: AnyShapeStyle(Theme.brandGradient))
                     VStack(alignment: .leading, spacing: 2) {
                         Text("隐身模式")
-                            .font(.system(size: 15, weight: .medium))
+                            .font(Theme.Typography.body())
                             .foregroundStyle(Theme.Palette.ink)
                         Text("开启后好友看不到你的实时位置")
-                            .font(.system(size: 11, weight: .regular))
+                            .font(Theme.Typography.caption2())
                             .foregroundStyle(Theme.Palette.subtle)
                     }
                     Spacer()
                     Toggle("", isOn: ghostModeBinding)
                         .labelsHidden()
                         .tint(Theme.Palette.primary)
+                        .accessibilityLabel("隐身模式开关")
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 13)
+                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.vertical, Theme.Spacing.listRowV)
 
-                divider
+                ListDivider()
 
                 // 邀请码
-                HStack(spacing: 14) {
-                    settingIcon(systemName: "qrcode", gradient: Theme.oceanGradient)
-                    Text("邀请码")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Theme.Palette.ink)
-                    Spacer()
+                SettingsRow(
+                    icon: "qrcode",
+                    gradient: AnyShapeStyle(Theme.oceanGradient),
+                    title: "邀请码",
+                    showChevron: false,
+                    action: nil
+                )
+                .overlay(alignment: .trailing) {
                     Text(session.currentUser?.inviteCode ?? "—")
-                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .font(Theme.Typography.subheadline(.bold, design: .rounded))
                         .foregroundStyle(Theme.Palette.subtle)
+                        .padding(.trailing, Theme.Spacing.lg)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 13)
 
-                divider
+                ListDivider()
 
                 // 历史状态
-                Button { showHistory = true } label: {
-                    HStack(spacing: 14) {
-                        settingIcon(systemName: "clock.arrow.circlepath", gradient: Theme.skyGradient)
-                        Text("我的历史状态")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(Theme.Palette.ink)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption.bold())
-                            .foregroundStyle(Theme.Palette.subtle)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 13)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.pressable(scale: 0.94))
+                SettingsRow(
+                    icon: "clock.arrow.circlepath",
+                    gradient: AnyShapeStyle(Theme.skyGradient),
+                    title: "我的历史状态"
+                ) { showHistory = true }
 
-                divider
+                ListDivider()
 
                 // 语言
-                Button { showLangPicker = true } label: {
-                    HStack(spacing: 14) {
-                        settingIcon(systemName: "globe", gradient: Theme.oceanGradient)
-                        Text("语言")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(Theme.Palette.ink)
-                        Spacer()
+                SettingsRow(
+                    icon: "globe",
+                    gradient: AnyShapeStyle(Theme.oceanGradient),
+                    title: "语言"
+                )
+                .overlay(alignment: .trailing) {
+                    HStack(spacing: Theme.Spacing.xs) {
                         Text("\(langMgr.current.flag) \(langMgr.current.displayName)")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(Theme.Typography.subheadline(.medium))
                             .foregroundStyle(Theme.Palette.subtle)
                         Image(systemName: "chevron.right")
                             .font(.caption.bold())
                             .foregroundStyle(Theme.Palette.subtle)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 13)
-                    .contentShape(Rectangle())
+                    .padding(.trailing, Theme.Spacing.lg)
                 }
-                .buttonStyle(.pressable(scale: 0.94))
+                .onTapGesture { showLangPicker = true }
 
-                divider
+                ListDivider()
 
                 // 会员中心
                 Button { showMembership = true } label: {
                     membershipRow
                 }
                 .buttonStyle(.pressable(scale: 0.94))
+                .accessibilityLabel("会员中心")
             }
 
             Group {
-                divider
+                ListDivider()
 
                 // 上报与隐私
-                Button { showReporting = true } label: {
-                    HStack(spacing: 14) {
-                        settingIcon(systemName: "dot.radiowaves.left.and.right", gradient: Theme.sunsetGradient)
-                        Text("上报与隐私")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(Theme.Palette.ink)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption.bold())
-                            .foregroundStyle(Theme.Palette.subtle.opacity(0.5))
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 13)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.pressable(scale: 0.94))
+                SettingsRow(
+                    icon: "dot.radiowaves.left.and.right",
+                    gradient: AnyShapeStyle(Theme.sunsetGradient),
+                    title: "上报与隐私"
+                ) { showReporting = true }
 
-                divider
+                ListDivider()
 
                 // 退出登录
                 Button {
@@ -481,74 +468,56 @@ struct ProfileView: View {
                     signOutRow
                 }
                 .buttonStyle(.pressable(scale: 0.94))
+                .accessibilityLabel("退出登录")
             }
         }
         .card()
     }
 
-    private var divider: some View {
-        Divider().padding(.leading, 54)
-    }
-
-    private func settingIcon<G: ShapeStyle>(systemName: String, gradient: G) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(AnyShapeStyle(gradient))
-                .frame(width: 30, height: 30)
-            Image(systemName: systemName)
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(.white)
-        }
-    }
-
     private var signOutRow: some View {
-        HStack(spacing: 14) {
-            settingIcon(systemName: "rectangle.portrait.and.arrow.right", gradient: Theme.sunsetGradient)
+        HStack(spacing: Theme.Spacing.md) {
+            SettingsIcon(systemName: "rectangle.portrait.and.arrow.right",
+                         gradient: AnyShapeStyle(Theme.sunsetGradient))
             Text("退出登录")
-                .font(.system(size: 15, weight: .medium))
+                .font(Theme.Typography.body())
                 .foregroundStyle(Theme.Palette.danger)
             Spacer()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 13)
+        .padding(.horizontal, Theme.Spacing.lg)
+        .padding(.vertical, Theme.Spacing.listRowV)
         .contentShape(Rectangle())
     }
 
     private var membershipRow: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: Theme.Spacing.md) {
             Image(systemName: "crown.fill")
-                .font(.system(size: 18, weight: .semibold))
+                .font(Theme.Typography.headline(.semibold))
                 .foregroundStyle(Theme.Palette.gold)
                 .frame(width: 36, height: 36)
                 .background(Theme.Palette.gold.opacity(0.18), in: RoundedRectangle(cornerRadius: 10))
 
             Text("会员中心")
-                .font(.system(size: 15, weight: .medium))
+                .font(Theme.Typography.body())
                 .foregroundStyle(Theme.Palette.ink)
             Spacer()
             if session.isMember {
-                Text("已开通")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.mint)
-                    .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(Theme.Palette.mint.opacity(0.15), in: Capsule())
+                BadgeChip(text: "已开通", textColor: Theme.Palette.mint,
+                          bgColor: Theme.Palette.mint.opacity(0.15))
             } else {
-                Text("解锁10+权益")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.gold)
-                    .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(Theme.Palette.gold.opacity(0.15), in: Capsule())
+                BadgeChip(text: "解锁10+权益", textColor: Theme.Palette.gold,
+                          bgColor: Theme.Palette.gold.opacity(0.15))
             }
             Image(systemName: "chevron.right")
                 .font(.caption.bold())
                 .foregroundStyle(Theme.Palette.subtle)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 13)
+        .padding(.horizontal, Theme.Spacing.lg)
+        .padding(.vertical, Theme.Spacing.listRowV)
         .contentShape(Rectangle())
     }
 
-    // MARK: - Ghost mode (synced to the user model + backend)
+    // MARK: - Ghost mode binding
+
     private var ghostModeBinding: Binding<Bool> {
         Binding(
             get: { session.currentUser?.isGhostMode ?? false },
@@ -564,53 +533,3 @@ struct ProfileView: View {
     }
 }
 
-// MARK: - Place detail sheet
-private struct PlaceDetailSheet: View {
-    let place: Place
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-                    ZStack {
-                        Circle().fill(Theme.Palette.groupedBackground).frame(width: 96, height: 96)
-                        Text(place.emoji).font(.system(size: 44))
-                    }
-                    Text(place.name)
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundStyle(Theme.Palette.ink)
-                    VStack(spacing: 12) {
-                        detailRow("到访次数", "\(place.visitCount) 次")
-                        detailRow("最近到访", place.lastVisit.relativeShort)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(16)
-                    .card()
-                }
-                .padding(20)
-            }
-            .navigationTitle("地点详情")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("关闭") { dismiss() }
-                        .foregroundStyle(Theme.Palette.primary)
-                }
-            }
-            .background(Theme.Palette.groupedBackground)
-        }
-    }
-
-    private func detailRow(_ title: String, _ value: String) -> some View {
-        HStack {
-            Text(title)
-                .font(.system(size: 14))
-                .foregroundStyle(Theme.Palette.subtle)
-            Spacer()
-            Text(value)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(Theme.Palette.ink)
-        }
-    }
-}
