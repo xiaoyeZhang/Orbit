@@ -48,10 +48,10 @@ public enum Theme {
         public static let bg: Color = adaptive(light: 0xF2F2F7, dark: 0x0D0D0D)
         public static let card: Color = adaptive(light: 0xFFFFFF, dark: 0x1C1C1E)
         public static let card2: Color = adaptive(light: 0xE5E5EA, dark: 0x2C2C2E)
-        public static let separator: Color = Color(UIColor { t in
+        public static let separator: Color = Color(UIColor(dynamicProvider: { t in
             t.userInterfaceStyle == .dark ? UIColor(white: 1, alpha: 0.08)
                                            : UIColor(white: 0, alpha: 0.10)
-        })
+        }))
         public static let textPrimary   = Color(.label)
         public static let textSecondary = Color(.secondaryLabel)
         /// 用在品牌色填充（primary 等）之上的固定白色文字，浅色模式下仍保持高对比
@@ -70,9 +70,9 @@ public enum Theme {
 
         // MARK: Adaptive helper
         private static func adaptive(light: UInt, dark: UInt) -> Color {
-            Color(UIColor { t in
+            Color(UIColor(dynamicProvider: { t in
                 t.userInterfaceStyle == .dark ? uiColor(hex: dark) : uiColor(hex: light)
-            })
+            }))
         }
         private static func uiColor(hex: UInt, alpha: Double = 1) -> UIColor {
             UIColor(srgbRed: Double((hex >> 16) & 0xff) / 255,
