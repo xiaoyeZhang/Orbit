@@ -14,6 +14,7 @@ struct ProfileView: View {
     @State private var showHistory       = false
     @State private var showMembership    = false
     @State private var showLangPicker    = false
+    @State private var showOnboarding     = false
     @State private var selectedPlace: Place?
     @State private var loadingProfile = true
 
@@ -71,6 +72,9 @@ struct ProfileView: View {
                     }
                 }
                 Button("取消 / Cancel", role: .cancel) {}
+            }
+            .fullScreenCover(isPresented: $showOnboarding) {
+                OnboardingView(onFinish: { showOnboarding = false })
             }
             .onAppear {
                 if ProcessInfo.processInfo.environment["JAGAT_OPEN"] == "reporting" {
@@ -449,6 +453,19 @@ struct ProfileView: View {
             }
 
             Group {
+                ListDivider()
+
+                // 重新看引导
+                SettingsRow(
+                    icon: "sparkles",
+                    gradient: AnyShapeStyle(Theme.brandGradient),
+                    title: "重新看引导"
+                ) {
+                    Haptics.light()
+                    showOnboarding = true
+                }
+                .accessibilityLabel("重新看新手引导")
+
                 ListDivider()
 
                 // 上报与隐私
