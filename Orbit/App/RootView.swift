@@ -130,9 +130,9 @@ struct MainTabView: View {
     // MARK: - Tab bar
     private var darkTabBar: some View {
         HStack(spacing: 0) {
-            // Left: Pulse/radar icon with red dot (map & discover)
+            // Left: Pulse/radar icon (map & discover)
             tabBtn(index: 0) {
-                ZStack(alignment: .topTrailing) {
+                ZStack {
                     Circle()
                         .fill(Theme.Palette.card2)
                         .frame(width: 46, height: 46)
@@ -141,11 +141,6 @@ struct MainTabView: View {
                         .foregroundStyle(selection == 0
                                          ? Theme.Palette.sky
                                          : Theme.Palette.textSecondary)
-                    // Red notification dot
-                    Circle()
-                        .fill(Theme.Palette.danger)
-                        .frame(width: 8, height: 8)
-                        .offset(x: 2, y: -2)
                 }
             }
 
