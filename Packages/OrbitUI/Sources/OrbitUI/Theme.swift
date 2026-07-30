@@ -431,27 +431,44 @@ public struct EmptyStateView: View {
     let subtitle: String
     let actionLabel: String?
     let action: (() -> Void)?
+    var tint: Color = Theme.Palette.primary
 
     public init(
         icon: String, title: String, subtitle: String,
-        actionLabel: String? = nil, action: (() -> Void)? = nil
+        actionLabel: String? = nil, action: (() -> Void)? = nil,
+        tint: Color = Theme.Palette.primary
     ) {
         self.icon = icon; self.title = title; self.subtitle = subtitle
         self.actionLabel = actionLabel; self.action = action
+        self.tint = tint
     }
 
     public var body: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: icon)
-                .font(.system(size: 40))
-                .foregroundStyle(Theme.Palette.subtle)
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(Theme.Palette.subtle)
-            Text(subtitle)
-                .font(Theme.Typography.caption())
-                .foregroundStyle(Theme.Palette.subtle.opacity(0.6))
-                .multilineTextAlignment(.center)
+        VStack(spacing: Theme.Spacing.lg) {
+            ZStack {
+                Circle()
+                    .fill(tint.opacity(0.14))
+                    .frame(width: 84, height: 84)
+                Circle()
+                    .fill(Theme.Palette.card2)
+                    .frame(width: 64, height: 64)
+                Image(systemName: icon)
+                    .font(Theme.Typography.symbol(30, .semibold))
+                    .foregroundStyle(tint)
+            }
+
+            VStack(spacing: Theme.Spacing.xs) {
+                Text(title)
+                    .font(Theme.Typography.headline(.semibold))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .multilineTextAlignment(.center)
+                Text(subtitle)
+                    .font(Theme.Typography.subheadline())
+                    .foregroundStyle(Theme.Palette.subtle)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 280)
+            }
+
             if let actionLabel, let action {
                 Button(action: action) {
                     Text(actionLabel)

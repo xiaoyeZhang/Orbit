@@ -255,7 +255,10 @@ struct FriendsView: View {
         EmptyStateView(
             icon: "person.2.slash",
             title: "还没有好友",
-            subtitle: "点右上角发出邀请吧"
+            subtitle: "点右上角「添加好友」，把重要的 TA 们邀请进来，一起看彼此在哪",
+            actionLabel: "添加好友",
+            action: { showAdd = true },
+            tint: Theme.Palette.sky
         )
         .popIn()
         .accessibilityLabel("好友列表为空")

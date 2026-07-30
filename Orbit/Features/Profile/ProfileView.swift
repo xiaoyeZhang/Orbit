@@ -212,7 +212,8 @@ struct ProfileView: View {
                     action: {
                         Haptics.light()
                         Toast.show("演示版：亲密关系需在真实后端绑定密友 / 情侣")
-                    }
+                    },
+                    tint: Theme.Palette.danger
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, Theme.Spacing.sm)
@@ -324,7 +325,8 @@ struct ProfileView: View {
                 EmptyStateView(
                     icon: "mappin.slash",
                     title: "还没有足迹，出去走走吧",
-                    subtitle: "你到访过的地点会出现在这里"
+                    subtitle: "打开位置共享后，你常去的地方会自动出现在这里",
+                    tint: Theme.Palette.sky
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)

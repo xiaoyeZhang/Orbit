@@ -270,18 +270,14 @@ struct ConversationsView: View {
     // MARK: - Empty DMs
 
     private var emptyDMs: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: "bubble.left.and.bubble.right")
-                .font(Theme.Typography.display())
-                .foregroundStyle(Theme.Palette.textSecondary.opacity(0.4))
-            Text("还没有私信")
-                .font(Theme.Typography.headline(.semibold))
-                .foregroundStyle(Theme.Palette.textSecondary)
-            Text("在地图上点击好友即可发起聊天")
-                .font(Theme.Typography.subheadline())
-                .foregroundStyle(Theme.Palette.textSecondary.opacity(0.6))
-                .multilineTextAlignment(.center)
-        }
+        EmptyStateView(
+            icon: "bubble.left.and.bubble.right",
+            title: "还没有私信",
+            subtitle: "在地图上点一位好友，就能和 TA 聊起来",
+            tint: Theme.Palette.sky
+        )
+        .popIn()
+        .accessibilityLabel("还没有私信")
     }
 
     // MARK: - Bottom search bar
