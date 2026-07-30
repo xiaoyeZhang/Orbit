@@ -132,16 +132,11 @@ struct MainTabView: View {
         HStack(spacing: 0) {
             // Left: Pulse/radar icon (map & discover)
             tabBtn(index: 0) {
-                ZStack {
-                    Circle()
-                        .fill(Theme.Palette.card2)
-                        .frame(width: 46, height: 46)
-                    Image(systemName: "waveform.circle.fill")
-                        .font(.system(size: 26, weight: .semibold))
-                        .foregroundStyle(selection == 0
-                                         ? Theme.Palette.sky
-                                         : Theme.Palette.textSecondary)
-                }
+                Image(systemName: "waveform.circle.fill")
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(selection == 0
+                                     ? Theme.Palette.sky
+                                     : Theme.Palette.textSecondary)
             }
 
             Spacer()
@@ -169,16 +164,11 @@ struct MainTabView: View {
 
             // Right: Location pin
             tabBtn(index: 2) {
-                ZStack {
-                    Circle()
-                        .fill(Theme.Palette.card2)
-                        .frame(width: 46, height: 46)
-                    Image(systemName: selection == 2 ? "mappin.circle.fill" : "mappin.circle")
-                        .font(.system(size: 26, weight: .semibold))
-                        .foregroundStyle(selection == 2
-                                         ? Theme.Palette.accent
-                                         : Theme.Palette.textSecondary)
-                }
+                Image(systemName: selection == 2 ? "mappin.circle.fill" : "mappin.circle")
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(selection == 2
+                                     ? Theme.Palette.accent
+                                     : Theme.Palette.textSecondary)
             }
         }
         .padding(.horizontal, 36)
