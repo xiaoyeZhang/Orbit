@@ -7,11 +7,18 @@ import OrbitServices
 struct RootView: View {
     @EnvironmentObject private var session: SessionStore
 
+    @AppStorage("orbit_hasSeenOnboarding") private var hasSeenOnboarding = false
+    @State private var showOnboarding = false
+
     var body: some View {
         Group {
             if session.isAuthenticated {
                 MainTabView()
                     .transition(.opacity)
+                    .onAppear { if !hasSeenOnboarding { showOnboarding = true } }
+                    .fullScreenCover(isPresented: $showOnboarding) {
+                        OnboardingView(onFinish: finishOnboarding)
+                    }
             } else {
                 LoginView()
                     .transition(.opacity)
@@ -23,6 +30,11 @@ struct RootView: View {
                 await session.bootstrap()
             }
         }
+    }
+
+    private func finishOnboarding() {
+        hasSeenOnboarding = true
+        showOnboarding = false
     }
 }
 

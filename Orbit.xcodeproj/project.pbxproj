@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0CB79563C68C21CAF36BC759 /* AppServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = E428F8B14B1FBFD3CFFC9393 /* AppServices.swift */; };
 		0E81C6F6B4308B354B8A4877 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52104617E4FFCEAB354D258C /* LoginView.swift */; };
+		EA70E9A4A35FD218001E0B65 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E866EFE14C78CD47001E0B65 /* OnboardingView.swift */; };
 		357B45FCD5B15783AFF04E14 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4050C07E21F4EBF1834A54E6 /* FriendsView.swift */; };
 		3D2D30A0174076DD2F0DBFA3 /* OrbitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9006EC29068E2AE2A5CB73BC /* OrbitUI */; };
 		4325BCC265BADD0B90244CDE /* AvatarEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4026167B4941975EB569E /* AvatarEditorView.swift */; };
@@ -57,6 +58,7 @@
 		4050C07E21F4EBF1834A54E6 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
 		48414B089652D9C90B8F8D2D /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
 		52104617E4FFCEAB354D258C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		E866EFE14C78CD47001E0B65 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		6B517D591155834DFE63229E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		996AD237BC284D463E664FFE /* Orbit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orbit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4292FC0DA5387F8CB84084B /* OrbitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrbitApp.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				52104617E4FFCEAB354D258C /* LoginView.swift */,
+				E866EFE14C78CD47001E0B65 /* OnboardingView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 				FD9742195984F61EFF8DF51A /* FriendDetailSheet.swift in Sources */,
 				BAF8D759A05B7A7230614A76 /* MapHomeView.swift in Sources */,
 				0E81C6F6B4308B354B8A4877 /* LoginView.swift in Sources */,
+				EA70E9A4A35FD218001E0B65 /* OnboardingView.swift in Sources */,
 				B5EB229B30198CE7001E0B65 /* PlaceDetailSheet.swift in Sources */,
 				4325BCC265BADD0B90244CDE /* AvatarEditorView.swift in Sources */,
 				5B9ABAE8B982A5C74910D661 /* ProfileView.swift in Sources */,
