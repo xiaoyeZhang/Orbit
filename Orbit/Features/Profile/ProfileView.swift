@@ -18,6 +18,8 @@ struct ProfileView: View {
     @State private var selectedPlace: Place?
     @State private var loadingProfile = true
 
+    @AppStorage("orbit_appearance") private var appearance = AppearanceMode.system
+
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
@@ -377,6 +379,27 @@ struct ProfileView: View {
     private var settingsSection: some View {
         VStack(spacing: 0) {
             Group {
+                // 外观（深浅模式）
+                HStack(spacing: Theme.Spacing.md) {
+                    SettingsIcon(systemName: "paintbrush.fill", gradient: AnyShapeStyle(Theme.brandGradient))
+                    Text("外观")
+                        .font(Theme.Typography.body())
+                        .foregroundStyle(Theme.Palette.ink)
+                    Spacer()
+                    Picker("", selection: $appearance) {
+                        ForEach(AppearanceMode.allCases) { mode in
+                            Text(mode.label).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(Theme.Palette.primary)
+                }
+                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.vertical, Theme.Spacing.listRowV)
+                .accessibilityLabel("外观模式")
+
+                ListDivider()
+
                 // 隐身模式
                 HStack(spacing: Theme.Spacing.md) {
                     SettingsIcon(systemName: "moon.zzz.fill", gradient: AnyShapeStyle(Theme.brandGradient))

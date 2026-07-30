@@ -1,5 +1,6 @@
 import SwiftUI
 import OrbitUI
+import UIKit
 
 /// 首次启动引导：讲解地图实时位置、隐身保护、一键求助三件核心事。
 /// 仅在用户首次进入主界面且未看过时，由 RootView 以 fullScreenCover 呈现。
@@ -69,14 +70,14 @@ struct OnboardingView: View {
                         if isLast {
                             onFinish()
                         } else {
-                            withAnimation(.easeInOut(duration: 0.3)) {
+                            withAnimation(UIAccessibility.isReduceMotionEnabled ? nil : .easeInOut(duration: 0.3)) {
                                 page += 1
                             }
                         }
                     } label: {
                         Text(isLast ? "开始使用" : "下一步")
-                            .font(Theme.Typography.headline(.semibold))
-                            .foregroundStyle(Theme.Palette.textPrimary)
+                            .font(.headline)
+                            .foregroundStyle(Theme.Palette.onPrimary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, Theme.Spacing.md)
                             .background(Theme.Palette.primary, in: Capsule())
@@ -119,18 +120,21 @@ struct OnboardingView: View {
 
             VStack(spacing: Theme.Spacing.sm) {
                 Text(p.title)
-                    .font(Theme.Typography.titleLarge(.bold))
+                    .font(.title.bold())
                     .foregroundStyle(Theme.Palette.ink)
                     .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.6)
 
                 Text(p.subtitle)
-                    .font(Theme.Typography.body())
+                    .font(.body)
                     .foregroundStyle(Theme.Palette.subtle)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 300)
+                    .minimumScaleFactor(0.6)
+                    .frame(maxWidth: 320)
             }
             .padding(.horizontal, Theme.Spacing.lg)
         }
+        .accessibilityElement(children: .combine)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

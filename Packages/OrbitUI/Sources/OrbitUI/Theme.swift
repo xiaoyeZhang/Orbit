@@ -1,4 +1,25 @@
 import SwiftUI
+import UIKit
+
+// MARK: - 外观模式
+public enum AppearanceMode: String, CaseIterable, Identifiable {
+    case system, dark, light
+    public var id: String { rawValue }
+    public var scheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .dark:   return .dark
+        case .light:  return .light
+        }
+    }
+    public var label: String {
+        switch self {
+        case .system: return "跟随系统"
+        case .dark:   return "深色"
+        case .light:  return "浅色"
+        }
+    }
+}
 
 // MARK: - Design System
 
@@ -23,13 +44,18 @@ public enum Theme {
         public static let surface      = Color(.systemBackground)
         public static let groupedBackground = Color(.systemGroupedBackground)
 
-        // Dark-first palette (主用)
-        public static let bg           = Color(hex: 0x0D0D0D)
-        public static let card         = Color(hex: 0x1C1C1E)
-        public static let card2        = Color(hex: 0x2C2C2E)
-        public static let separator    = Color(white: 1.0, opacity: 0.08)
-        public static let textPrimary  = Color.white
-        public static let textSecondary = Color(white: 1.0, opacity: 0.50)
+        // Surfaces & text — 深浅自适应（跟随最终生效的 colorScheme）
+        public static let bg: Color = adaptive(light: 0xF2F2F7, dark: 0x0D0D0D)
+        public static let card: Color = adaptive(light: 0xFFFFFF, dark: 0x1C1C1E)
+        public static let card2: Color = adaptive(light: 0xE5E5EA, dark: 0x2C2C2E)
+        public static let separator: Color = Color(UIColor { t in
+            t.userInterfaceStyle == .dark ? UIColor(white: 1, alpha: 0.08)
+                                           : UIColor(white: 0, alpha: 0.10)
+        })
+        public static let textPrimary   = Color(.label)
+        public static let textSecondary = Color(.secondaryLabel)
+        /// 用在品牌色填充（primary 等）之上的固定白色文字，浅色模式下仍保持高对比
+        public static let onPrimary     = Color.white
 
         // Accent variants (formerly hardcoded in views)
         public static let tangerine    = Color(hex: 0xFF9F43)
@@ -41,6 +67,19 @@ public enum Theme {
         public static let darkInk      = Color(hex: 0x1A1A1A)
         public static let memberGradientStart = Color(hex: 0x2D2D44)
         public static let memberGradientEnd   = Color(hex: 0x1A1A2E)
+
+        // MARK: Adaptive helper
+        private static func adaptive(light: UInt, dark: UInt) -> Color {
+            Color(UIColor { t in
+                t.userInterfaceStyle == .dark ? uiColor(hex: dark) : uiColor(hex: light)
+            })
+        }
+        private static func uiColor(hex: UInt, alpha: Double = 1) -> UIColor {
+            UIColor(srgbRed: Double((hex >> 16) & 0xff) / 255,
+                    green:   Double((hex >> 8)  & 0xff) / 255,
+                    blue:    Double((hex >> 0)  & 0xff) / 255,
+                    alpha:   alpha)
+        }
     }
 
     // MARK: Typography (字体规范)
@@ -459,21 +498,23 @@ public struct EmptyStateView: View {
 
             VStack(spacing: Theme.Spacing.xs) {
                 Text(title)
-                    .font(Theme.Typography.headline(.semibold))
+                    .font(.headline)
                     .foregroundStyle(Theme.Palette.ink)
                     .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.6)
                 Text(subtitle)
-                    .font(Theme.Typography.subheadline())
+                    .font(.subheadline)
                     .foregroundStyle(Theme.Palette.subtle)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 280)
+                    .minimumScaleFactor(0.6)
+                    .frame(maxWidth: 320)
             }
 
             if let actionLabel, let action {
                 Button(action: action) {
                     Text(actionLabel)
-                        .font(Theme.Typography.callout(.bold))
-                        .foregroundStyle(Theme.Palette.textPrimary)
+                        .font(.callout.bold())
+                        .foregroundStyle(Theme.Palette.onPrimary)
                         .padding(.horizontal, Theme.Spacing.xl)
                         .padding(.vertical, Theme.Spacing.sm + 1)
                         .background(Theme.Palette.primary, in: Capsule())

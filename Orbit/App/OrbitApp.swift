@@ -17,6 +17,7 @@ struct OrbitApp: App {
     @StateObject private var langMgr  = LanguageManager.shared
 
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("orbit_appearance") private var appearance = AppearanceMode.system
 
     var body: some Scene {
         WindowGroup {
@@ -26,7 +27,7 @@ struct OrbitApp: App {
                 .environmentObject(reporter)
                 .environmentObject(langMgr)
                 .environment(\.locale, langMgr.current.locale)
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(appearance.scheme)
         }
         .onChange(of: scenePhase) { phase in
             switch phase {
