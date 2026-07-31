@@ -21,6 +21,21 @@ public enum AppearanceMode: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Adaptive Color Helpers (file-private, reduces Palette enum body complexity)
+private func adaptiveColor(light: UInt, dark: UInt) -> Color {
+    Color(UIColor(dynamicProvider: { t in
+        t.userInterfaceStyle == .dark ? uiColorFromHex(hex: dark) : uiColorFromHex(hex: light)
+    }))
+}
+private func uiColorFromHex(hex: UInt, alpha: Double = 1) -> UIColor {
+    UIColor(
+        red:   CGFloat((hex >> 16) & 0xff) / 255,
+        green: CGFloat((hex >> 8)  & 0xff) / 255,
+        blue:  CGFloat((hex >> 0)  & 0xff) / 255,
+        alpha: alpha
+    )
+}
+
 // MARK: - Design System
 
 public enum Theme {
@@ -45,13 +60,10 @@ public enum Theme {
         public static let groupedBackground = Color(.systemGroupedBackground)
 
         // Surfaces & text — 深浅自适应（跟随最终生效的 colorScheme）
-        public static let bg: Color = adaptive(light: 0xF2F2F7, dark: 0x0D0D0D)
-        public static let card: Color = adaptive(light: 0xFFFFFF, dark: 0x1C1C1E)
-        public static let card2: Color = adaptive(light: 0xE5E5EA, dark: 0x2C2C2E)
-        public static let separator: Color = Color(UIColor(dynamicProvider: { t in
-            t.userInterfaceStyle == .dark ? UIColor(white: 1, alpha: 0.08)
-                                           : UIColor(white: 0, alpha: 0.10)
-        }))
+        public static let bg: Color = adaptiveColor(light: 0xF2F2F7, dark: 0x0D0D0D)
+        public static let card: Color = adaptiveColor(light: 0xFFFFFF, dark: 0x1C1C1E)
+        public static let card2: Color = adaptiveColor(light: 0xE5E5EA, dark: 0x2C2C2E)
+        public static let separator: Color = adaptiveColor(light: 0x1A1A1A, dark: 0x141414)
         public static let textPrimary   = Color(.label)
         public static let textSecondary = Color(.secondaryLabel)
         /// 用在品牌色填充（primary 等）之上的固定白色文字，浅色模式下仍保持高对比
@@ -67,19 +79,6 @@ public enum Theme {
         public static let darkInk      = Color(hex: 0x1A1A1A)
         public static let memberGradientStart = Color(hex: 0x2D2D44)
         public static let memberGradientEnd   = Color(hex: 0x1A1A2E)
-
-        // MARK: Adaptive helper
-        private static func adaptive(light: UInt, dark: UInt) -> Color {
-            Color(UIColor(dynamicProvider: { t in
-                t.userInterfaceStyle == .dark ? uiColor(hex: dark) : uiColor(hex: light)
-            }))
-        }
-        private static func uiColor(hex: UInt, alpha: Double = 1) -> UIColor {
-            UIColor(srgbRed: Double((hex >> 16) & 0xff) / 255,
-                    green:   Double((hex >> 8)  & 0xff) / 255,
-                    blue:    Double((hex >> 0)  & 0xff) / 255,
-                    alpha:   alpha)
-        }
     }
 
     // MARK: Typography (字体规范)
