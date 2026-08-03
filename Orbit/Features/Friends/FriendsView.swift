@@ -109,7 +109,19 @@ struct FriendsView: View {
                     .presentationDragIndicator(.visible)
             }
             .overlay {
-                if session.friends.isEmpty { emptyState }
+                if let err = session.loadError {
+                    ErrorStateView(
+                        title: "加载失败",
+                        subtitle: err,
+                        retryLabel: "重新加载"
+                    ) {
+                        Task { await session.reloadFriends() }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Theme.Palette.groupedBackground)
+                } else if session.friends.isEmpty {
+                    emptyState
+                }
             }
         }
     }

@@ -15,6 +15,8 @@ public final class SessionStore: ObservableObject {
     @Published public var isAuthenticated = false
     @Published public var isBusy = false
     @Published public var errorMessage: String?
+    /// 列表级加载失败（区别于全局 errorMessage）。置非 nil 时，好友/会话等列表视图展示错误态而非内容。默认 nil。
+    @Published public var loadError: String?
 
     public let backend: BackendService
     private var friendsStreamTask: Task<Void, Never>?
@@ -66,6 +68,13 @@ public final class SessionStore: ObservableObject {
             friends = try await f; conversations = try await c; places = try await p
         } catch { errorMessage = error.localizedDescription }
         subscribeFriends()
+    }
+
+    /// 重新拉取好友列表；失败写入 `loadError` 供视图层展示错误态，成功清空之。
+    public func reloadFriends() async {
+        isBusy = true; loadError = nil; defer { isBusy = false }
+        do { friends = try await backend.fetchFriends() }
+        catch { loadError = error.localizedDescription }
     }
 
     private func subscribeFriends() {

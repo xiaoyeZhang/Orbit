@@ -25,7 +25,7 @@ struct ConversationsView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(Color.white.opacity(0.2))
+                        .fill(Theme.Palette.textPrimary.opacity(0.2))
                         .frame(width: 36, height: 5)
                         .padding(.top, 10)
                         .padding(.bottom, Theme.Spacing.md)
@@ -40,13 +40,14 @@ struct ConversationsView: View {
 
                     if !sorted.isEmpty {
                         LazyVStack(spacing: 1) {
-                            ForEach(sorted) { convo in
+                            ForEach(Array(sorted.enumerated()), id: \.element.id) { idx, convo in
                                 Button {
                                     pushChat = convo
                                 } label: {
                                     conversationRow(convo)
                                 }
                                 .buttonStyle(.pressable(scale: 0.94))
+                                .staggeredAppear(index: idx)
                             }
                         }
                         .padding(.top, Theme.Spacing.xs)
@@ -122,9 +123,11 @@ struct ConversationsView: View {
             categoryRow(
                 emoji: "🤝", label: "群聊", sub: "你已保存0个群组", badge: nil
             ) { Toast.show("群组功能即将上线 🚧") }
+            .staggeredAppear(index: 0)
             categoryRow(
                 emoji: "🙋", label: "好友申请", sub: "在这里添加新好友", badge: nil
             ) { showFriends = true }
+            .staggeredAppear(index: 1)
             categoryRow(
                 emoji: "🎉", label: "活动通知",
                 sub: "恭喜挑战赛第四期的摸鱼...",
@@ -134,6 +137,7 @@ struct ConversationsView: View {
                 notice = NoticeItem(title: "活动通知",
                                     body: "恭喜挑战赛第四期的摸鱼大赛圆满收官，点击查看你的专属成绩与奖品领取方式～")
             }
+            .staggeredAppear(index: 2)
             categoryRow(
                 emoji: "⚙️", label: "系统通知",
                 sub: "再不记录帮你叫医生了！",
@@ -143,6 +147,7 @@ struct ConversationsView: View {
                 notice = NoticeItem(title: "系统通知",
                                     body: "再不记录位置，系统就要帮你呼叫医生啦！记得经常打开 App 留下你的足迹哦。")
             }
+            .staggeredAppear(index: 3)
         }
         .background(Theme.Palette.card)
     }

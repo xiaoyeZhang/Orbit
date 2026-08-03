@@ -430,7 +430,7 @@ struct MapHomeView: View {
                     .foregroundStyle(Theme.Palette.textPrimary)
                     .padding(.horizontal, Theme.Spacing.sm)
                     .padding(.vertical, 3)
-                    .background(Color.black.opacity(0.55), in: Capsule())
+                    .background(Theme.Palette.card.opacity(0.9), in: Capsule())
             }
         }
         .buttonStyle(.pressable(scale: 0.88))

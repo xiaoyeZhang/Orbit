@@ -524,6 +524,68 @@ public struct EmptyStateView: View {
     }
 }
 
+/// 错误/加载失败占位 — 图标 + 标题 + 描述 + 重试按钮
+public struct ErrorStateView: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let retryLabel: String
+    let onRetry: () -> Void
+
+    public init(
+        icon: String = "exclamationmark.triangle",
+        title: String,
+        subtitle: String,
+        retryLabel: String = "重试",
+        onRetry: @escaping () -> Void
+    ) {
+        self.icon = icon; self.title = title; self.subtitle = subtitle
+        self.retryLabel = retryLabel; self.onRetry = onRetry
+    }
+
+    public var body: some View {
+        VStack(spacing: Theme.Spacing.lg) {
+            ZStack {
+                Circle()
+                    .fill(Theme.Palette.danger.opacity(0.12))
+                    .frame(width: 84, height: 84)
+                Image(systemName: icon)
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.danger)
+            }
+            .accessibilityHidden(true)
+
+            VStack(spacing: Theme.Spacing.xs) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(Theme.Palette.ink)
+                    .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.6)
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.Palette.subtle)
+                    .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.6)
+                    .frame(maxWidth: 320)
+            }
+
+            Button(action: onRetry) {
+                HStack(spacing: Theme.Spacing.xs) {
+                    Image(systemName: "arrow.clockwise")
+                    Text(retryLabel)
+                }
+                .font(.callout.bold())
+                .foregroundStyle(Theme.Palette.onPrimary)
+                .padding(.horizontal, Theme.Spacing.xl)
+                .padding(.vertical, Theme.Spacing.sm + 1)
+                .background(Theme.Palette.primary, in: Capsule())
+            }
+            .buttonStyle(.pressable(scale: 0.94))
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
 /// 分隔线 — 统一左侧留白
 public struct ListDivider: View {
     let leadingPadding: CGFloat
