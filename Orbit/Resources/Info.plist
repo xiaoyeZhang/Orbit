@@ -24,8 +24,13 @@
 	<true/>
 	<key>UILaunchScreen</key>
 	<dict>
-		<key>UIColorName</key>
-		<string></string>
+		<key>UIColor</key>
+		<dict>
+			<key>UIColorColorSpace</key>
+			<string>sRGB</string>
+			<key>UIColorValue</key>
+			<string>0.051 0.051 0.051 1</string>
+		</dict>
 	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
