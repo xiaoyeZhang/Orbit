@@ -174,7 +174,13 @@ struct MainTabView: View {
         .padding(.horizontal, 36)
         .padding(.vertical, 12)
         .background {
-            // 向上延伸的底色，盖住 Home Indicator 安全区与导航栏之间的黑条
+            // 全宽底部遮罩：盖住背后聊天面板/地图从导航栏两侧透出的背景
+            Theme.Palette.card
+                .frame(height: 90)
+                .padding(.top, -60)
+                .allowsHitTesting(false)
+
+            // 圆角 pill 本体
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .fill(Theme.Palette.card.opacity(0.96))
                 .overlay {
