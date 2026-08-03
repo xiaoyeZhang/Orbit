@@ -174,6 +174,7 @@ struct MainTabView: View {
         .padding(.horizontal, 36)
         .padding(.vertical, 12)
         .background {
+            // 向上延伸的底色，盖住 Home Indicator 安全区与导航栏之间的黑条
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .fill(Theme.Palette.card.opacity(0.96))
                 .overlay {
@@ -181,6 +182,8 @@ struct MainTabView: View {
                         .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
                 }
                 .shadow(color: .black.opacity(0.55), radius: 32, y: 12)
+                // 向上延伸覆盖安全区黑条（地图 ignoresSafeArea 底部露出的纯黑）
+                .padding(.top, -60)
         }
         .padding(.horizontal, 28)
         .padding(.bottom, 28)
