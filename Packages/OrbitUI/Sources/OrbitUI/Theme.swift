@@ -63,7 +63,7 @@ public enum Theme {
         public static let bg: Color = adaptiveColor(light: 0xF2F2F7, dark: 0x0D0D0D)
         public static let card: Color = adaptiveColor(light: 0xFFFFFF, dark: 0x1C1C1E)
         public static let card2: Color = adaptiveColor(light: 0xE5E5EA, dark: 0x2C2C2E)
-        public static let separator: Color = adaptiveColor(light: 0x1A1A1A, dark: 0x141414)
+        public static let separator: Color = adaptiveColor(light: 0xC7C7CC, dark: 0x38383A)
         public static let textPrimary   = Color(.label)
         public static let textSecondary = Color(.secondaryLabel)
         /// 用在品牌色填充（primary 等）之上的固定白色文字，浅色模式下仍保持高对比
