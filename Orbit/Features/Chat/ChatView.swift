@@ -367,7 +367,7 @@ struct PingBubble: View {
                 }
             Text("戳了你一下")
                 .font(Theme.Typography.callout(.bold))
-                .foregroundStyle(Theme.Palette.sunshine)
+                .foregroundStyle(Theme.Palette.textPrimary)
         }
         .padding(.horizontal, Theme.Spacing.lg)
         .padding(.vertical, Theme.Spacing.md)

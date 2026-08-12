@@ -409,7 +409,7 @@ struct FriendsView: View {
                 .foregroundStyle(Theme.Palette.subtle)
             Text(ev.startsIn)
                 .font(Theme.Typography.caption(.medium))
-                .foregroundStyle(Theme.Palette.accent)
+                .foregroundStyle(Theme.Palette.subtle)
             HStack(spacing: Theme.Spacing.xs) {
                 Image(systemName: "person.2").font(Theme.Typography.symbol(11))
                 Text("\(ev.attendees) 人感兴趣")
