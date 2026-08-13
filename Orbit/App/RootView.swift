@@ -133,7 +133,7 @@ struct MainTabView: View {
             // Left: Pulse/radar icon (map & discover)
             tabBtn(index: 0) {
                 Image(systemName: "waveform.circle.fill")
-                    .font(.system(size: 28, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(selection == 0
                                      ? Theme.Palette.sky
                                      : Theme.Palette.textSecondary)
@@ -144,17 +144,17 @@ struct MainTabView: View {
             // Center: Friend/message count pill
             tabBtn(index: 1) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .fill(selection == 1 ? Theme.Palette.primary : Theme.Palette.card2)
-                        .frame(width: 64, height: 42)
+                        .frame(width: 52, height: 34)
                     let count = session.friends.count > 0 ? session.friends.count : session.totalUnread
                     if count > 0 {
                         Text("\(min(count, 99))")
-                            .font(.system(size: 24, weight: .heavy, design: .rounded))
+                            .font(.system(size: 20, weight: .heavy, design: .rounded))
                             .foregroundStyle(.white)
                     } else {
                         Image(systemName: "person.2.fill")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(selection == 1 ? .white : Theme.Palette.textSecondary)
                     }
                 }
@@ -165,33 +165,33 @@ struct MainTabView: View {
             // Right: Location pin
             tabBtn(index: 2) {
                 Image(systemName: selection == 2 ? "mappin.circle.fill" : "mappin.circle")
-                    .font(.system(size: 28, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(selection == 2
                                      ? Theme.Palette.accent
                                      : Theme.Palette.textSecondary)
             }
         }
-        .padding(.horizontal, 36)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 28)
+        .padding(.vertical, 6)
         .background {
             // 全宽底部遮罩：盖住背后聊天面板/地图从导航栏两侧透出的背景
             Theme.Palette.card
-                .frame(height: 90)
-                .padding(.top, -60)
+                .frame(height: 48)
+                .padding(.top, -28)
                 .allowsHitTesting(false)
 
             // 圆角 pill 本体
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Theme.Palette.card.opacity(0.96))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
                         .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
                 }
-                .shadow(color: .black.opacity(0.55), radius: 32, y: 12)
+                .shadow(color: .black.opacity(0.55), radius: 20, y: 6)
                 // 向上延伸覆盖安全区黑条（地图 ignoresSafeArea 底部露出的纯黑）
-                .padding(.top, -60)
+                .padding(.top, -28)
         }
-        .padding(.horizontal, 28)
+        .padding(.horizontal, 20)
         .padding(.bottom, 28)
     }
 

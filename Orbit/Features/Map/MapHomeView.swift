@@ -8,11 +8,11 @@ import OrbitServices
 // MARK: - Layout Constants (经验偏移：自定义浮动 TabBar 高度 + 底部安全区)
 private enum MapLayout {
     /// 幽灵模式横幅底部偏移
-    static let ghostBannerBottom: CGFloat = 72
+    static let ghostBannerBottom: CGFloat = 56
     /// 底部功能胶囊偏移
-    static let bottomPillBottom: CGFloat = 120
+    static let bottomPillBottom: CGFloat = 88
     /// 邀请贴纸底部偏移
-    static let inviteStickerBottom: CGFloat = 136
+    static let inviteStickerBottom: CGFloat = 104
 }
 
 private enum MapEntity: Identifiable {
