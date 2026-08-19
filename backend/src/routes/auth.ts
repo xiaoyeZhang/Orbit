@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import { z } from 'zod'
-import { v4 as uuid } from 'uuid'
 import { db } from '../db'
 import { saveOtp, verifyOtp } from '../redis'
 import { signToken } from '../middleware/auth'
@@ -20,12 +19,14 @@ authRouter.post('/request-code', async (req, res) => {
   await saveOtp(phone, code)
 
   const isDev = process.env.NODE_ENV !== 'production'
-  console.log(`📱 OTP for ${phone}: ${code}`)
+  if (isDev && process.env.ALLOW_DEV_OTP === 'true') {
+    console.log(`📱 OTP for ${phone}: ${code}`)
+  }
 
   res.json({
     ok: true,
-    // 开发模式下直接返回验证码，生产环境删掉 debug_code 字段并接入短信服务
-    ...(isDev && { debug_code: code }),
+    // 仅在显式开启时向本地调试客户端返回验证码。
+    ...(isDev && process.env.ALLOW_DEV_OTP === 'true' && { debug_code: code }),
   })
 })
 
@@ -39,7 +40,9 @@ authRouter.post('/verify', async (req, res) => {
   const isDev = process.env.NODE_ENV !== 'production'
 
   // 开发模式：4 位以上任意码都通过（与 iOS Demo 一致）
-  const valid = isDev ? code.length >= 4 : await verifyOtp(phone, code)
+  const valid = isDev && process.env.ALLOW_DEV_OTP === 'true'
+    ? code.length >= 4
+    : await verifyOtp(phone, code)
   if (!valid) {
     res.status(400).json({ error: 'Invalid or expired code' })
     return

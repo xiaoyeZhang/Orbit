@@ -15,9 +15,11 @@ CREATE TABLE IF NOT EXISTS friendships (
   id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   friend_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  is_favorite BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(user_id, friend_id)
 );
+ALTER TABLE friendships ADD COLUMN IF NOT EXISTS is_favorite BOOLEAN NOT NULL DEFAULT false;
 CREATE INDEX IF NOT EXISTS idx_friendships_user ON friendships(user_id);
 
 CREATE TABLE IF NOT EXISTS locations (

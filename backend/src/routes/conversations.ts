@@ -8,7 +8,7 @@ conversationsRouter.use(requireAuth)
 
 // GET /conversations
 conversationsRouter.get('/', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const r = await db.query(
     `SELECT c.id, c.last_message, c.last_message_at,
             u.id as other_id, u.display_name, u.avatar
@@ -28,7 +28,7 @@ conversationsRouter.get('/', async (req, res) => {
 
 // GET /conversations/:id/messages
 conversationsRouter.get('/:id/messages', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const { id } = req.params
   // Verify participant
   const check = await db.query(
@@ -57,7 +57,7 @@ conversationsRouter.get('/:id/messages', async (req, res) => {
 
 // POST /conversations/:id/messages
 conversationsRouter.post('/:id/messages', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const { id } = req.params
   const { content } = z.object({ content: z.string().min(1).max(2000) }).parse(req.body)
 
@@ -81,8 +81,15 @@ conversationsRouter.post('/:id/messages', async (req, res) => {
 
 // POST /conversations — create or get DM with a friend
 conversationsRouter.post('/', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const { friendId } = z.object({ friendId: z.string().uuid() }).parse(req.body)
+
+  if (friendId === userId) { res.status(400).json({ error: 'Cannot message yourself' }); return }
+  const friendship = await db.query(
+    'SELECT 1 FROM friendships WHERE user_id = $1 AND friend_id = $2',
+    [userId, friendId]
+  )
+  if (!friendship.rows[0]) { res.status(403).json({ error: 'Friendship required' }); return }
 
   const [a, b] = [userId, friendId].sort()
   const r = await db.query(
@@ -93,4 +100,18 @@ conversationsRouter.post('/', async (req, res) => {
     [a, b]
   )
   res.json({ id: r.rows[0].id })
+})
+
+// PATCH /conversations/:id/read — verify access and acknowledge read state
+conversationsRouter.patch('/:id/read', async (req, res) => {
+  const { userId } = req as unknown as AuthRequest
+  const { id } = req.params
+  const check = await db.query(
+    'SELECT id FROM conversations WHERE id=$1 AND (participant_a=$2 OR participant_b=$2)',
+    [id, userId]
+  )
+  if (!check.rows[0]) { res.status(403).json({ error: 'Forbidden' }); return }
+  // The current PostgreSQL schema has no unread/read columns; keep the endpoint
+  // compatible while the message-read model is introduced in a later migration.
+  res.json({ ok: true })
 })

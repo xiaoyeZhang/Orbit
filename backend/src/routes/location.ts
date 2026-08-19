@@ -9,7 +9,7 @@ locationRouter.use(requireAuth)
 
 // POST /location — report current location + presence
 locationRouter.post('/', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const body = z.object({
     latitude:   z.number(),
     longitude:  z.number(),
@@ -48,5 +48,30 @@ locationRouter.post('/', async (req, res) => {
     })
   }
 
+  res.json({ ok: true })
+})
+
+// PATCH /location/presence — update presence without replacing coordinates
+locationRouter.patch('/presence', async (req, res) => {
+  const { userId } = req as unknown as AuthRequest
+  const body = z.object({
+    battery:    z.number().int().min(0).max(100).optional(),
+    isCharging: z.boolean().optional(),
+    movement:   z.enum(['stationary', 'walking', 'running', 'cycling', 'driving']).optional(),
+  }).parse(req.body)
+
+  const sets: string[] = []
+  const values: unknown[] = []
+  let index = 1
+  if (body.battery !== undefined) { sets.push(`battery = $${index++}`); values.push(body.battery) }
+  if (body.isCharging !== undefined) { sets.push(`is_charging = $${index++}`); values.push(body.isCharging) }
+  if (body.movement !== undefined) { sets.push(`movement = $${index++}`); values.push(body.movement) }
+  if (!sets.length) { res.json({ ok: true }); return }
+
+  values.push(userId)
+  await db.query(
+    `UPDATE locations SET ${sets.join(', ')}, updated_at = NOW() WHERE user_id = $${index}`,
+    values
+  )
   res.json({ ok: true })
 })

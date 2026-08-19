@@ -7,7 +7,7 @@ placesRouter.use(requireAuth)
 
 // GET /places
 placesRouter.get('/', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const r = await db.query(
     `SELECT id, name, emoji, latitude, longitude, visit_count, last_visit
      FROM places WHERE user_id=$1 ORDER BY visit_count DESC LIMIT 20`,

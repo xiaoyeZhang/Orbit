@@ -2,7 +2,6 @@ import { Router, Request, Response } from 'express'
 import { z } from 'zod'
 import { db } from '../db'
 import { requireAuth, AuthRequest } from '../middleware/auth'
-import { redis } from '../redis'
 
 export const friendsRouter = Router()
 
@@ -23,9 +22,9 @@ friendsRouter.use(requireAuth)
 
 // GET /friends — list friends with latest location
 friendsRouter.get('/', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const r = await db.query(
-    `SELECT u.id, u.display_name, u.bio, u.invite_code, u.avatar,
+    `SELECT u.id, u.display_name, u.bio, u.invite_code, u.avatar, f.is_favorite,
             l.latitude, l.longitude, l.battery, l.is_charging, l.movement, l.updated_at
      FROM friendships f
      JOIN users     u ON u.id = f.friend_id
@@ -39,6 +38,7 @@ friendsRouter.get('/', async (req, res) => {
     bio:         row.bio,
     inviteCode:  row.invite_code,
     avatar:      row.avatar,
+    isFavorite:  row.is_favorite,
     coordinate:  row.latitude ? { latitude: row.latitude, longitude: row.longitude } : null,
     presence: {
       batteryLevel: row.battery ?? 100,
@@ -51,7 +51,7 @@ friendsRouter.get('/', async (req, res) => {
 
 // POST /friends/add — add by invite code
 friendsRouter.post('/add', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const { inviteCode } = z.object({ inviteCode: z.string().min(3) }).parse(req.body)
 
   const r = await db.query(
@@ -70,11 +70,13 @@ friendsRouter.post('/add', async (req, res) => {
 
   // Return the new friend's profile
   const fr = await db.query(
-    `SELECT u.id, u.display_name, u.bio, u.invite_code, u.avatar,
+    `SELECT u.id, u.display_name, u.bio, u.invite_code, u.avatar, f.is_favorite,
             l.latitude, l.longitude, l.battery, l.is_charging, l.movement
-     FROM users u LEFT JOIN locations l ON l.user_id = u.id
+     FROM users u
+     JOIN friendships f ON f.user_id = $2 AND f.friend_id = u.id
+     LEFT JOIN locations l ON l.user_id = u.id
      WHERE u.id = $1`,
-    [friendId]
+    [friendId, userId]
   )
   const f = fr.rows[0]
   res.json({
@@ -83,14 +85,45 @@ friendsRouter.post('/add', async (req, res) => {
     bio:         f.bio,
     inviteCode:  f.invite_code,
     avatar:      f.avatar,
+    isFavorite:  f.is_favorite,
     coordinate:  f.latitude ? { latitude: f.latitude, longitude: f.longitude } : null,
     presence: { batteryLevel: f.battery ?? 100, isCharging: f.is_charging ?? false, movement: f.movement ?? 'stationary' },
   })
 })
 
+// DELETE /friends/:id — remove the bidirectional friendship
+friendsRouter.delete('/:id', async (req, res) => {
+  const { userId } = req as unknown as AuthRequest
+  const { id: friendId } = req.params
+
+  await db.query(
+    `DELETE FROM friendships
+     WHERE (user_id = $1 AND friend_id = $2)
+        OR (user_id = $2 AND friend_id = $1)`,
+    [userId, friendId]
+  )
+  res.json({ ok: true })
+})
+
+// PATCH /friends/:id/favorite — update only the current user's relation
+friendsRouter.patch('/:id/favorite', async (req, res) => {
+  const { userId } = req as unknown as AuthRequest
+  const { id: friendId } = req.params
+  const { isFavorite } = z.object({ isFavorite: z.boolean() }).parse(req.body)
+
+  const result = await db.query(
+    `UPDATE friendships SET is_favorite = $1
+     WHERE user_id = $2 AND friend_id = $3
+     RETURNING friend_id`,
+    [isFavorite, userId, friendId]
+  )
+  if (!result.rows[0]) { res.status(404).json({ error: 'Friendship not found' }); return }
+  res.json({ ok: true })
+})
+
 // GET /friends/stream — SSE real-time location updates
 friendsRouter.get('/stream', async (req: Request, res: Response) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
 
   res.setHeader('Content-Type',  'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
@@ -113,7 +146,21 @@ friendsRouter.get('/stream', async (req: Request, res: Response) => {
      WHERE f.user_id = $1 AND u.is_ghost = false`,
     [userId]
   )
-  res.write(`data: ${JSON.stringify({ type: 'snapshot', friends: r.rows })}\n\n`)
+  const friends = r.rows.map(row => ({
+    id: row.id,
+    displayName: row.display_name,
+    avatar: row.avatar,
+    coordinate: row.latitude == null ? null : {
+      latitude: row.latitude,
+      longitude: row.longitude,
+    },
+    presence: {
+      batteryLevel: row.battery ?? 100,
+      isCharging: row.is_charging ?? false,
+      movement: row.movement ?? 'stationary',
+    },
+  }))
+  res.write(`data: ${JSON.stringify({ type: 'snapshot', friends })}\n\n`)
 
   // Heartbeat every 30s
   const heartbeat = setInterval(() => {

@@ -8,7 +8,7 @@ usersRouter.use(requireAuth)
 
 // GET /users/me
 usersRouter.get('/me', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const r = await db.query(
     'SELECT id, display_name, bio, invite_code, avatar, is_ghost FROM users WHERE id = $1',
     [userId]
@@ -23,7 +23,7 @@ usersRouter.get('/me', async (req, res) => {
 
 // PATCH /users/me
 usersRouter.patch('/me', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const body = z.object({
     displayName: z.string().optional(),
     bio:         z.string().optional(),
@@ -45,7 +45,7 @@ usersRouter.patch('/me', async (req, res) => {
 
 // PATCH /users/me/ghost-mode
 usersRouter.patch('/me/ghost-mode', async (req, res) => {
-  const { userId } = req as AuthRequest
+  const { userId } = req as unknown as AuthRequest
   const { enabled } = z.object({ enabled: z.boolean() }).parse(req.body)
   await db.query('UPDATE users SET is_ghost = $1 WHERE id = $2', [enabled, userId])
   res.json({ ok: true })

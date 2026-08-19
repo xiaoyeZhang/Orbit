@@ -5,6 +5,14 @@ export interface AuthRequest extends Request {
   userId: string
 }
 
+function jwtSecret(): string {
+  const secret = process.env.JWT_SECRET
+  if (!secret || secret.length < 32) {
+    throw new Error('JWT_SECRET must be configured with at least 32 characters')
+  }
+  return secret
+}
+
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization
   if (!header?.startsWith('Bearer ')) {
@@ -13,7 +21,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   }
   try {
     const token = header.slice(7)
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string }
+    const payload = jwt.verify(token, jwtSecret()) as { sub?: string }
+    if (!payload.sub) {
+      res.status(401).json({ error: 'Invalid token' })
+      return
+    }
     ;(req as AuthRequest).userId = payload.sub
     next()
   } catch {
@@ -22,5 +34,5 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 export function signToken(userId: string): string {
-  return jwt.sign({ sub: userId }, process.env.JWT_SECRET!, { expiresIn: '30d' })
+  return jwt.sign({ sub: userId }, jwtSecret(), { expiresIn: '30d' })
 }
