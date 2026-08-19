@@ -7,7 +7,7 @@ import OrbitServices
 ///
 /// 切换数据来源的唯一开关就在这里：
 /// - 演示 / 离线：返回 `MockBackendService()`
-/// - 接入真实后端：把下面改成 `LiveBackendService(baseURL: ...)`，其余代码无需改动。
+/// - 接入真实后端：使用 `CustomBackendService` 连接仓库内的 Node REST 服务。
 @MainActor
 enum AppEnvironment {
 
@@ -34,7 +34,7 @@ enum AppEnvironment {
             return MockBackendService()
             #endif
         case .rest:
-            return LiveBackendService(baseURL: liveBaseURL)
+            return CustomBackendService(baseURL: liveBaseURL.absoluteString)
         }
     }
 }

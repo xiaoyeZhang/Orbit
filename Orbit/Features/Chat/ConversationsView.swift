@@ -5,6 +5,7 @@ import OrbitServices
 import UserNotifications
 
 struct ConversationsView: View {
+    private let bottomInset: CGFloat
     @EnvironmentObject private var session: SessionStore
     @State private var searchText = ""
     @State private var pushChat: Conversation?
@@ -13,6 +14,10 @@ struct ConversationsView: View {
     @State private var showFriends = false
     @State private var notice: NoticeItem?
     @State private var initiallyLoading = true
+
+    init(bottomInset: CGFloat = 0) {
+        self.bottomInset = bottomInset
+    }
 
     private var sorted: [Conversation] {
         let all = session.conversations.sorted { $0.lastMessageDate > $1.lastMessageDate }
@@ -64,6 +69,7 @@ struct ConversationsView: View {
             }
 
             bottomSearchBar
+                .padding(.bottom, bottomInset)
         }
         .background(Theme.Palette.bg)
         .sheet(item: $pushChat) { convo in

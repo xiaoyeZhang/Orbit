@@ -244,8 +244,17 @@ public final class CustomBackendService: BackendService {
     private func getArray(_ path: String) async throws -> [[String: Any]] {
         var r = URLRequest(url: base.appendingPathComponent(path))
         if let tok = token { r.setValue("Bearer \(tok)", forHTTPHeaderField: "Authorization") }
-        let (data, _) = try await URLSession.shared.data(for: r)
-        return (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]] ?? []
+        let (data, response) = try await URLSession.shared.data(for: r)
+        let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+        let json = try? JSONSerialization.jsonObject(with: data)
+        if code >= 400 {
+            let message = (json as? [String: Any])?["error"] as? String ?? "HTTP \(code)"
+            throw BackendError.network(message)
+        }
+        guard let array = json as? [[String: Any]] else {
+            throw BackendError.network("Bad response")
+        }
+        return array
     }
     private func fetchMessages(conversationId: String) async throws -> [Message] {
         let me = cachedUser?.id ?? ""
