@@ -104,9 +104,9 @@ struct ProfileView: View {
                     RoundedRectangle(cornerRadius: 24, style: .continuous)
                         .fill(Theme.brandGradient)
                         .frame(height: 116)
-                    Circle().fill(.white.opacity(0.08)).frame(width: 140)
+                    Circle().fill(Theme.Palette.onGradient.opacity(0.08)).frame(width: 140)
                         .frame(maxWidth: .infinity, alignment: .trailing).offset(x: 40, y: -30)
-                    Circle().fill(.white.opacity(0.05)).frame(width: 80)
+                    Circle().fill(Theme.Palette.onGradient.opacity(0.05)).frame(width: 80)
                         .frame(maxWidth: .infinity, alignment: .leading).offset(x: -20, y: 20)
                 }
                 .clipped()
@@ -138,7 +138,7 @@ struct ProfileView: View {
             Button { showAvatarEditor = true } label: {
                 ZStack(alignment: .bottomTrailing) {
                     AvatarView(config: session.currentUser?.avatar ?? .default,
-                               size: 88, showsRing: true, ringColor: .white)
+                               size: 88, showsRing: true, ringColor: Theme.Palette.onGradient)
                         .themedShadow(.glow(Theme.Palette.primary))
                         .breathing(scale: 1.028, duration: 3.5)
 

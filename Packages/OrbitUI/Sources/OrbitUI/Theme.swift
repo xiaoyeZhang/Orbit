@@ -68,6 +68,10 @@ public enum Theme {
         public static let textSecondary = Color(.secondaryLabel)
         /// 用在品牌色填充（primary 等）之上的固定白色文字，浅色模式下仍保持高对比
         public static let onPrimary     = Color.white
+        /// 固定白色 — 渐变 / 极光 / 深色浮层上的装饰与描边（有意设计，不随外观变化）
+        public static let onGradient    = Color.white
+        /// 二维码画布 — 扫码对比度要求固定白底，不随外观变化
+        public static let qrCanvas      = Color.white
 
         // Accent variants (formerly hardcoded in views)
         public static let tangerine    = Color(hex: 0xFF9F43)

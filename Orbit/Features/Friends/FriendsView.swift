@@ -162,7 +162,7 @@ struct FriendsView: View {
                 ZStack(alignment: .bottomTrailing) {
                     AvatarView(config: friend.avatar, size: 52,
                                showsRing: true,
-                               ringColor: friend.isFavorite ? Theme.Palette.accent : .white)
+                               ringColor: friend.isFavorite ? Theme.Palette.accent : Theme.Palette.onGradient)
                     if !friend.isGhostMode {
                         OnlineDot(size: 11)
                             .offset(x: 2, y: 2)
@@ -226,7 +226,7 @@ struct FriendsView: View {
         HStack(spacing: Theme.Spacing.lg) {
             ZStack {
                 RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous)
-                    .fill(.white.opacity(0.22))
+                    .fill(Theme.Palette.onGradient.opacity(0.22))
                     .frame(width: 50, height: 50)
                 Image(systemName: "qrcode")
                     .font(Theme.Typography.symbol(26, .bold))
@@ -253,7 +253,7 @@ struct FriendsView: View {
                     .foregroundStyle(Theme.Palette.primary)
                     .padding(.horizontal, Theme.Spacing.md)
                     .padding(.vertical, Theme.Spacing.sm)
-                    .background(Capsule().fill(.white))
+                    .background(Capsule().fill(Theme.Palette.onGradient))
             }
             .buttonStyle(.pressable(scale: 0.92))
         }

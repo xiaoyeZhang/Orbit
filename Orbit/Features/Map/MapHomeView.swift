@@ -267,7 +267,7 @@ struct MapHomeView: View {
                 }
                 .foregroundStyle(Theme.Palette.textPrimary.opacity(0.85))
                 .padding(.horizontal, 10).padding(.vertical, Theme.Spacing.xs)
-                .background(Color.white.opacity(0.14), in: Capsule())
+                .background(Theme.Palette.onGradient.opacity(0.14), in: Capsule())
                 .onTapGesture { showReporting = true }
             }
         }
@@ -278,7 +278,7 @@ struct MapHomeView: View {
     private var rightSidebar: some View {
         VStack(spacing: 10) {
             Button { showAddFriend = true } label: {
-                sidebarButton(icon: "plus", color: .white)
+                sidebarButton(icon: "plus", color: Theme.Palette.primary)
             }
             .buttonStyle(.pressable(scale: 0.88))
             .accessibilityLabel("添加好友")
@@ -286,7 +286,7 @@ struct MapHomeView: View {
             ForEach(session.friends.filter { !$0.isGhostMode }.prefix(4)) { friend in
                 Button { focus(on: friend) } label: {
                     AvatarView(config: friend.avatar, size: 44, showsRing: true,
-                               ringColor: selection?.id == friend.id ? Theme.Palette.sky : .white)
+                               ringColor: selection?.id == friend.id ? Theme.Palette.sky : Theme.Palette.onGradient)
                         .shadowFloating()
                 }
                 .buttonStyle(.pressable(scale: 0.88))

@@ -73,8 +73,8 @@ struct FriendDetailSheet: View {
             .frame(height: 220)
             .overlay(alignment: .topLeading) {
                 // 装饰圆
-                Circle().fill(.white.opacity(0.07)).frame(width: 160).offset(x: 110, y: -50)
-                Circle().fill(.white.opacity(0.05)).frame(width: 100).offset(x: -20, y: 30)
+                Circle().fill(Theme.Palette.onGradient.opacity(0.07)).frame(width: 160).offset(x: 110, y: -50)
+                Circle().fill(Theme.Palette.onGradient.opacity(0.05)).frame(width: 100).offset(x: -20, y: 30)
             }
             .background(heroColor(friend).opacity(0.92).ignoresSafeArea(edges: .top))
 
@@ -82,7 +82,7 @@ struct FriendDetailSheet: View {
             VStack(spacing: 10) {
                 ZStack(alignment: .bottomTrailing) {
                     AvatarView(config: friend.avatar, size: 90,
-                               showsRing: true, ringColor: .white)
+                               showsRing: true, ringColor: Theme.Palette.onGradient)
                         .shadow(color: .black.opacity(0.25), radius: 16, y: 6)
                         .breathing(scale: 1.025, duration: 3.2)
 

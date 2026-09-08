@@ -228,7 +228,7 @@ struct AddFriendView: View {
                         .scaledToFit()
                         .frame(width: 220, height: 220)
                         .padding(Theme.Spacing.xl)
-                        .background(.white, in: RoundedRectangle(cornerRadius: 20))
+                        .background(Theme.Palette.qrCanvas, in: RoundedRectangle(cornerRadius: 20))
                         .shadow(color: .black.opacity(0.15), radius: 20, y: 8)
                 }
 

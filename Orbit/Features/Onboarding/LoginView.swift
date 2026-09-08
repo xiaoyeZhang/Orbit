@@ -43,20 +43,20 @@ struct LoginView: View {
             ZStack {
                 // 外光晕
                 Circle()
-                    .fill(.white.opacity(0.07))
+                    .fill(Theme.Palette.onGradient.opacity(0.07))
                     .frame(width: 140, height: 140)
                     .blur(radius: 4)
                     .floating(amount: 5, duration: 3.8)
 
                 // 扩散脉冲环（双环）
-                PulseRing(color: .white, size: 106, lineWidth: 1.8, maxScale: 2.0, dual: true)
+                PulseRing(color: Theme.Palette.onGradient, size: 106, lineWidth: 1.8, maxScale: 2.0, dual: true)
 
                 // 图标背景圆
                 Circle()
-                    .fill(.white.opacity(0.18))
+                    .fill(Theme.Palette.onGradient.opacity(0.18))
                     .frame(width: 100, height: 100)
                     .overlay(
-                        Circle().strokeBorder(.white.opacity(0.38), lineWidth: 1)
+                        Circle().strokeBorder(Theme.Palette.onGradient.opacity(0.38), lineWidth: 1)
                     )
 
                     Image(systemName: "location.north.circle.fill")
@@ -97,7 +97,7 @@ struct LoginView: View {
                         .foregroundStyle(Theme.Palette.textPrimary.opacity(0.85))
                 }
                 Rectangle()
-                    .fill(.white.opacity(0.35))
+                    .fill(Theme.Palette.onGradient.opacity(0.35))
                     .frame(width: 1, height: 20)
                 TextField("", text: $phone, prompt:
                     Text("手机号码").foregroundColor(Theme.Palette.textPrimary.opacity(0.45)))
@@ -118,10 +118,10 @@ struct LoginView: View {
             .padding(.vertical, 15)
             .background {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(.white.opacity(0.14))
+                    .fill(Theme.Palette.onGradient.opacity(0.14))
                     .overlay {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .strokeBorder(.white.opacity(0.32), lineWidth: 1)
+                            .strokeBorder(Theme.Palette.onGradient.opacity(0.32), lineWidth: 1)
                     }
             }
 
@@ -139,10 +139,10 @@ struct LoginView: View {
                     .padding(.vertical, 15)
                     .background {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(.white.opacity(0.14))
+                            .fill(Theme.Palette.onGradient.opacity(0.14))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .strokeBorder(.white.opacity(0.32), lineWidth: 1)
+                                    .strokeBorder(Theme.Palette.onGradient.opacity(0.32), lineWidth: 1)
                             }
                     }
                     .transition(.asymmetric(
@@ -182,7 +182,7 @@ struct LoginView: View {
                 .frame(height: 54)
                 .background {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(.white)
+                        .fill(Theme.Palette.onGradient)
                         .shadow(color: Theme.Palette.primary.opacity(0.25), radius: 14, y: 6)
                 }
             }

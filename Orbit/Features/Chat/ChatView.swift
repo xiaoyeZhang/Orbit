@@ -297,7 +297,7 @@ struct MessageBubble: View {
                 }
                 .foregroundStyle(Theme.Palette.textPrimary)
                 .padding(.horizontal, 10).padding(.vertical, 5)
-                .background(.white.opacity(0.2), in: Capsule())
+                .background(Theme.Palette.onGradient.opacity(0.2), in: Capsule())
             }
             .padding(.horizontal, Theme.Spacing.md)
             .padding(.vertical, Theme.Spacing.md)

@@ -111,7 +111,7 @@ struct WeatherDetailView: View {
     }
 
     private func infoCard(title: String, value: String, icon: String,
-                          iconColor: Color = .white, large: Bool = false,
+                          iconColor: Color = Theme.Palette.onGradient, large: Bool = false,
                           warning: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
