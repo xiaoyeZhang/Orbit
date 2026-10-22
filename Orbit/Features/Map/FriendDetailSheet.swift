@@ -212,6 +212,7 @@ struct FriendDetailSheet: View {
                            gradient: AnyShapeStyle(Theme.brandGradient))
             }
             .buttonStyle(.pressable(scale: 0.95))
+            .accessibilityLabel("和\(friend.displayName)聊天")
 
             Button {
                 Task { await pingFriend(friend) }
@@ -220,6 +221,7 @@ struct FriendDetailSheet: View {
                            gradient: AnyShapeStyle(Theme.sunsetGradient))
             }
             .buttonStyle(.pressable(scale: 0.95))
+            .accessibilityLabel("戳一下\(friend.displayName)")
 
             Button {
                 Task { await session.toggleFavorite(friend) }
@@ -229,6 +231,7 @@ struct FriendDetailSheet: View {
                            gradient: favoriteGradient(friend.isFavorite))
             }
             .buttonStyle(.pressable(scale: 0.95))
+            .accessibilityLabel(friend.isFavorite ? "取消关注\(friend.displayName)" : "关注\(friend.displayName)")
         }
     }
 

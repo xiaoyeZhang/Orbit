@@ -103,6 +103,7 @@ struct ChatView: View {
                         .shadowCard()
                 }
                 .buttonStyle(.pressable(scale: 0.82))
+                .accessibilityLabel("发送\(emoji)表情轰炸")
             }
 
             Button {
@@ -116,6 +117,7 @@ struct ChatView: View {
                     .overlay(Circle().strokeBorder(Theme.Palette.sunshine.opacity(0.5), lineWidth: 1))
             }
             .buttonStyle(.pressable(scale: 0.82))
+            .accessibilityLabel("向好友发送戳一下")
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Theme.Spacing.sm)

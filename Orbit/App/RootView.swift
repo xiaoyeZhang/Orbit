@@ -42,6 +42,7 @@ struct RootView: View {
 struct MainTabView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var reporter: PresenceReporter
+    @Environment(\.colorScheme) private var colorScheme
     @State private var selection = 0
     @State private var sheetDragOffset: CGFloat = 0
 
@@ -83,7 +84,9 @@ struct MainTabView: View {
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
                             .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
                     }
-                    .shadow(color: .black.opacity(0.6), radius: 40, y: -8)
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.6 : 0.15),
+                            radius: colorScheme == .dark ? 40 : 28,
+                            y: colorScheme == .dark ? -8 : -6)
                     .offset(y: max(0, sheetDragOffset))
                     .gesture(
                         DragGesture(minimumDistance: 12, coordinateSpace: .local)
