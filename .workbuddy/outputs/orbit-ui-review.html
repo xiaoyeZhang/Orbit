@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbit UI/UX 审查报告</title>
+<style>
+  :root {
+    --bg: #0D0D0D;
+    --card: #1C1C1E;
+    --card2: #2C2C2E;
+    --separator: rgba(255,255,255,0.08);
+    --text: #fff;
+    --text2: rgba(255,255,255,0.50);
+    --primary: #6C5CE7;
+    --accent: #FD79A8;
+    --danger: #FF6B6B;
+    --mint: #00D2A8;
+    --gold: #FFC312;
+    --sky: #54A0FF;
+    --sunshine: #FDCB6E;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    line-height: 1.6;
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .subtitle { color: var(--text2); font-size: 15px; margin-bottom: 36px; }
+  h2 {
+    font-size: 20px; font-weight: 700; margin: 32px 0 16px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--separator);
+    display: flex; align-items: center; gap: 10px;
+  }
+  h3 { font-size: 15px; font-weight: 700; margin: 20px 0 10px; }
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+    display: inline-block; line-height: 1.4;
+  }
+  .badge-critical { background: rgba(255,107,107,0.18); color: var(--danger); }
+  .badge-medium { background: rgba(253,203,110,0.18); color: var(--sunshine); }
+  .badge-low { background: rgba(0,210,168,0.18); color: var(--mint); }
+  .badge-good { background: rgba(84,160,255,0.18); color: var(--sky); }
+  .card {
+    background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 16px;
+    border: 1px solid var(--separator);
+  }
+  .card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .card p, .card li { font-size: 13px; color: var(--text2); }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 4px; }
+  code {
+    background: var(--card2); padding: 2px 6px; border-radius: 4px;
+    font-family: 'SF Mono', Menlo, monospace; font-size: 12px;
+    color: var(--sky);
+  }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat {
+    background: var(--card); border-radius: 12px; padding: 16px; text-align: center;
+    border: 1px solid var(--separator);
+  }
+  .stat-num { font-size: 32px; font-weight: 800; font-feature-settings: "tnum"; }
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 4px; }
+  .stat-num.red { color: var(--danger); }
+  .stat-num.yellow { color: var(--sunshine); }
+  .stat-num.green { color: var(--mint); }
+  .file-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .file-item {
+    background: var(--card2); border-radius: 8px; padding: 10px 14px;
+    font-size: 12px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .file-item .name { font-weight: 600; }
+  .file-item .lines { color: var(--text2); }
+  .table-wrap { overflow-x: auto; margin: 12px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--separator); }
+  th { color: var(--text2); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .metric-label { font-weight: 600; }
+  .metric-value { font-family: 'SF Mono', Menlo, monospace; color: var(--text2); }
+  .highlight { color: var(--accent); font-weight: 600; }
+  .summary-bar {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .summary-item {
+    flex: 1; min-width: 140px; background: var(--card); border-radius: 12px;
+    padding: 16px; text-align: center; border: 1px solid var(--separator);
+  }
+  .summary-item .num { font-size: 28px; font-weight: 800; }
+  .summary-item .label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .section-score { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .score-circle {
+    width: 48px; height: 48px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-weight: 800; font-size: 18px;
+  }
+  .score-A { background: rgba(0,210,168,0.18); color: var(--mint); }
+  .score-B { background: rgba(84,160,255,0.18); color: var(--sky); }
+  .score-C { background: rgba(253,203,110,0.18); color: var(--sunshine); }
+  .score-D { background: rgba(255,107,107,0.18); color: var(--danger); }
+</style>
+</head>
+<body>
+
+<h1>🔍 Orbit UI/UX 审查报告</h1>
+<p class="subtitle">SwiftUI iOS 16 实时位置社交 App · 共 13 个视图文件，5,105 行代码</p>
+
+<!-- Summary Stats -->
+<div class="summary-bar">
+  <div class="summary-item">
+    <div class="num" style="color:var(--danger)">268</div>
+    <div class="label">硬编码字体调用</div>
+  </div>
+  <div class="summary-item">
+    <div class="num" style="color:var(--sunshine)">211</div>
+    <div class="label">硬编码 padding</div>
+  </div>
+  <div class="summary-item">
+    <div class="num" style="color:var(--sunshine)">13</div>
+    <div class="label">Palette 外 hex 色</div>
+  </div>
+  <div class="summary-item">
+    <div class="num" style="color:var(--mint)">4</div>
+    <div class="label">设计系统常量</div>
+  </div>
+  <div class="summary-item">
+    <div class="num" style="color:var(--danger)">0</div>
+    <div class="label">Accessibility 标签</div>
+  </div>
+</div>
+
+<!-- Overall Score -->
+<h2>📊 总体评分</h2>
+<div class="card">
+  <div class="section-score">
+    <div class="score-circle score-B">B</div>
+    <div>
+      <strong>综合评分：B（良好，有较大优化空间）</strong>
+      <p style="margin-top:4px">整体布局结构合理，视觉效果有品质感。主要短板在<b>设计系统不完整</b>（缺少字体/间距/阴影规范），导致大量硬编码值和视觉不一致。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section 1: Design System -->
+<h2>🔴 设计系统缺陷 <span class="badge badge-critical">高优先级</span></h2>
+
+<div class="card">
+  <h4>1.1 缺少字体排版系统</h4>
+  <p><code>Theme.swift</code>（122行）中没有任何字体大小常量。13个视图文件中散布了 <b>268 处</b> <code>.system(size:)</code> 调用，大小从 8pt 到 148pt，纯靠开发者直觉。最常见的分布：</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>字号</th><th>次数</th><th>典型用途</th></tr>
+      <tr><td>15</td><td>42</td><td>正文、按钮标签</td></tr>
+      <tr><td>12</td><td>40</td><td>描述文字、标签</td></tr>
+      <tr><td>13</td><td>31</td><td>列表行副文本</td></tr>
+      <tr><td>14</td><td>31</td><td>小标题</td></tr>
+      <tr><td>11</td><td>29</td><td>极小标签、徽章</td></tr>
+    </table>
+  </div>
+  <p style="margin-top:8px"><strong>建议：</strong>在 <code>Theme</code> 中增加 <code>Typography</code> 枚举，定义语义化字体样式（如 <code>.titleLarge</code>、<code>.body</code>、<code>.caption</code>），同时支持 Dynamic Type。</p>
+</div>
+
+<div class="card">
+  <h4>1.2 缺少间距比例系统</h4>
+  <p>211 处 padding 调用中，最常见的值是 <code>.horizontal, 16</code>（43 次），但 <b>几乎从不引用</b> 已有的 <code>Theme.Metric.cardPadding = 16</code>。间距值涉及 23 种不同数值（3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 28, 30, 32, 36, 40, 52, 54...），无体系。</p>
+  <p style="margin-top:8px"><strong>建议：</strong>增加 <code>Theme.Spacing</code> 常量（xs=4, sm=8, md=12, lg=16, xl=20, xxl=28），全工程统一替换。</p>
+</div>
+
+<div class="card">
+  <h4>1.3 缺少阴影预设</h4>
+  <p>每个视图都在硬编码 <code>.shadow(color:radius:y:)</code>，参数组合众多且不一致。例如：<code>black.opacity(0.06)/14/5</code>、<code>black.opacity(0.55)/32/12</code>、<code>black.opacity(0.6)/40/-8</code>。</p>
+  <p style="margin-top:8px"><strong>建议：</strong>增加 <code>Theme.Shadow</code> 预设（如 <code>.card</code>、<code>.elevated</code>、<code>.floating</code>），统一视觉层级。</p>
+</div>
+
+<div class="card">
+  <h4>1.4 仅 4 个 Metric 常量</h4>
+  <p>当前 <code>Theme.Metric</code> 只有 <code>corner(20)</code>、<code>smallCorner(12)</code>、<code>cardPadding(16)</code>、<code>avatar(52)</code>。但全工程实际使用了 icon 尺寸（8~52）、列表行高度、搜索栏高度等，都没有统一常量。</p>
+</div>
+
+<!-- Section 2: Color Usage -->
+<h2>🟡 颜色使用问题 <span class="badge badge-medium">中优先级</span></h2>
+
+<div class="card">
+  <h4>2.1 调色板外的硬编码颜色（13处）</h4>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Hex</th><th>文件</th><th>用途</th></tr>
+      <tr><td><code>0x1A1A1A</code></td><td>MembershipView ×3</td><td>深色文字/背景</td></tr>
+      <tr><td><code>0x5352ED</code></td><td>StatusHistoryView, MembershipView</td><td>安全守护标签 / pro 标签</td></tr>
+      <tr><td><code>0x1A1A2E</code></td><td>MembershipView, WeatherDetailView</td><td>渐变背景</td></tr>
+      <tr><td><code>0xFF9F43</code></td><td>MembershipView</td><td>VIP 标签</td></tr>
+      <tr><td><code>0xFF6B81</code></td><td>StatusHistoryView</td><td>地点提醒色</td></tr>
+      <tr><td><code>0x2BCB96</code></td><td>StatusHistoryView</td><td>健康用机色</td></tr>
+      <tr><td><code>0x2D2D44</code></td><td>MembershipView</td><td>深色渐变</td></tr>
+    </table>
+  </div>
+  <p style="margin-top:8px"><strong>建议：</strong>全部收入 <code>Theme.Palette</code>，或替换为现有语义色。比如 <code>0x1A1A1A</code> 可改为 <code>textPrimary</code>。</p>
+</div>
+
+<div class="card">
+  <h4>2.2 直接使用 .white / .black（~25处）</h4>
+  <p>大量视图直接用 <code>.white</code> 而非 <code>Theme.Palette.textPrimary</code>。由于 App 强制深色主题（<code>.preferredColorScheme(.dark)</code>），当前不会有问题，但<a style="color:var(--sky)">若未来支持浅色模式，会出现白色文字在白色背景上看不见的问题</a>。</p>
+  <p style="margin-top:8px"><strong>受影响文件：</strong>MapHomeView（左侧信息、底部胶囊、邀请标贴）、ConversationsView（搜索栏）、AddFriendView、RootView（标签栏）、FriendMapBubble。</p>
+</div>
+
+<!-- Section 3: Layout Issues -->
+<h2>🟡 布局一致性问题 <span class="badge badge-medium">中优先级</span></h2>
+
+<div class="card">
+  <h4>3.1 行内边距不一致</h4>
+  <div class="table-wrap">
+    <table>
+      <tr><th>视图</th><th>行 padding</th><th>问题</th></tr>
+      <tr><td>ProfileView 设置行</td><td><code>.horizontal: 16, .vertical: 13</code></td><td>✅ 大部分一致</td></tr>
+      <tr><td>FriendsView friendRow</td><td><code>.horizontal: 16, .vertical: 12</code></td><td>13 vs 12 不统一</td></tr>
+      <tr><td>ConversationsView 分类行</td><td><code>.horizontal: 16, .vertical: 13</code></td><td>✅ 一致</td></tr>
+      <tr><td>ConversationsView 对话行</td><td><code>.horizontal: 16, .vertical: 13</code></td><td>✅ 一致</td></tr>
+      <tr><td>城市脉搏附近卡</td><td><code>12</code>（四边）</td><td>卡片内边距略小</td></tr>
+      <tr><td>城市脉搏活动卡</td><td><code>12</code>（四边）</td><td>同上</td></tr>
+    </table>
+  </div>
+  <p style="margin-top:8px"><strong>建议：</strong>统一列表行内边距为 <code>Theme.Spacing.rowH, rowV</code>，卡片内边距为 <code>Theme.Spacing.cardInner</code>。</p>
+</div>
+
+<div class="card">
+  <h4>3.2 Magic Number 底部间距</h4>
+  <p>MapHomeView 中有多处纯经验值的 bottom padding，依赖重叠布局的精确偏移：</p>
+  <ul>
+    <li><code>.padding(.bottom, 120)</code> — 底部「好友」胶囊</li>
+    <li><code>.padding(.bottom, 72)</code> — 隐身横幅</li>
+    <li><code>.padding(.bottom, 136)</code> — 邀请贴纸</li>
+    <li>ProfileView: <code>.padding(.bottom, 110)</code> — 为底部标签栏留空</li>
+  </ul>
+  <p style="margin-top:8px">这些值依赖 <code>MainTabView</code> 的底部浮动栏高度 + 安全区，<a style="color:var(--sunshine)">iPhone SE vs Pro Max 可能有差异</a>。建议用 <code>safeAreaInsets</code> 或 <code>GeometryReader</code> 动态计算。</p>
+</div>
+
+<div class="card">
+  <h4>3.3 圆角不统一</h4>
+  <p>全工程使用了 7 种不同圆角：<code>12, 14, 16, 18, 20, 24, 28</code>。大多是合理的分层（大卡 20-28，小元素 12-16），但缺少明确规范。建议在 <code>Theme.Metric</code> 中增加 <code>cardCorner</code>、<code>cellCorner</code>、<code>pillCorner</code> 常量。</p>
+</div>
+
+<!-- Section 4: Code Quality -->
+<h2>🟡 代码结构问题 <span class="badge badge-medium">中优先级</span></h2>
+
+<div class="card">
+  <h4>4.1 文件过大</h4>
+  <div class="file-list">
+    <div class="file-item"><span class="name">StatusHistoryView.swift</span><span class="lines">750 行</span></div>
+    <div class="file-item"><span class="name">ProfileView.swift</span><span class="lines">616 行</span></div>
+    <div class="file-item"><span class="name">MapHomeView.swift</span><span class="lines">609 行</span></div>
+    <div class="file-item"><span class="name">ChatView.swift</span><span class="lines">551 行</span></div>
+  </div>
+  <p style="margin-top:12px">4 个文件超过 500 行，包含了模型定义、内联子视图、业务逻辑的大杂烩。建议拆分为独立的 View 文件和 ViewModel。</p>
+</div>
+
+<div class="card">
+  <h4>4.2 地图视图叠加层过多</h4>
+  <p>MapHomeView 的 <code>ZStack</code> 中有 <b>8 层叠加</b>（地图、氛围、左上信息、右侧栏、底部胶囊、隐身横幅、SOS 提示、邀请贴纸），全部通过 <code>.frame(alignment:)</code> 定位。这种布局方式脆弱，依赖精确的 padding 偏移。</p>
+  <p style="margin-top:8px"><strong>建议：</strong>用 <code>safeAreaInset</code> 或 <code>.overlay(alignment:)</code> 代替部分叠加层。</p>
+</div>
+
+<div class="card">
+  <h4>4.3 LoginView 的代码组织良好 ✅</h4>
+  <p>相比其他文件，LoginView（224行）拆分清晰：logoSection / formSection 独立计算属性，动画逻辑集中在 onAppear。这个模式值得其他视图借鉴。</p>
+</div>
+
+<!-- Section 5: Polish -->
+<h2>🟢 视觉打磨建议 <span class="badge badge-low">低优先级</span></h2>
+
+<div class="card">
+  <h4>5.1 MapHomeView 邀请贴纸用了硬编码渐变</h4>
+  <p><code>LinearGradient(colors: [Color(hex: 0x6C5CE7), Color(hex: 0xFD79A8)], ...)</code> 实际上就是已有的 <code>Theme.brandGradient</code>。应替换引用。</p>
+</div>
+
+<div class="card">
+  <h4>5.2 好友列表分隔线左边距不一致</h4>
+  <p>FriendsView 分隔线 <code>.padding(.leading, 78)</code> vs ProfileView 设置分隔线 <code>.padding(.leading, 54)</code> vs ConversationsView <code>.padding(.leading, 78/80)</code>。应根据内容区左边距统一为同一值。</p>
+</div>
+
+<div class="card">
+  <h4>5.3 Empty States 表现良好 ✅</h4>
+  <p>FriendsView（空好友）、ProfileView（无亲密关系/无足迹）、ConversationsView（无私信）都有空态提示，风格统一，动效恰当。</p>
+</div>
+
+<div class="card">
+  <h4>5.4 缺少骨架屏 / 加载态</h4>
+  <p>除城市脉搏有 <code>loadingRow</code>（ProgressView + 文字），其他数据加载场景缺少骨架屏（如好友列表首次加载、会员状态加载中）。建议为列表页增加 <code>.redacted(reason: .placeholder)</code> 骨架效果。</p>
+</div>
+
+<div class="card">
+  <h4>5.5 可访问性完全缺失 ⚠️</h4>
+  <p>全工程 <b>0 处</b> <code>.accessibilityLabel</code> / <code>.accessibilityHint</code> / <code>.accessibilityAddTraits</code>。头像、按钮、图标对 VoiceOver 用户不透明。建议至少为核心按钮（SOS、隐身开关、好友头像）加标签。</p>
+</div>
+
+<!-- Section 6: What's Good -->
+<h2>✅ 做得好的地方 <span class="badge badge-good">保持</span></h2>
+
+<div class="card">
+  <h4>6.1 颜色调色板设计合理</h4>
+  <p><code>Theme.Palette</code> 的 21 个语义色覆盖了品牌色、深色专用色、状态色，命名清晰。渐变预设 5 种，卡片修饰器 4 种，整体思路正确。</p>
+</div>
+
+<div class="card">
+  <h4>6.2 动画系统完善</h4>
+  <p><code>Effects.swift</code> 提供了 <code>jelly/smoothSpring/snap/bounce</code> 预设、<code>Haptics</code> 工具、<code>PressableStyle</code> 按钮、<code>Breathing/Floating/PopIn/StaggeredAppear</code> 修饰器。动画粒度恰到好处，不浮夸。</p>
+</div>
+
+<div class="card">
+  <h4>6.3 自定义 TabBar 体验优秀</h4>
+  <p>深色浮动胶囊标签栏（3 Tab）+ 消息底部弹出 + 个人资料滑入，比系统 TabView 更有品质感。双击消息 Tab 回地图的交互也很自然。</p>
+</div>
+
+<div class="card">
+  <h4>6.4 深色主题统一</h4>
+  <p>整体深色视觉风格一致，毛玻璃效果（<code>.ultraThinMaterial</code>）、半透明卡片、发光阴影都很好地服务于「实时位置」的科技感。</p>
+</div>
+
+<!-- Priority Roadmap -->
+<h2>🗺 优化路线图建议</h2>
+
+<div class="card">
+  <table>
+    <tr>
+      <th>优先级</th><th>任务</th><th>预估工作量</th><th>影响范围</th>
+    </tr>
+    <tr>
+      <td><span class="badge badge-critical">P0</span></td>
+      <td>增加 <code>Theme.Typography</code> 字体系统，全工程替换硬编码字号</td>
+      <td>中</td>
+      <td>全部视图</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-critical">P0</span></td>
+      <td>增加 <code>Theme.Spacing</code> 间距系统，替换硬编码 padding</td>
+      <td>中</td>
+      <td>全部视图</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-critical">P0</span></td>
+      <td>增加 <code>Theme.Shadow</code> 阴影预设</td>
+      <td>小</td>
+      <td>全部卡片/浮动元素</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-medium">P1</span></td>
+      <td>非 Palette hex 颜色收入 Palette</td>
+      <td>小</td>
+      <td>MembershipView / StatusHistoryView</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-medium">P1</span></td>
+      <td>替换 <code>.white</code> → <code>textPrimary</code></td>
+      <td>中</td>
+      <td>MapHomeView / ConversationsView 等</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-medium">P1</span></td>
+      <td>拆分 Giant Files（四文件 500+ 行 → 各拆 2-3 文件）</td>
+      <td>大</td>
+      <td>4 个主要视图</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-medium">P1</span></td>
+      <td>MapHomeView 魔法数字 bottom padding 动态化</td>
+      <td>中</td>
+      <td>MapHomeView</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-low">P2</span></td>
+      <td>增加列表骨架屏 / <code>.redacted</code> 加载态</td>
+      <td>小</td>
+      <td>全部列表页</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-low">P2</span></td>
+      <td>核心按钮增加 Accessibility 标签</td>
+      <td>小</td>
+      <td>核心交互元素</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-low">P2</span></td>
+      <td>统一分隔线左边距</td>
+      <td>小</td>
+      <td>FriendsView / ProfileView / ConversationsView</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-low">P2</span></td>
+      <td>Dynamic Type 支持</td>
+      <td>中</td>
+      <td>全部文本</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Summary -->
+<h2>📋 总结</h2>
+<div class="card">
+  <p><strong>整体评价：</strong>Orbit 的 UI 层处于「功能完整、视觉及格、系统薄弱」的阶段。所有功能页面都能正常渲染，视觉效果有品质感，但底层设计系统仅有颜色的基础定义，缺少字体、间距、阴影规范。这导致：</p>
+  <ul style="margin-top:12px">
+    <li>每个开发者需要自行选择字体大小（268 个选择！），容易不一致</li>
+    <li>修改全局样式（如行高、卡片内边距）需要改几十处</li>
+    <li>添加新页面时，没有清晰的「应该用什么字号/间距」指引</li>
+    <li>未来支持浅色模式需要逐个检查 .white / .black 引用</li>
+  </ul>
+  <p style="margin-top:12px"><strong>建议优先做 P0 三项</strong>（Typography + Spacing + Shadow），这是基础设施投入，做完后整个代码库的质量和可维护性都会显著提升。P1/P2 可以边迭代边做。</p>
+</div>
+
+<p style="text-align:center;color:var(--text2);font-size:12px;margin-top:40px">Orbit UI/UX Review · 2026-07-28</p>
+
+</body>
+</html>
