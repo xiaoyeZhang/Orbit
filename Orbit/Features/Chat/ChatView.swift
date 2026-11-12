@@ -47,7 +47,6 @@ struct ChatView: View {
         }
         .navigationTitle(vm.conversation.friendName)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .onAppear { vm.start() }
         .onDisappear { vm.stop() }
         .onChange(of: vm.messages.count) { _ in
@@ -90,38 +89,40 @@ struct ChatView: View {
     // MARK: - emoji 轰炸快捷条
 
     private var burstBar: some View {
-        HStack(spacing: Theme.Spacing.sm) {
-            ForEach(burstEmojis, id: \.self) { emoji in
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Theme.Spacing.sm) {
+                ForEach(burstEmojis, id: \.self) { emoji in
+                    Button {
+                        vm.sendBurst(emoji)
+                        withAnimation(.snap) { showBurstBar = false }
+                    } label: {
+                        Text(emoji)
+                            .font(Theme.Typography.title2(.heavy))
+                            .frame(width: 44, height: 44)
+                            .background(Theme.Palette.surface, in: Circle())
+                            .shadowCard()
+                    }
+                    .buttonStyle(.pressable(scale: 0.82))
+                    .accessibilityLabel("发送\(emoji)表情轰炸")
+                }
+
                 Button {
-                    vm.sendBurst(emoji)
+                    vm.sendPing()
                     withAnimation(.snap) { showBurstBar = false }
                 } label: {
-                    Text(emoji)
-                        .font(Theme.Typography.title2(.heavy))
-                        .frame(width: 44, height: 44)
-                        .background(Theme.Palette.surface, in: Circle())
-                        .shadowCard()
-                }
-                .buttonStyle(.pressable(scale: 0.82))
-                .accessibilityLabel("发送\(emoji)表情轰炸")
-            }
-
-            Button {
-                vm.sendPing()
-                withAnimation(.snap) { showBurstBar = false }
-            } label: {
                     Text("👋")
                         .font(Theme.Typography.title2(.heavy))
                         .frame(width: 44, height: 44)
-                    .background(Theme.Palette.sunshine.opacity(0.18), in: Circle())
-                    .overlay(Circle().strokeBorder(Theme.Palette.sunshine.opacity(0.5), lineWidth: 1))
+                        .background(Theme.Palette.sunshine.opacity(0.18), in: Circle())
+                        .overlay(Circle().strokeBorder(Theme.Palette.sunshine.opacity(0.5), lineWidth: 1))
+                }
+                .buttonStyle(.pressable(scale: 0.82))
+                .accessibilityLabel("向好友发送戳一下")
             }
-            .buttonStyle(.pressable(scale: 0.82))
-            .accessibilityLabel("向好友发送戳一下")
+            .padding(.horizontal, Theme.Spacing.md)
         }
-        .frame(maxWidth: .infinity)
         .padding(.vertical, Theme.Spacing.sm)
-        .background(.ultraThinMaterial)
+        .orbitGlass(in: RoundedRectangle(cornerRadius: Theme.Radius.xl))
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
@@ -196,7 +197,7 @@ struct ChatView: View {
         }
         .padding(.horizontal, Theme.Spacing.md)
         .padding(.vertical, 10)
-        .background(.ultraThinMaterial)
+        .orbitGlass(in: RoundedRectangle(cornerRadius: Theme.Radius.xl))
         .overlay(alignment: .top) {
             Divider().opacity(0.4)
         }

@@ -86,44 +86,44 @@ public enum Theme {
     }
 
     // MARK: Typography (字体规范)
-    /// 使用 `Theme.Typography.xxx` 替代全局 `.system(size:weight:)` 硬编码。
+    /// 使用系统语义字体，随 Dynamic Type 缩放；大号装饰性展示保留专用尺寸。
     /// 带参数版本用于需要定制 weight / design 的场景（如 statPill 的 .rounded）。
     public enum Typography {
         /// 34pt — 地图城市名
         public static func titleLarge(_ weight: Font.Weight = .heavy, design: Font.Design = .default) -> Font {
-            .system(size: 34, weight: weight, design: design)
+            .system(.largeTitle, design: design).weight(weight)
         }
         /// 22pt — 表单标题、统计数字
         public static func title(_ weight: Font.Weight = .bold, design: Font.Design = .default) -> Font {
-            .system(size: 22, weight: weight, design: design)
+            .system(.title2, design: design).weight(weight)
         }
         /// 20pt — 次级标题、详情页标题
         public static func title3(_ weight: Font.Weight = .bold, design: Font.Design = .default) -> Font {
-            .system(size: 20, weight: weight, design: design)
+            .system(.title3, design: design).weight(weight)
         }
         /// 17–18pt — 段落标题（section header、会员标题）
         public static func headline(_ weight: Font.Weight = .semibold, design: Font.Design = .default) -> Font {
-            .system(size: 17, weight: weight, design: design)
+            .system(.headline, design: design).weight(weight)
         }
         /// 15pt — 正文 / 列表行标题 / 聊天文字
         public static func body(_ weight: Font.Weight = .medium, design: Font.Design = .default) -> Font {
-            .system(size: 15, weight: weight, design: design)
+            .system(.subheadline, design: design).weight(weight)
         }
         /// 14pt — 辅助文字
         public static func callout(_ weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
-            .system(size: 14, weight: weight, design: design)
+            .system(.callout, design: design).weight(weight)
         }
         /// 13pt — 小标签 / 描述 / 输入框
         public static func subheadline(_ weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
-            .system(size: 13, weight: weight, design: design)
+            .system(.footnote, design: design).weight(weight)
         }
         /// 12pt — 说明文字 / 日期 / 按钮小字
         public static func caption(_ weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
-            .system(size: 12, weight: weight, design: design)
+            .system(.caption, design: design).weight(weight)
         }
         /// 11pt — 角标 / 微标
         public static func caption2(_ weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
-            .system(size: 11, weight: weight, design: design)
+            .system(.caption2, design: design).weight(weight)
         }
         /// 9pt — 超小角标
         public static func micro(_ weight: Font.Weight = .heavy, design: Font.Design = .default) -> Font {
@@ -133,7 +133,7 @@ public enum Theme {
         // MARK: Display (大号展示字体)
         /// 28pt — 统计大数 / emoji 展示 / 城市名
         public static func title2(_ weight: Font.Weight = .heavy, design: Font.Design = .default) -> Font {
-            .system(size: 28, weight: weight, design: design)
+            .system(.title, design: design).weight(weight)
         }
         /// 44pt — 空态大 emoji / 距离展示
         public static func display(_ weight: Font.Weight = .light, design: Font.Design = .default) -> Font {

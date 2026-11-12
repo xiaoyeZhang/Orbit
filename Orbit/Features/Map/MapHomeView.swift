@@ -5,14 +5,14 @@ import OrbitCore
 import OrbitUI
 import OrbitServices
 
-// MARK: - Layout Constants (经验偏移：自定义浮动 TabBar 高度 + 底部安全区)
+// MARK: - Insets inside the safe area (the root owns the navigation bar)
 private enum MapLayout {
     /// 幽灵模式横幅底部偏移
-    static let ghostBannerBottom: CGFloat = 56
+    static let ghostBannerBottom: CGFloat = 76
     /// 底部功能胶囊偏移
-    static let bottomPillBottom: CGFloat = 88
+    static let bottomPillBottom: CGFloat = 16
     /// 邀请贴纸底部偏移
-    static let inviteStickerBottom: CGFloat = 104
+    static let inviteStickerBottom: CGFloat = 16
 }
 
 private enum MapEntity: Identifiable {
@@ -103,19 +103,25 @@ struct MapHomeView: View {
             ambientOverlay
 
             topLeftInfo
+                .padding(.trailing, 80)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .padding(.leading, Theme.Spacing.lg)
-                .padding(.top, 60)
+                .padding(.top, Theme.Spacing.md)
 
-            rightSidebar
+            ScrollView(showsIndicators: false) {
+                OrbitGlassGroup { rightSidebar }
+                    .padding(.vertical, Theme.Spacing.md)
+            }
+                .frame(width: 56)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 .padding(.trailing, Theme.Spacing.md)
-                .padding(.top, 60)
+                .padding(.bottom, 76)
 
             bottomPill
                 .padding(.bottom, MapLayout.bottomPillBottom)
 
             ghostBanner
+                .padding(.horizontal, Theme.Spacing.lg)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, MapLayout.ghostBannerBottom)
 
@@ -131,7 +137,6 @@ struct MapHomeView: View {
                 .padding(.leading, Theme.Spacing.lg)
                 .padding(.bottom, MapLayout.inviteStickerBottom)
         }
-        .ignoresSafeArea(edges: .bottom)
         .sheet(item: $selection) { sel in
             FriendDetailSheet(friendId: sel.id, onOpenChat: {})
                 .presentationDetents([.medium, .large])
@@ -228,7 +233,7 @@ struct MapHomeView: View {
                     .font(Theme.Typography.caption(.semibold))
                     .foregroundStyle(Theme.Palette.textPrimary)
                     .padding(.horizontal, 10).padding(.vertical, 5)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .orbitGlass(in: Capsule(), interactive: true)
                 }
                 .buttonStyle(.pressable(scale: 0.92))
                 .accessibilityLabel(temperature != nil ? "温度 \(String(format: "%.1f", temperature!)) 度" : "天气")
@@ -243,7 +248,7 @@ struct MapHomeView: View {
                 }
                 .foregroundStyle(Theme.Palette.textPrimary)
                 .padding(.horizontal, 10).padding(.vertical, 5)
-                .background(.ultraThinMaterial, in: Capsule())
+                .orbitGlass(in: Capsule(), interactive: true)
                 .onTapGesture { showFriends = true }
                 .accessibilityLabel("好友地图")
             }
@@ -253,7 +258,7 @@ struct MapHomeView: View {
                     .font(Theme.Typography.caption(.semibold))
                     .foregroundStyle(Theme.Palette.textPrimary)
                     .padding(.horizontal, 10).padding(.vertical, 5)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .orbitGlass(in: Capsule(), interactive: true)
             }
             .buttonStyle(.pressable(scale: 0.92))
             .accessibilityLabel("氛围地图: \(ambient.timeOfDay.title)")
@@ -302,11 +307,8 @@ struct MapHomeView: View {
                     HStack(spacing: Theme.Spacing.xs) {
                         Image(systemName: "moon.zzz.fill")
                             .font(Theme.Typography.symbol(11))
-                        Text("\(hiddenFriends.count) 隐身")
+                        Text("\(hiddenFriends.count)")
                             .font(Theme.Typography.caption2(.semibold))
-                        Image(systemName: "info.circle.fill")
-                            .font(Theme.Typography.symbol(9))
-                            .opacity(0.6)
                     }
                     .foregroundStyle(Theme.Palette.subtle)
                     .padding(.horizontal, Theme.Spacing.sm)
@@ -364,9 +366,7 @@ struct MapHomeView: View {
             .font(Theme.Typography.symbol(17, .semibold))
             .foregroundStyle(color)
             .frame(width: 44, height: 44)
-            .background(Theme.Palette.card, in: Circle())
-            .overlay(Circle().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
-            .shadowFloating()
+            .orbitGlass(in: Circle(), interactive: true)
     }
 
     // MARK: - Bottom pill
@@ -381,9 +381,7 @@ struct MapHomeView: View {
             }
             .foregroundStyle(Theme.Palette.textPrimary)
             .padding(.horizontal, 22).padding(.vertical, 11)
-            .background(Theme.Palette.card.opacity(0.92), in: Capsule())
-            .overlay(Capsule().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
-            .shadowFloating()
+            .orbitGlass(in: Capsule(), interactive: true)
         }
         .buttonStyle(.pressable(scale: 0.92))
         .accessibilityLabel("好友列表")
@@ -403,8 +401,7 @@ struct MapHomeView: View {
                 .foregroundStyle(Theme.Palette.textPrimary)
                 .padding(.horizontal, Theme.Spacing.md)
                 .padding(.vertical, 9)
-                .background(Color.black.opacity(0.62), in: Capsule())
-                .shadowFloating()
+                .orbitGlass(in: Capsule())
                 .accessibilityLabel("你已隐身")
             }
         }

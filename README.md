@@ -3,6 +3,14 @@
 一款用 **SwiftUI（iOS 16）** 实现的、功能参照 Zenly 的实时位置社交 App。
 核心体验：在地图上实时看到好友的头像气泡、位置、移动状态与电量，并能添加好友、聊天、自定义卡通头像。
 
+### 新系统界面与窗口适配
+
+- 最低支持 iOS 16；iOS 26 及以后使用原生 Liquid Glass 导航和地图控件，较早系统回退到系统材质。开启“降低透明度”时控件使用实色背景。
+- 根据当前窗口宽高布局，不依赖设备名称。宽窗口将地图与消息／个人页并排显示；窄窗口、短横屏和辅助功能字号保留单列面板。
+- 手机支持横屏；消息搜索栏和底部导航遵守安全区；聊天表情栏支持横向滚动；正文采用系统语义字体随字号设置缩放。
+- 布局策略回归检查：`swiftc Packages/OrbitUI/Sources/OrbitUI/AdaptiveLayout.swift Scripts/Tests/AdaptiveLayoutTests.swift -o /tmp/orbit-layout-tests && /tmp/orbit-layout-tests`。
+- 本轮用 Xcode 26.6 / iOS 26.5 SDK 和 Xcode 27.1 / iOS 27.1 SDK 构建，部署目标均保持 iOS 16。iPhone Duo / iOS 27.1 模拟器已验证启动与地图页显示；展开／折叠、键盘及辅助功能交互仍需人工验收，未进行 iOS 16 设备运行验证。
+
 > 数据层采用「**后端服务协议 + Mock 实现**」：现在用内置假数据即可离线编译运行、看到完整效果；
 > 将来接入真实服务器时，只改一处开关即可，UI 代码零改动。
 

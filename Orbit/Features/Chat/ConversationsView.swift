@@ -29,12 +29,6 @@ struct ConversationsView: View {
         ZStack(alignment: .bottom) {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(Theme.Palette.textPrimary.opacity(0.2))
-                        .frame(width: 36, height: 5)
-                        .padding(.top, 10)
-                        .padding(.bottom, Theme.Spacing.md)
-
                     if showNotificationBanner {
                         notificationBanner
                             .padding(.horizontal, Theme.Spacing.lg)
@@ -64,12 +58,12 @@ struct ConversationsView: View {
                             .padding(.top, 36)
                     }
 
-                    Color.clear.frame(height: 100)
                 }
             }
 
-            bottomSearchBar
-                .padding(.bottom, bottomInset)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            bottomSearchBar.padding(.bottom, bottomInset)
         }
         .background(Theme.Palette.bg)
         .sheet(item: $pushChat) { convo in
@@ -306,8 +300,7 @@ struct ConversationsView: View {
             }
             .padding(.horizontal, Theme.Spacing.md)
             .padding(.vertical, 11)
-            .background(Theme.Palette.card2, in: Capsule())
-            .overlay(Capsule().strokeBorder(Theme.Palette.separator, lineWidth: 0.5))
+            .orbitGlass(in: Capsule(), interactive: true)
 
             Button { showNewChat = true } label: {
                 Image(systemName: "square.and.pencil")

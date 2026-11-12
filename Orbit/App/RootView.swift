@@ -38,180 +38,122 @@ struct RootView: View {
     }
 }
 
-// MARK: - 主界面（3-Tab 深色浮动栏）
+// MARK: - 主界面（窄屏底部面板 / 宽屏地图与面板并排）
 struct MainTabView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var reporter: PresenceReporter
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selection = 0
-    @State private var sheetDragOffset: CGFloat = 0
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // ── Map is always the background ──
-            MapHomeView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        GeometryReader { geometry in
+            let layout = OrbitAdaptiveLayout(
+                size: geometry.size,
+                accessibilityText: dynamicTypeSize.isAccessibilitySize
+            )
+            ZStack(alignment: .bottomTrailing) {
+                HStack(spacing: 0) {
+                    MapHomeView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    if layout.usesSidePanel && selection != 0 {
+                        Color.clear.frame(width: layout.panelWidth)
+                    }
+                }
+                .accessibilityHidden(selection != 0 && !layout.usesSidePanel)
 
-            // ── Profile slides in (full replace) ──
-            if selection == 2 {
-                ProfileView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .bottom),
-                        removal: .move(edge: .bottom)
-                    ))
-            }
+                if selection == 1 && !layout.usesSidePanel {
+                    Color.black.opacity(0.25)
+                        .ignoresSafeArea()
+                        .onTapGesture { selectTab(0) }
+                        .accessibilityLabel("关闭消息面板")
+                        .accessibilityAddTraits(.isButton)
+                }
 
-            // ── Messages slides up as bottom sheet ──
-            if selection == 1 {
-                // Tap-outside dismiss overlay
-                Color.black.opacity(0.35)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        Haptics.selection()
-                        withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
-                            selection = 0
+                // One panel subtree preserves search, navigation and scroll state on resize.
+                if selection != 0 {
+                    VStack(spacing: 0) {
+                        if selection == 1 {
+                            HStack {
+                                Text("消息").font(.headline)
+                                Spacer()
+                                Button { selectTab(0) } label: {
+                                    Image(systemName: "xmark")
+                                        .font(.body.weight(.semibold))
+                                        .frame(width: 44, height: 44)
+                                        .orbitGlass(in: Circle(), interactive: true)
+                                }
+                                .accessibilityLabel("关闭消息面板")
+                            }
+                            .padding(.horizontal, Theme.Spacing.lg)
+                            .padding(.top, Theme.Spacing.sm)
+                            ConversationsView()
+                        } else {
+                            ProfileView()
                         }
                     }
-                    .transition(.opacity)
-
-                // 给消息面板底部搜索栏预留自定义导航栏的空间，避免两个底部控件互相覆盖。
-                ConversationsView(bottomInset: 84)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: UIScreen.main.bounds.height * 0.72)
-                    .background(Theme.Palette.bg, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-                    .overlay(alignment: .top) {
-                        RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
+                    .frame(width: layout.panelWidth,
+                           height: selection == 1 ? layout.messagePanelHeight : geometry.size.height)
+                    .background(Theme.Palette.bg)
+                    .clipShape(RoundedRectangle(cornerRadius: layout.usesSidePanel ? 0 : 24,
+                                                style: .continuous))
+                    .overlay(alignment: .leading) {
+                        if layout.usesSidePanel { Divider() }
                     }
-                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.6 : 0.15),
-                            radius: colorScheme == .dark ? 40 : 28,
-                            y: colorScheme == .dark ? -8 : -6)
-                    .offset(y: max(0, sheetDragOffset))
-                    .gesture(
-                        DragGesture(minimumDistance: 12, coordinateSpace: .local)
-                            .onChanged { value in
-                                // 只允许向下拖
-                                if value.translation.height > 0 {
-                                    sheetDragOffset = value.translation.height
-                                }
-                            }
-                            .onEnded { value in
-                                let velocity = value.predictedEndTranslation.height
-                                if value.translation.height > 80 || velocity > 300 {
-                                    // 超过阈值 → 收起
-                                    Haptics.selection()
-                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
-                                        sheetDragOffset = 0
-                                        selection = 0
-                                    }
-                                } else {
-                                    // 弹回原位
-                                    withAnimation(.spring(response: 0.30, dampingFraction: 0.75)) {
-                                        sheetDragOffset = 0
-                                    }
-                                }
-                            }
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .bottom).combined(with: .opacity),
-                        removal: .move(edge: .bottom).combined(with: .opacity)
-                    ))
-                    .ignoresSafeArea(edges: .bottom)
-                    .onChange(of: selection) { _ in sheetDragOffset = 0 }
+                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+                }
             }
-
-            // ── Floating dark tab bar (always on top) ──
-            darkTabBar
         }
-        .ignoresSafeArea(edges: .bottom)
-        .animation(.spring(response: 0.40, dampingFraction: 0.82), value: selection)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            floatingTabBar
+                .padding(.horizontal, Theme.Spacing.xl)
+                .padding(.vertical, Theme.Spacing.sm)
+        }
         .onAppear { reporter.start() }
         .onDisappear { reporter.stop() }
     }
 
-    // MARK: - Tab bar
-    private var darkTabBar: some View {
-        ZStack(alignment: .bottom) {
-            HStack(spacing: 0) {
-                // Left: Pulse/radar icon (map & discover)
-                tabBtn(index: 0) {
-                    Image(systemName: "waveform.circle.fill")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(selection == 0
-                                         ? Theme.Palette.sky
-                                         : Theme.Palette.textSecondary)
-                }
-
-                Spacer()
-
-                // Center: Friend/message count pill
-                tabBtn(index: 1) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(selection == 1 ? Theme.Palette.primary : Theme.Palette.card2)
-                            .frame(width: 52, height: 34)
-                        let count = session.friends.count > 0 ? session.friends.count : session.totalUnread
-                        if count > 0 {
-                            Text("\(min(count, 99))")
-                                .font(.system(size: 20, weight: .heavy, design: .rounded))
-                                .foregroundStyle(.white)
-                        } else {
-                            Image(systemName: "person.2.fill")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(selection == 1 ? .white : Theme.Palette.textSecondary)
-                        }
-                    }
-                }
-
-                Spacer()
-
-                // Right: Location pin
-                tabBtn(index: 2) {
-                    Image(systemName: selection == 2 ? "mappin.circle.fill" : "mappin.circle")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(selection == 2
-                                         ? Theme.Palette.accent
-                                         : Theme.Palette.textSecondary)
-                }
-            }
-            .padding(.horizontal, 28)
-            .padding(.vertical, 6)
-            .background {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(Theme.Palette.card.opacity(0.96))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .strokeBorder(Theme.Palette.separator, lineWidth: 0.5)
-                    }
-                    .shadow(color: .black.opacity(0.55), radius: 20, y: 6)
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 28)
+    private var floatingTabBar: some View {
+        HStack(spacing: 4) {
+            tabButton(index: 0, title: "地图", icon: "map.fill", tint: Theme.Palette.sky)
+            tabButton(index: 1, title: "消息", icon: "bubble.left.and.bubble.right.fill", tint: Theme.Palette.primary)
+            tabButton(index: 2, title: "我的", icon: "person.crop.circle.fill", tint: Theme.Palette.accent)
         }
-        .frame(maxWidth: .infinity)
+        .padding(6)
+        .frame(maxWidth: 520)
+        .orbitGlass(in: Capsule())
     }
 
-    private func tabBtn<Label: View>(index: Int, @ViewBuilder label: () -> Label) -> some View {
-        Button {
-            // Tapping the messages tab again collapses it back to map
-            if index == 1 && selection == 1 {
-                Haptics.selection()
-                withAnimation(.spring(response: 0.38, dampingFraction: 0.82)) {
-                    selection = 0
-                }
-                return
+    private func tabButton(index: Int, title: String, icon: String, tint: Color) -> some View {
+        Button { selectTab(index == 1 && selection == 1 ? 0 : index) } label: {
+            VStack(spacing: 3) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .overlay(alignment: .topTrailing) {
+                        if index == 1 && session.totalUnread > 0 {
+                            Circle().fill(Theme.Palette.danger)
+                                .frame(width: 8, height: 8)
+                                .offset(x: 5, y: -2)
+                        }
+                    }
+                Text(title).font(.caption.weight(.semibold))
             }
-            guard selection != index else { return }
-            Haptics.selection()
-            withAnimation(.spring(response: 0.32, dampingFraction: 0.78)) {
-                selection = index
-            }
-        } label: {
-            label()
-                .frame(minWidth: 44, minHeight: 44)
+            .foregroundStyle(selection == index ? tint : Theme.Palette.textSecondary)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .padding(.vertical, 4)
+            .background(selection == index ? tint.opacity(0.14) : .clear, in: Capsule())
+            .contentShape(Capsule())
         }
-        .buttonStyle(.pressable(scale: 0.86))
+        .buttonStyle(.pressable)
+        .accessibilityLabel(title)
+        .accessibilityValue(index == 1 && session.totalUnread > 0 ? "\(session.totalUnread) 条未读消息" : "")
+        .accessibilityAddTraits(selection == index ? .isSelected : [])
+    }
+
+    private func selectTab(_ index: Int) {
+        Haptics.selection()
+        withAnimation(reduceMotion ? nil : .spring(response: 0.38, dampingFraction: 0.86)) {
+            selection = index
+        }
     }
 }

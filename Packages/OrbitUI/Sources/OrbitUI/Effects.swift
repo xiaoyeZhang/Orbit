@@ -36,6 +36,7 @@ public enum Haptics {
 
 // MARK: - PressableButtonStyle
 public struct PressableStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     public var scale: CGFloat = 0.94
     public var haptic: Bool = true
     public init(scale: CGFloat = 0.94, haptic: Bool = true) {
@@ -43,10 +44,10 @@ public struct PressableStyle: ButtonStyle {
     }
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? scale : 1)
+            .scaleEffect(configuration.isPressed && !reduceMotion ? scale : 1)
             .opacity(configuration.isPressed ? 0.80 : 1)
             .brightness(configuration.isPressed ? -0.06 : 0)
-            .animation(.spring(response: 0.18, dampingFraction: 0.55), value: configuration.isPressed)
+            .animation(reduceMotion ? nil : .spring(response: 0.18, dampingFraction: 0.55), value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { pressed in
                 if pressed && haptic { Haptics.medium() }
             }

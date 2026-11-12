@@ -39,9 +39,11 @@ struct ProfileView: View {
                     settingsSection
                         .popIn(delay: 0.18)
                 }
+                .frame(maxWidth: 680)
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.top, 10)
-                .padding(.bottom, 110)
+                .padding(.bottom, Theme.Spacing.xl)
+                .frame(maxWidth: .infinity)
             }
             .background(Theme.Palette.groupedBackground.ignoresSafeArea())
             .navigationTitle("我的")
